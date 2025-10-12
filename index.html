@@ -102,7 +102,7 @@
     }
     @keyframes menuEnter{from{opacity:0; transform:translateY(-8px)} to{opacity:1; transform:translateY(0)}}
 
-    /* Rotating Icon (bottom-right) - Google Form -> Discord -> Instagram */
+    /* Rotating Icon bottom-right: Google Form -> Discord -> Instagram */
     #staticSlideMenu{
       position:fixed;
       bottom:24px;
@@ -128,36 +128,6 @@
     @keyframes slideIn{ from{opacity:0; transform:translateX(140px) scale(.96)} to{opacity:1; transform:translateX(0) scale(1)} }
     @keyframes slideOut{ from{opacity:1; transform:translateX(0) scale(1)} to{opacity:0; transform:translateX(140px) scale(.96)} }
 
-    /* Loader overlay */
-    #loadingCover{
-      position:fixed;
-      inset:0;
-      background:#0e0f14;
-      display:flex;
-      flex-direction:column;
-      align-items:center;
-      justify-content:center;
-      gap:16px;
-      z-index:5000;
-    }
-    .load-title{ font-weight:900; letter-spacing:.5px; color:#cfefff; }
-    .bar{
-      width:min(520px, 80vw);
-      height:12px;
-      background:rgba(255,255,255,.12);
-      border-radius:10px;
-      overflow:hidden;
-      box-shadow:var(--shadow);
-    }
-    .bar>span{
-      display:block;
-      height:100%;
-      width:0%;
-      background:linear-gradient(90deg, var(--brand), var(--brand2));
-      transition:width .18s ease;
-    }
-    .percent{ font-variant-numeric:tabular-nums; color:#9bdcff; opacity:.9; font-weight:700; }
-
     /* Hidden SEO (crawler only) */
     .seo-hidden{
       position:absolute;
@@ -173,7 +143,7 @@
     }
   </style>
 
-  <!-- Local Unity loader assets -->
+  <!-- Local Unity loader assets (must be raw JS files in same folder) -->
   <script src="UnityProgress.js"></script>
   <script src="UnityLoader.js"></script>
 </head>
@@ -191,13 +161,6 @@
     </a>
   </div>
 
-  <!-- Loader -->
-  <div id="loadingCover" role="status" aria-live="polite">
-    <div class="load-title">Loading Slope</div>
-    <div class="bar"><span id="barFill"></span></div>
-    <div class="percent" id="barPct">0%</div>
-  </div>
-
   <!-- Unity Game -->
   <div class="webgl-content">
     <div id="gameContainer"></div>
@@ -212,11 +175,12 @@
     <p>Internal links: games list at https://sites.google.com/view/staticquasar931/gm3z and help at https://sites.google.com/view/staticquasar931/home/help-faq</p>
   </div>
 
-  <!-- Scripts at end so DOM is ready -->
+  <!-- Scripts at end so DOM exists -->
   <script>
     // Leave warning
     window.onbeforeunload = () => "Are you sure you want to leave? Your progress may not be saved.";
 
+    // Full viewport sizing
     function fitGame(){
       const el = document.getElementById("gameContainer");
       if (!el) return;
@@ -227,124 +191,98 @@
     addEventListener("resize", fitGame, {passive:true});
     if (window.visualViewport) window.visualViewport.addEventListener("resize", fitGame, {passive:true});
 
-    // Static Menu hide + auto-restore (3 minutes)
-    (function(){
-      const menu = document.getElementById("staticMenu");
-      const btn  = document.getElementById("closeStaticMenu");
-      const KEY  = "sq931_staticMenu_hidden_until";
-      const restore = () => { menu.style.display = "flex"; };
-      const maybeHide = () => {
-        const until = parseInt(localStorage.getItem(KEY) || "0", 10);
-        const now = Date.now();
-        if (until && now < until){
-          menu.style.display = "none";
-          setTimeout(restore, until - now);
-        }
-      };
-      if (btn){
-        btn.onclick = () => {
-          menu.style.display = "none";
-          const until = Date.now() + 180000;
-          localStorage.setItem(KEY, String(until));
-          setTimeout(restore, 180000);
-        };
-      }
-      maybeHide();
-    })();
-
-    // Rotator: Google Form -> Discord -> Instagram
-    (function(){
-      const wrap = document.getElementById("staticSlideMenu");
-      const a    = document.getElementById("staticSlideLink");
-      const img  = document.getElementById("staticSlideImg");
-      if (!wrap || !a || !img) return;
-
-      const FORM = {
-        src:  "https://res.cloudinary.com/dcsrqennd/image/upload/v1747533056/raw_um4pvq.png",
-        alt:  "StaticQuasar931 Google Form - feedback and requests",
-        link: "https://sites.google.com/view/staticquasar931/google-form",
-        cls:  ""
-      };
-      const DISCORD = {
-        src:  "https://res.cloudinary.com/dcsrqennd/image/upload/v1758072526/Join_Our_Discord_StaticQuassar931_lcplrf.png",
-        alt:  "Join the StaticQuasar931 Discord - opens in a new tab",
-        link: "https://discord.gg/DP2hM7RRhR",
-        cls:  "discord"
-      };
-      const INSTA = {
-        src:  "https://res.cloudinary.com/dcsrqennd/image/upload/v1747533158/raw_cw34yi.png",
-        alt:  "StaticQuasar931 Instagram - updates and clips",
-        link: "https://www.instagram.com/freeschoolgamepage/",
-        cls:  ""
-      };
-
-      const ROT = [FORM, DISCORD, INSTA];
-      ROT.forEach(o => { const p = new Image(); p.src = o.src; });
-
-      const T_IN = 1600, T_SHOW = 5000, T_OUT = 1600, T_GAP = 14000;
-      let i = 0;
-
-      function apply(o){
-        img.src = o.src;
-        img.alt = o.alt;
-        a.href  = o.link;
-        wrap.className = o.cls;
-      }
-
-      async function loop(){
-        for(;;){
-          apply(ROT[i]);
-          wrap.style.pointerEvents = "auto";
-          wrap.classList.remove("slide-out");
-          wrap.classList.add("slide-in");
-          await new Promise(r => setTimeout(r, T_IN + T_SHOW));
-          wrap.classList.remove("slide-in");
-          wrap.classList.add("slide-out");
-          await new Promise(r => setTimeout(r, T_OUT));
-          wrap.style.pointerEvents = "none";
-          await new Promise(r => setTimeout(r, T_GAP));
-          i = (i + 1) % ROT.length;
-        }
-      }
-
-      apply(ROT[i]);
-      loop();
-    })();
-
-    // Custom loader to replace UnityProgress if it doesn't match DOM
-    function SQProgress(_game, progress) {
-      // progress is 0..1
-      const cover = document.getElementById("loadingCover");
-      const fill  = document.getElementById("barFill");
-      const pct   = document.getElementById("barPct");
-      if (fill) fill.style.width = Math.round(progress * 100) + "%";
-      if (pct)  pct.textContent  = Math.round(progress * 100) + "%";
-
-      // Some builds call progress=1 before WebAssembly finishes
-      if (progress >= 1) {
-        // Hide after a small delay so final frame can appear
-        setTimeout(() => { if (cover) cover.style.display = "none"; }, 200);
-      } else {
-        if (cover) cover.style.display = "flex";
-      }
-    }
-
-    // Boot Unity
     document.addEventListener("DOMContentLoaded", () => {
       fitGame();
+
+      // Static Menu hide + auto-restore
+      (function(){
+        const menu = document.getElementById("staticMenu");
+        const btn  = document.getElementById("closeStaticMenu");
+        const KEY  = "sq931_staticMenu_hidden_until";
+        const restore = () => { menu.style.display = "flex"; };
+        const maybeHide = () => {
+          const until = parseInt(localStorage.getItem(KEY) || "0", 10);
+          const now = Date.now();
+          if (until && now < until){
+            menu.style.display = "none";
+            setTimeout(restore, until - now);
+          }
+        };
+        if (btn){
+          btn.onclick = () => {
+            menu.style.display = "none";
+            const until = Date.now() + 180000;
+            localStorage.setItem(KEY, String(until));
+            setTimeout(restore, 180000);
+          };
+        }
+        maybeHide();
+      })();
+
+      // Rotator: Google Form -> Discord -> Instagram
+      (function(){
+        const wrap = document.getElementById("staticSlideMenu");
+        const a    = document.getElementById("staticSlideLink");
+        const img  = document.getElementById("staticSlideImg");
+        if (!wrap || !a || !img) return;
+
+        const FORM = {
+          src:  "https://res.cloudinary.com/dcsrqennd/image/upload/v1747533056/raw_um4pvq.png",
+          alt:  "StaticQuasar931 Google Form - feedback and requests",
+          link: "https://sites.google.com/view/staticquasar931/google-form",
+          cls:  ""
+        };
+        const DISCORD = {
+          src:  "https://res.cloudinary.com/dcsrqennd/image/upload/v1758072526/Join_Our_Discord_StaticQuassar931_lcplrf.png",
+          alt:  "Join the StaticQuasar931 Discord",
+          link: "https://discord.gg/DP2hM7RRhR",
+          cls:  "discord"
+        };
+        const INSTA = {
+          src:  "https://res.cloudinary.com/dcsrqennd/image/upload/v1747533158/raw_cw34yi.png",
+          alt:  "StaticQuasar931 Instagram",
+          link: "https://www.instagram.com/freeschoolgamepage/",
+          cls:  ""
+        };
+
+        const ROT = [FORM, DISCORD, INSTA];
+        ROT.forEach(o => { const p = new Image(); p.src = o.src; });
+
+        const T_IN = 1600, T_SHOW = 5000, T_OUT = 1600, T_GAP = 14000;
+        let i = 0;
+
+        function apply(o){
+          img.src = o.src;
+          img.alt = o.alt;
+          a.href  = o.link;
+          wrap.className = o.cls;
+        }
+
+        async function loop(){
+          for(;;){
+            apply(ROT[i]);
+            wrap.style.pointerEvents = "auto";
+            wrap.classList.remove("slide-out");
+            wrap.classList.add("slide-in");
+            await new Promise(r => setTimeout(r, T_IN + T_SHOW));
+            wrap.classList.remove("slide-in");
+            wrap.classList.add("slide-out");
+            await new Promise(r => setTimeout(r, T_OUT));
+            wrap.style.pointerEvents = "none";
+            await new Promise(r => setTimeout(r, T_GAP));
+            i = (i + 1) % ROT.length;
+          }
+        }
+
+        apply(ROT[i]);
+        loop();
+      })();
+
+      // Launch Unity with default UnityProgress loader
       window.gameInstance = UnityLoader.instantiate(
         "gameContainer",
         "slope_new.json",
-        {
-          onProgress: SQProgress, // use our loader
-          Module: {
-            onRuntimeInitialized: function () {
-              // Safety: if UnityProgress.js also runs, ensure our cover is gone
-              const cover = document.getElementById("loadingCover");
-              if (cover) cover.style.display = "none";
-            }
-          }
-        }
+        { onProgress: UnityProgress }
       );
     });
   </script>
