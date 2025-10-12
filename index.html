@@ -1,31 +1,145 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en-us">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Slope</title>
+  <!-- Charset & Viewport -->
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <!-- Canonical & Robots -->
+  <link rel="canonical" href="https://sites.google.com/view/staticquasar931/gm3z/sl0pe" />
+  <meta name="robots" content="index, follow, max-image-preview:large" />
+
+  <!-- Title -->
+  <title>Slope — Free Unblocked Game | StaticQuasar931</title>
+
+  <!-- Favicon / Social Image -->
+  <link rel="icon" href="https://res.cloudinary.com/dlq5fztla/image/upload/v1760301648/slope_Staticquasar931_stable_agqxto.png" />
+  <meta property="og:image" content="https://res.cloudinary.com/dlq5fztla/image/upload/v1760301648/slope_Staticquasar931_stable_agqxto.png" />
+  <meta name="twitter:image" content="https://res.cloudinary.com/dlq5fztla/image/upload/v1760301648/slope_Staticquasar931_stable_agqxto.png" />
+  <meta property="og:image:alt" content="Slope 3D rolling ball on neon track - StaticQuasar931" />
+  <meta name="twitter:image:alt" content="Slope 3D rolling ball on neon track - StaticQuasar931" />
+
+  <!-- Core SEO -->
+  <meta name="description" content="Play Slope free and unblocked. Dodge obstacles, stay on the track, and push your high score. School friendly mirror by StaticQuasar931. Works on Chromebook, PC, and mobile." />
+  <meta name="keywords" content="Slope, Slope unblocked, play Slope, Slope game, Slope g@me, Slope browser game, Slope online, Slope at school, unblocked 3D games, endless runner, reflex game, neon ball, school safe games, Static, Static 931, StaticQuasar931, staticquasar931, staticq, staticq931, 931 unblocked" />
+  <meta name="theme-color" content="#231f20" />
+
+  <!-- Open Graph / Twitter -->
+  <meta property="og:title" content="Play Slope - Free Unblocked on StaticQuasar931" />
+  <meta property="og:description" content="Fast 3D ball runner. Stay on the slopes, dodge red blocks, and set a new record. Chromebook and mobile friendly." />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://sites.google.com/view/staticquasar931/gm3z/sl0pe" />
+  <meta name="twitter:card" content="summary_large_image" />
+
+  <!-- Preload rotating assets -->
+  <link rel="preload" as="image" href="https://res.cloudinary.com/dcsrqennd/image/upload/v1747533056/raw_um4pvq.png" />
+  <link rel="preload" as="image" href="https://res.cloudinary.com/dcsrqennd/image/upload/v1758072526/Join_Our_Discord_StaticQuassar931_lcplrf.png" />
+  <link rel="preload" as="image" href="https://res.cloudinary.com/dcsrqennd/image/upload/v1747533158/raw_cw34yi.png" />
 
   <style>
-    html, body {
-      margin: 0;
-      padding: 0;
-      width: 100%;
-      height: 100%;
-      background: #231f20;
-      overflow: hidden;
-      font-family: Arial, sans-serif;
+    :root{
+      --brand:#5ee1ff;
+      --brand2:#9bffb7;
+      --shadow:0 12px 34px rgba(0,0,0,.45);
+      --glow:0 0 12px rgba(94,225,255,.65), 0 0 28px rgba(155,255,183,.35);
+      --panel:#0f1220;
+      --panel2:#0a0c17;
     }
-    .webgl-content {
-      position: fixed;
-      inset: 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+    html,body{
+      margin:0;
+      padding:0;
+      height:100%;
+      background:#231f20;
+      overflow:hidden;
+      font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+      color:#e8f3ff;
     }
-    #gameContainer {
-      width: 100vw;
-      height: 100vh;
-      background: #231f20;
+
+    /* Fullscreen WebGL container */
+    .webgl-content{
+      position:fixed;
+      inset:0;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+    }
+    #gameContainer{
+      width:100vw;
+      height:100vh;
+      background:#231f20;
+    }
+
+    /* Static Menu (top-left) */
+    #staticMenu{
+      position:fixed;
+      top:12px;
+      left:12px;
+      z-index:9999;
+      display:flex;
+      gap:10px;
+      align-items:center;
+      padding:10px 14px;
+      border-radius:12px;
+      background:linear-gradient(135deg, rgba(20,20,28,.92), rgba(20,20,28,.6));
+      border:1px solid rgba(94,225,255,.35);
+      box-shadow:var(--glow), var(--shadow);
+      font-size:14px;
+      animation:menuEnter .6s ease .15s both;
+    }
+    #staticMenu a{
+      color:#5ee1ff;
+      text-decoration:none;
+      font-weight:800;
+    }
+    #closeStaticMenu{
+      color:#f55;
+      cursor:pointer;
+      padding:2px 6px;
+      border-radius:6px;
+      border:1px solid rgba(255,255,255,.15);
+      background:rgba(255,255,255,.06);
+      user-select:none;
+    }
+    @keyframes menuEnter{from{opacity:0; transform:translateY(-8px)} to{opacity:1; transform:translateY(0)}}
+
+    /* Rotating Icon (bottom-right) - Google Form -> Discord -> Instagram */
+    #staticSlideMenu{
+      position:fixed;
+      bottom:24px;
+      right:24px;
+      z-index:9999;
+      width:100px;
+      height:100px;
+      pointer-events:none;
+      opacity:0;
+      transform:translateX(140px) scale(.96);
+    }
+    #staticSlideMenu a{ display:block; width:100%; height:100%; }
+    #staticSlideMenu img{
+      width:100%;
+      height:100%;
+      object-fit:cover;
+      border-radius:50%;
+    }
+    #staticSlideMenu.discord img{ transform:scale(1.2); } /* Discord 20% larger */
+
+    .slide-in{ animation:slideIn 1.6s ease forwards; }
+    .slide-out{ animation:slideOut 1.6s ease forwards; }
+    @keyframes slideIn{ from{opacity:0; transform:translateX(140px) scale(.96)} to{opacity:1; transform:translateX(0) scale(1)} }
+    @keyframes slideOut{ from{opacity:1; transform:translateX(0) scale(1)} to{opacity:0; transform:translateX(140px) scale(.96)} }
+
+    /* Hidden SEO (crawler only) */
+    .seo-hidden{
+      position:absolute;
+      width:1px;
+      height:1px;
+      overflow:hidden;
+      clip:rect(1px,1px,1px,1px);
+      white-space:nowrap;
+    }
+
+    @media (max-width: 768px){
+      #staticSlideMenu{ width:84px; height:84px; }
     }
   </style>
 
@@ -34,21 +148,110 @@
   <script src="UnityLoader.js"></script>
 
   <script>
+    // Leave warning
     window.onbeforeunload = () => "Are you sure you want to leave? Your progress may not be saved.";
 
-    let gameInstance;
-
-    function sizeContainer() {
+    // Full viewport sizing
+    function fitGame(){
       const el = document.getElementById("gameContainer");
       if (!el) return;
-      el.style.width = window.innerWidth + "px";
-      el.style.height = window.innerHeight + "px";
+      const h = window.visualViewport ? window.visualViewport.height : window.innerHeight;
+      el.style.width  = window.innerWidth + "px";
+      el.style.height = h + "px";
     }
+    addEventListener("resize", fitGame, {passive:true});
+    if (window.visualViewport) window.visualViewport.addEventListener("resize", fitGame, {passive:true});
 
-    window.addEventListener("resize", sizeContainer);
+    // Static Menu hide + auto-restore (3 minutes)
+    (function(){
+      const menu = document.getElementById("staticMenu");
+      const btn  = document.getElementById("closeStaticMenu");
+      const KEY  = "sq931_staticMenu_hidden_until";
+      const restore = () => { menu.style.display = "flex"; };
+      const maybeHide = () => {
+        const until = parseInt(localStorage.getItem(KEY) || "0", 10);
+        const now = Date.now();
+        if (until && now < until){
+          menu.style.display = "none";
+          setTimeout(restore, until - now);
+        }
+      };
+      if (btn){
+        btn.onclick = () => {
+          menu.style.display = "none";
+          const until = Date.now() + 180000;
+          localStorage.setItem(KEY, String(until));
+          setTimeout(restore, 180000);
+        };
+      }
+      maybeHide();
+    })();
 
+    // Rotator: Google Form -> Discord -> Instagram
+    (function(){
+      const wrap = document.getElementById("staticSlideMenu");
+      const a    = document.getElementById("staticSlideLink");
+      const img  = document.getElementById("staticSlideImg");
+
+      const FORM = {
+        src:  "https://res.cloudinary.com/dcsrqennd/image/upload/v1747533056/raw_um4pvq.png",
+        alt:  "StaticQuasar931 Google Form - feedback and requests",
+        link: "https://sites.google.com/view/staticquasar931/google-form",
+        cls:  ""
+      };
+      const DISCORD = {
+        src:  "https://res.cloudinary.com/dcsrqennd/image/upload/v1758072526/Join_Our_Discord_StaticQuassar931_lcplrf.png",
+        alt:  "Join the StaticQuasar931 Discord - opens in a new tab",
+        link: "https://discord.gg/DP2hM7RRhR",
+        cls:  "discord"
+      };
+      const INSTA = {
+        src:  "https://res.cloudinary.com/dcsrqennd/image/upload/v1747533158/raw_cw34yi.png",
+        alt:  "StaticQuasar931 Instagram - updates and clips",
+        link: "https://www.instagram.com/freeschoolgamepage/",
+        cls:  ""
+      };
+
+      const ROT = [FORM, DISCORD, INSTA];
+
+      // Preload images
+      ROT.forEach(o => { const p = new Image(); p.src = o.src; });
+
+      // Timing - smooth and readable on desktop and mobile
+      const T_IN = 1600, T_SHOW = 5000, T_OUT = 1600, T_GAP = 14000;
+      let i = 0;
+
+      function apply(o){
+        img.src = o.src;
+        img.alt = o.alt;
+        a.href  = o.link;
+        wrap.className = o.cls;
+      }
+
+      async function loop(){
+        for(;;){
+          apply(ROT[i]);
+          wrap.style.pointerEvents = "auto";
+          wrap.classList.remove("slide-out");
+          wrap.classList.add("slide-in");
+          await new Promise(r => setTimeout(r, T_IN + T_SHOW));
+          wrap.classList.remove("slide-in");
+          wrap.classList.add("slide-out");
+          await new Promise(r => setTimeout(r, T_OUT));
+          wrap.style.pointerEvents = "none";
+          await new Promise(r => setTimeout(r, T_GAP));
+          i = (i + 1) % ROT.length;
+        }
+      }
+
+      apply(ROT[i]);
+      loop();
+    })();
+
+    // Boot Unity
+    let gameInstance;
     window.addEventListener("load", () => {
-      sizeContainer();
+      fitGame();
       gameInstance = UnityLoader.instantiate(
         "gameContainer",
         "slope_new.json",
@@ -65,8 +268,31 @@
   </script>
 </head>
 <body>
+  <!-- Static Menu -->
+  <div id="staticMenu" role="region" aria-label="StaticQuasar menu">
+    <a href="https://sites.google.com/view/staticquasar931/gm3z" target="_blank" rel="noopener">More Unblocked Games by Static</a>
+    <span id="closeStaticMenu" title="Hide temporarily">✕</span>
+  </div>
+
+  <!-- Rotating Icon - Google Form -> Discord -> Instagram -->
+  <div id="staticSlideMenu" aria-live="polite">
+    <a id="staticSlideLink" href="https://sites.google.com/view/staticquasar931/google-form" target="_blank" rel="noopener" aria-label="Open Google Form">
+      <img id="staticSlideImg" src="https://res.cloudinary.com/dcsrqennd/image/upload/v1747533056/raw_um4pvq.png" alt="StaticQuasar931 Google Form" />
+    </a>
+  </div>
+
+  <!-- Unity Game -->
   <div class="webgl-content">
     <div id="gameContainer"></div>
+  </div>
+
+  <!-- Hidden SEO Block -->
+  <div class="seo-hidden" aria-hidden="true">
+    <h1>Play Slope - Unblocked 3D Reflex Game</h1>
+    <p><strong>Slope</strong> is a fast 3D rolling ball arcade <strong>game</strong> built for quick reflexes. Tilt into green ramps, avoid red obstacles, and keep your line clean while the speed climbs. This mirror is hosted by <strong>StaticQuasar931</strong> and is school friendly. It loads on Chromebook, Windows, macOS, and mobile browsers without downloads. Use fullscreen for the best feel and try to beat your high score.</p>
+    <p>Why players like it: smooth controls, endless layout variety, no long waits, instant restarts. Controls are simple, left and right to steer. The challenge is reading the slope and reacting before the next gap or wall appears.</p>
+    <p>Keywords: slope unblocked, play slope online, free slope <strong>game</strong>, free slope <strong>g@me</strong>, slope at school, school safe arcade, unblocked 3d <strong>game</strong>, fast reflex <strong>g@me</strong>, neon ball runner, Static, Static 931, StaticQuasar931, staticquasar931, staticq, staticq931, 931 unblocked.</p>
+    <p>Internal links: games list at https://sites.google.com/view/staticquasar931/gm3z and help at https://sites.google.com/view/staticquasar931/home/help-faq</p>
   </div>
 </body>
 </html>
