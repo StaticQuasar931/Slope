@@ -34,37 +34,89 @@
   <link rel="preload" as="image" href="https://res.cloudinary.com/dcsrqennd/image/upload/v1758072526/Join_Our_Discord_StaticQuassar931_lcplrf.png" />
   <link rel="preload" as="image" href="https://res.cloudinary.com/dcsrqennd/image/upload/v1747533158/raw_cw34yi.png" />
 
-  <!-- Unity loader styles must come before loader scripts -->
-  <link rel="stylesheet" href="style.css" />
-
   <style>
-    :root{ --brand:#5ee1ff; --brand2:#9bffb7; --shadow:0 12px 34px rgba(0,0,0,.45); --glow:0 0 12px rgba(94,225,255,.65), 0 0 28px rgba(155,255,183,.35); --panel:#0f1220; --panel2:#0a0c17; }
-    html,body{ margin:0; padding:0; height:100%; background:#231f20; overflow:hidden; font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif; color:#e8f3ff; }
-    .webgl-content{ position:fixed; inset:0; display:flex; align-items:center; justify-content:center; }
-    #gameContainer{ width:100vw; height:100vh; background:#231f20; }
+    :root{
+      --brand:#5ee1ff; --brand2:#9bffb7;
+      --bg:#231f20; --panel:#0f1220; --panel2:#0a0c17;
+      --text:#e8f3ff; --muted:#b9d7ff;
+      --shadow:0 12px 34px rgba(0,0,0,.45);
+      --glow:0 0 12px rgba(94,225,255,.65), 0 0 28px rgba(155,255,183,.35);
+    }
+    html,body{
+      margin:0; padding:0; height:100%; overflow:hidden;
+      background:var(--bg); color:var(--text);
+      font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+    }
 
-    /* Static Menu */
-    #staticMenu{ position:fixed; top:12px; left:12px; z-index:9999; display:flex; gap:10px; align-items:center; padding:10px 14px; border-radius:12px; background:linear-gradient(135deg, rgba(20,20,28,.92), rgba(20,20,28,.6)); border:1px solid rgba(94,225,255,.35); box-shadow:var(--glow), var(--shadow); font-size:14px; animation:menuEnter .6s ease .15s both; }
-    #staticMenu a{ color:#5ee1ff; text-decoration:none; font-weight:800; }
-    #closeStaticMenu{ color:#f55; cursor:pointer; padding:2px 6px; border-radius:6px; border:1px solid rgba(255,255,255,.15); background:rgba(255,255,255,.06); user-select:none; }
+    /* Fullscreen WebGL container */
+    .webgl-content{ position:fixed; inset:0; display:flex; align-items:center; justify-content:center; }
+    #gameContainer{ width:100vw; height:100vh; background:var(--bg); }
+
+    /* Static Menu (top left) */
+    #staticMenu{
+      position:fixed; top:12px; left:12px; z-index:9999;
+      display:flex; gap:10px; align-items:center;
+      padding:10px 14px; border-radius:12px;
+      background:linear-gradient(135deg, rgba(20,20,28,.92), rgba(20,20,28,.6));
+      border:1px solid rgba(94,225,255,.35);
+      box-shadow:var(--glow), var(--shadow);
+      font-size:14px; animation:menuEnter .6s ease .15s both;
+    }
+    #staticMenu a{ color:var(--brand); text-decoration:none; font-weight:800; }
+    #closeStaticMenu{
+      color:#f55; cursor:pointer; padding:2px 6px; border-radius:6px;
+      border:1px solid rgba(255,255,255,.15); background:rgba(255,255,255,.06);
+      user-select:none;
+    }
     @keyframes menuEnter{from{opacity:0; transform:translateY(-8px)} to{opacity:1; transform:translateY(0)}}
 
-    /* Rotating Icon */
-    #staticSlideMenu{ position:fixed; bottom:24px; right:24px; z-index:9999; width:100px; height:100px; pointer-events:none; opacity:0; transform:translateX(140px) scale(.96); }
+    /* Rotating icon bottom right */
+    #staticSlideMenu{
+      position:fixed; bottom:24px; right:24px; z-index:9999;
+      width:100px; height:100px; pointer-events:none; opacity:0;
+      transform:translateX(140px) scale(.96);
+    }
     #staticSlideMenu a{ display:block; width:100%; height:100%; }
     #staticSlideMenu img{ width:100%; height:100%; object-fit:cover; border-radius:50%; }
     #staticSlideMenu.discord img{ transform:scale(1.2); }
-    .slide-in{ animation:slideIn 1.6s ease forwards; } .slide-out{ animation:slideOut 1.6s ease forwards; }
+    .slide-in{ animation:slideIn 1.6s ease forwards; }
+    .slide-out{ animation:slideOut 1.6s ease forwards; }
     @keyframes slideIn{ from{opacity:0; transform:translateX(140px) scale(.96)} to{opacity:1; transform:translateX(0) scale(1)} }
     @keyframes slideOut{ from{opacity:1; transform:translateX(0) scale(1)} to{opacity:0; transform:translateX(140px) scale(.96)} }
     @media (max-width:768px){ #staticSlideMenu{ width:84px; height:84px; } }
 
-    /* Hidden SEO */
-    .seo-hidden{ position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(1px,1px,1px,1px); white-space:nowrap; }
+    /* Fake Unity-style loader */
+    #loaderCover{
+      position:fixed; inset:0; z-index:5000; background:#0e0f14;
+      display:flex; flex-direction:column; align-items:center; justify-content:center; gap:24px;
+    }
+    .loader-logo{
+      width:154px; height:130px; display:flex; align-items:center; justify-content:center;
+    }
+    .loader-logo img{
+      width:100%; height:100%; object-fit:contain; filter:drop-shadow(0 0 10px rgba(255,255,255,.25));
+    }
+    .loader-bar{
+      width:min(520px, 80vw); height:18px; border-radius:10px; overflow:hidden;
+      background:linear-gradient(180deg, rgba(255,255,255,.09), rgba(255,255,255,.04));
+      box-shadow:inset 0 0 0 1px rgba(255,255,255,.08), var(--shadow);
+    }
+    .loader-bar span{
+      display:block; height:100%; width:0%;
+      background:linear-gradient(90deg, var(--brand), var(--brand2));
+      transition:width .18s ease;
+    }
+    .loader-text{
+      font-variant-numeric:tabular-nums; color:var(--muted); font-weight:700; letter-spacing:.4px;
+    }
+
+    /* Hidden SEO for crawlers */
+    .seo-hidden{
+      position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(1px,1px,1px,1px); white-space:nowrap;
+    }
   </style>
 
-  <!-- Real Unity loader scripts -->
-  <script src="UnityProgress.js"></script>
+  <!-- Local Unity loader JS -->
   <script src="UnityLoader.js"></script>
 </head>
 <body>
@@ -79,6 +131,15 @@
     <a id="staticSlideLink" href="https://sites.google.com/view/staticquasar931/google-form" target="_blank" rel="noopener" aria-label="Open Google Form">
       <img id="staticSlideImg" src="https://res.cloudinary.com/dcsrqennd/image/upload/v1747533056/raw_um4pvq.png" alt="StaticQuasar931 Google Form" />
     </a>
+  </div>
+
+  <!-- Fake Unity-style loader -->
+  <div id="loaderCover" role="status" aria-live="polite">
+    <div class="loader-logo">
+      <img src="https://res.cloudinary.com/dlq5fztla/image/upload/v1760306331/unity-white-logo-icon-png-701751694968149dpc3d4ff9d_ecik9t.png" alt="Loading" />
+    </div>
+    <div class="loader-bar"><span id="loaderFill"></span></div>
+    <div class="loader-text" id="loaderPct">0%</div>
   </div>
 
   <!-- Unity Game -->
@@ -97,7 +158,7 @@
     // Leave warning
     window.onbeforeunload = () => "Are you sure you want to leave? Your progress may not be saved.";
 
-    // Viewport sizing
+    // Fit canvas to viewport
     function fitGame(){
       const el = document.getElementById("gameContainer");
       if (!el) return;
@@ -107,6 +168,31 @@
     }
     addEventListener("resize", fitGame, {passive:true});
     if (window.visualViewport) window.visualViewport.addEventListener("resize", fitGame, {passive:true});
+
+    // Static Menu hide + auto restore
+    (function(){
+      const menu = document.getElementById("staticMenu");
+      const btn  = document.getElementById("closeStaticMenu");
+      const KEY  = "sq931_staticMenu_hidden_until";
+      const restore = () => { menu.style.display = "flex"; };
+      const maybeHide = () => {
+        const until = parseInt(localStorage.getItem(KEY) || "0", 10);
+        const now = Date.now();
+        if (until && now < until){
+          menu.style.display = "none";
+          setTimeout(restore, until - now);
+        }
+      };
+      if (btn){
+        btn.onclick = () => {
+          menu.style.display = "none";
+          const until = Date.now() + 180000;
+          localStorage.setItem(KEY, String(until));
+          setTimeout(restore, 180000);
+        };
+      }
+      maybeHide();
+    })();
 
     // Rotator: Google Form -> Discord -> Instagram
     (function(){
@@ -143,10 +229,45 @@
       apply(ROT[i]); loop();
     })();
 
-    // Start game with the real Unity loader
+    // Fake Unity-style progress handler
+    function SQProgress(_game, progress) {
+      const cover = document.getElementById("loaderCover");
+      const fill  = document.getElementById("loaderFill");
+      const pct   = document.getElementById("loaderPct");
+      const p = Math.max(0, Math.min(1, progress || 0));
+      if (fill) fill.style.width = Math.round(p * 100) + "%";
+      if (pct)  pct.textContent  = Math.round(p * 100) + "%";
+      if (p >= 1 && cover) setTimeout(() => cover.style.display = "none", 150);
+    }
+
+    // Safety: if Unity never calls onProgress, animate to 90 percent slowly
+    (function fakeDrip(){
+      const cover = document.getElementById("loaderCover");
+      const fill  = document.getElementById("loaderFill");
+      const pct   = document.getElementById("loaderPct");
+      let val = 0;
+      const tick = () => {
+        if (!cover || cover.style.display === "none") return;
+        val = Math.min(val + 0.01, 0.9);
+        if (fill) fill.style.width = Math.round(val * 100) + "%";
+        if (pct)  pct.textContent  = Math.round(val * 100) + "%";
+        if (val < 0.9) setTimeout(tick, 120);
+      };
+      setTimeout(tick, 400);
+    })();
+
+    // Start game
     window.addEventListener("load", () => {
       fitGame();
-      UnityLoader.instantiate("gameContainer", "slope_new.json", { onProgress: UnityProgress });
+      // Use our fake loader hook
+      window.gameInstance = UnityLoader.instantiate("gameContainer", "slope_new.json", {
+        onProgress: SQProgress
+      });
+      // Extra safety: hard hide loader after 20s even if no callback
+      setTimeout(() => {
+        const cover = document.getElementById("loaderCover");
+        if (cover) cover.style.display = "none";
+      }, 20000);
     });
   </script>
 </body>
