@@ -1,1 +1,72 @@
-<html><head></head><body style="margin: 0px; height: 100vh;"><iframe style="border: medium; width: 100%; height: 100%; margin: 0px;" src="https://images-opensocial.googleusercontent.com/gadgets/ifr?url=https://cdn.jsdelivr.net/gh/sk1bx/toastjr@01e87a80ca1def9255173c785896d378b2d0bec9/build/6sp.xml&amp;container=ig"></iframe></body></html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Slope</title>
+
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      background: #231f20;
+      overflow: hidden;
+      font-family: Arial, sans-serif;
+    }
+    .webgl-content {
+      position: fixed;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    #gameContainer {
+      width: 100vw;
+      height: 100vh;
+      background: #231f20;
+    }
+  </style>
+
+  <!-- Local Unity loader assets -->
+  <script src="UnityProgress.js"></script>
+  <script src="UnityLoader.js"></script>
+
+  <script>
+    window.onbeforeunload = () => "Are you sure you want to leave? Your progress may not be saved.";
+
+    let gameInstance;
+
+    function sizeContainer() {
+      const el = document.getElementById("gameContainer");
+      if (!el) return;
+      el.style.width = window.innerWidth + "px";
+      el.style.height = window.innerHeight + "px";
+    }
+
+    window.addEventListener("resize", sizeContainer);
+
+    window.addEventListener("load", () => {
+      sizeContainer();
+      gameInstance = UnityLoader.instantiate(
+        "gameContainer",
+        "slope_new.json",
+        {
+          onProgress: UnityProgress,
+          Module: {
+            onRuntimeInitialized: function () {
+              UnityProgress(gameInstance, "complete");
+            }
+          }
+        }
+      );
+    });
+  </script>
+</head>
+<body>
+  <div class="webgl-content">
+    <div id="gameContainer"></div>
+  </div>
+</body>
+</html>
