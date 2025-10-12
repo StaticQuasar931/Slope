@@ -21,7 +21,7 @@
 
   <!-- Core SEO -->
   <meta name="description" content="Play Slope free and unblocked. Dodge obstacles, stay on the track, and push your high score. School friendly mirror by StaticQuasar931. Works on Chromebook, PC, and mobile." />
-  <meta name="keywords" content="Slope, Slope unblocked, play Slope, Slope game, Slope g@me, Slope browser game, Slope online, Slope at school, unblocked 3D games, endless runner, reflex game, neon ball, school safe games, Static, Static 931, StaticQuasar931, staticquasar931, staticq, staticq931, 931 unblocked" />
+  <meta name="keywords" content="Slope, Slope unblocked, play Slope, Slope game, Slope g@me, Slope online, Slope browser game, fast reflex game, neon ball, unblocked 3D game, school friendly game, Static, Static 931, StaticQuasar931, staticquasar931, staticq, staticq931, 931 unblocked" />
   <meta name="theme-color" content="#231f20" />
 
   <!-- Open Graph / Twitter -->
@@ -146,126 +146,6 @@
   <!-- Local Unity loader assets -->
   <script src="UnityProgress.js"></script>
   <script src="UnityLoader.js"></script>
-
-  <script>
-    // Leave warning
-    window.onbeforeunload = () => "Are you sure you want to leave? Your progress may not be saved.";
-
-    // Full viewport sizing
-    function fitGame(){
-      const el = document.getElementById("gameContainer");
-      if (!el) return;
-      const h = window.visualViewport ? window.visualViewport.height : window.innerHeight;
-      el.style.width  = window.innerWidth + "px";
-      el.style.height = h + "px";
-    }
-    addEventListener("resize", fitGame, {passive:true});
-    if (window.visualViewport) window.visualViewport.addEventListener("resize", fitGame, {passive:true});
-
-    // Static Menu hide + auto-restore (3 minutes)
-    (function(){
-      const menu = document.getElementById("staticMenu");
-      const btn  = document.getElementById("closeStaticMenu");
-      const KEY  = "sq931_staticMenu_hidden_until";
-      const restore = () => { menu.style.display = "flex"; };
-      const maybeHide = () => {
-        const until = parseInt(localStorage.getItem(KEY) || "0", 10);
-        const now = Date.now();
-        if (until && now < until){
-          menu.style.display = "none";
-          setTimeout(restore, until - now);
-        }
-      };
-      if (btn){
-        btn.onclick = () => {
-          menu.style.display = "none";
-          const until = Date.now() + 180000;
-          localStorage.setItem(KEY, String(until));
-          setTimeout(restore, 180000);
-        };
-      }
-      maybeHide();
-    })();
-
-    // Rotator: Google Form -> Discord -> Instagram
-    (function(){
-      const wrap = document.getElementById("staticSlideMenu");
-      const a    = document.getElementById("staticSlideLink");
-      const img  = document.getElementById("staticSlideImg");
-
-      const FORM = {
-        src:  "https://res.cloudinary.com/dcsrqennd/image/upload/v1747533056/raw_um4pvq.png",
-        alt:  "StaticQuasar931 Google Form - feedback and requests",
-        link: "https://sites.google.com/view/staticquasar931/google-form",
-        cls:  ""
-      };
-      const DISCORD = {
-        src:  "https://res.cloudinary.com/dcsrqennd/image/upload/v1758072526/Join_Our_Discord_StaticQuassar931_lcplrf.png",
-        alt:  "Join the StaticQuasar931 Discord - opens in a new tab",
-        link: "https://discord.gg/DP2hM7RRhR",
-        cls:  "discord"
-      };
-      const INSTA = {
-        src:  "https://res.cloudinary.com/dcsrqennd/image/upload/v1747533158/raw_cw34yi.png",
-        alt:  "StaticQuasar931 Instagram - updates and clips",
-        link: "https://www.instagram.com/freeschoolgamepage/",
-        cls:  ""
-      };
-
-      const ROT = [FORM, DISCORD, INSTA];
-
-      // Preload images
-      ROT.forEach(o => { const p = new Image(); p.src = o.src; });
-
-      // Timing - smooth and readable on desktop and mobile
-      const T_IN = 1600, T_SHOW = 5000, T_OUT = 1600, T_GAP = 14000;
-      let i = 0;
-
-      function apply(o){
-        img.src = o.src;
-        img.alt = o.alt;
-        a.href  = o.link;
-        wrap.className = o.cls;
-      }
-
-      async function loop(){
-        for(;;){
-          apply(ROT[i]);
-          wrap.style.pointerEvents = "auto";
-          wrap.classList.remove("slide-out");
-          wrap.classList.add("slide-in");
-          await new Promise(r => setTimeout(r, T_IN + T_SHOW));
-          wrap.classList.remove("slide-in");
-          wrap.classList.add("slide-out");
-          await new Promise(r => setTimeout(r, T_OUT));
-          wrap.style.pointerEvents = "none";
-          await new Promise(r => setTimeout(r, T_GAP));
-          i = (i + 1) % ROT.length;
-        }
-      }
-
-      apply(ROT[i]);
-      loop();
-    })();
-
-    // Boot Unity
-    let gameInstance;
-    window.addEventListener("load", () => {
-      fitGame();
-      gameInstance = UnityLoader.instantiate(
-        "gameContainer",
-        "slope_new.json",
-        {
-          onProgress: UnityProgress,
-          Module: {
-            onRuntimeInitialized: function () {
-              UnityProgress(gameInstance, "complete");
-            }
-          }
-        }
-      );
-    });
-  </script>
 </head>
 <body>
   <!-- Static Menu -->
@@ -294,5 +174,128 @@
     <p>Keywords: slope unblocked, play slope online, free slope <strong>game</strong>, free slope <strong>g@me</strong>, slope at school, school safe arcade, unblocked 3d <strong>game</strong>, fast reflex <strong>g@me</strong>, neon ball runner, Static, Static 931, StaticQuasar931, staticquasar931, staticq, staticq931, 931 unblocked.</p>
     <p>Internal links: games list at https://sites.google.com/view/staticquasar931/gm3z and help at https://sites.google.com/view/staticquasar931/home/help-faq</p>
   </div>
+
+  <!-- Scripts placed at end so DOM is ready -->
+  <script>
+    // Leave warning
+    window.onbeforeunload = () => "Are you sure you want to leave? Your progress may not be saved.";
+
+    function fitGame(){
+      const el = document.getElementById("gameContainer");
+      if (!el) return;
+      const h = window.visualViewport ? window.visualViewport.height : window.innerHeight;
+      el.style.width  = window.innerWidth + "px";
+      el.style.height = h + "px";
+    }
+
+    window.addEventListener("resize", fitGame, {passive:true});
+    if (window.visualViewport) {
+      window.visualViewport.addEventListener("resize", fitGame, {passive:true});
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+      fitGame();
+
+      // Static Menu hide + auto-restore (3 minutes)
+      (function(){
+        const menu = document.getElementById("staticMenu");
+        const btn  = document.getElementById("closeStaticMenu");
+        const KEY  = "sq931_staticMenu_hidden_until";
+        const restore = () => { menu.style.display = "flex"; };
+        const maybeHide = () => {
+          const until = parseInt(localStorage.getItem(KEY) || "0", 10);
+          const now = Date.now();
+          if (until && now < until){
+            menu.style.display = "none";
+            setTimeout(restore, until - now);
+          }
+        };
+        if (btn){
+          btn.onclick = () => {
+            menu.style.display = "none";
+            const until = Date.now() + 180000;
+            localStorage.setItem(KEY, String(until));
+            setTimeout(restore, 180000);
+          };
+        }
+        maybeHide();
+      })();
+
+      // Rotator: Google Form -> Discord -> Instagram
+      (function(){
+        const wrap = document.getElementById("staticSlideMenu");
+        const a    = document.getElementById("staticSlideLink");
+        const img  = document.getElementById("staticSlideImg");
+        if (!wrap || !a || !img) return; // hard guard to avoid null errors
+
+        const FORM = {
+          src:  "https://res.cloudinary.com/dcsrqennd/image/upload/v1747533056/raw_um4pvq.png",
+          alt:  "StaticQuasar931 Google Form - feedback and requests",
+          link: "https://sites.google.com/view/staticquasar931/google-form",
+          cls:  ""
+        };
+        const DISCORD = {
+          src:  "https://res.cloudinary.com/dcsrqennd/image/upload/v1758072526/Join_Our_Discord_StaticQuassar931_lcplrf.png",
+          alt:  "Join the StaticQuasar931 Discord - opens in a new tab",
+          link: "https://discord.gg/DP2hM7RRhR",
+          cls:  "discord"
+        };
+        const INSTA = {
+          src:  "https://res.cloudinary.com/dcsrqennd/image/upload/v1747533158/raw_cw34yi.png",
+          alt:  "StaticQuasar931 Instagram - updates and clips",
+          link: "https://www.instagram.com/freeschoolgamepage/",
+          cls:  ""
+        };
+
+        const ROT = [FORM, DISCORD, INSTA];
+
+        // Preload images
+        ROT.forEach(o => { const p = new Image(); p.src = o.src; });
+
+        const T_IN = 1600, T_SHOW = 5000, T_OUT = 1600, T_GAP = 14000;
+        let i = 0;
+
+        function apply(o){
+          img.src = o.src;
+          img.alt = o.alt;
+          a.href  = o.link;
+          wrap.className = o.cls;
+        }
+
+        async function loop(){
+          for(;;){
+            apply(ROT[i]);
+            wrap.style.pointerEvents = "auto";
+            wrap.classList.remove("slide-out");
+            wrap.classList.add("slide-in");
+            await new Promise(r => setTimeout(r, T_IN + T_SHOW));
+            wrap.classList.remove("slide-in");
+            wrap.classList.add("slide-out");
+            await new Promise(r => setTimeout(r, T_OUT));
+            wrap.style.pointerEvents = "none";
+            await new Promise(r => setTimeout(r, T_GAP));
+            i = (i + 1) % ROT.length;
+          }
+        }
+
+        apply(ROT[i]);
+        loop();
+      })();
+
+      // Boot Unity after DOM is ready
+      window.gameInstance = UnityLoader.instantiate(
+        "gameContainer",
+        "slope_new.json",
+        {
+          onProgress: UnityProgress,
+          Module: {
+            onRuntimeInitialized: function () {
+              UnityProgress(window.gameInstance, "complete");
+            }
+          }
+        }
+      );
+    });
+  </script>
 </body>
 </html>
