@@ -4,8 +4,18 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
 
+  <!-- Make blocked third-party calls fail fast instead of hanging -->
+  <meta http-equiv="Content-Security-Policy"
+        content="default-src 'self' data: blob: https:;
+                 script-src 'self' 'unsafe-inline' https:;
+                 img-src 'self' data: https:;
+                 style-src 'self' 'unsafe-inline';
+                 connect-src 'self' https://staticquasar931.github.io data: blob:;
+                 frame-ancestors 'self';
+                 object-src 'none'">
+
   <!-- Canonical & Robots -->
-  <link rel="canonical" href="https://staticquasar931.github.io/Slope/" />
+  <link rel="canonical" href="https://sites.google.com/view/staticquasar931/gm3z/sl0pe" />
   <meta name="robots" content="index, follow, max-image-preview:large" />
 
   <title>Slope — Free Unblocked Game | StaticQuasar931</title>
@@ -20,7 +30,7 @@
   <!-- Core SEO -->
   <meta name="description" content="Play Slope free and unblocked. Dodge obstacles, stay on the track, and push your high score. School friendly mirror by StaticQuasar931. Works on Chromebook, PC, and mobile." />
   <meta name="keywords" content="Slope, Slope unblocked, play Slope, Slope game, Slope online, Slope browser game, fast reflex game, neon ball, unblocked 3D game, school friendly game, StaticQuasar931" />
-  <meta name="theme-color" content="#231f20" />
+  <meta name="theme-color" content="#131419" />
 
   <!-- Open Graph / Twitter -->
   <meta property="og:title" content="Play Slope - Free Unblocked on StaticQuasar931" />
@@ -42,13 +52,10 @@
       --shadow:0 8px 28px rgba(0,0,0,.45);
       --glow:0 0 12px rgba(94,225,255,.65), 0 0 24px rgba(155,255,183,.35);
     }
-    html,body{
-      margin:0; padding:0; height:100%; overflow:hidden;
+    html,body{ margin:0; padding:0; height:100%; overflow:hidden;
       background:linear-gradient(180deg,var(--bg),var(--bg2)); color:var(--text);
-      font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
-    }
+      font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif; }
 
-    /* Fullscreen WebGL container */
     .webgl-content{ position:fixed; inset:0; display:flex; align-items:center; justify-content:center; }
     #gameContainer{ width:100vw; height:100vh; background:transparent; }
 
@@ -59,9 +66,8 @@
       padding:10px 14px; border-radius:12px;
       background:linear-gradient(135deg, rgba(20,20,28,.92), rgba(20,20,28,.6));
       border:1px solid rgba(94,225,255,.35);
-      box-shadow:var(--glow), var(--shadow);
-      font-size:14px; animation:menuEnter .45s ease .1s both;
-      backdrop-filter: blur(8px);
+      box-shadow:var(--glow), var(--shadow); font-size:14px;
+      animation:menuEnter .45s ease .1s both; backdrop-filter: blur(8px);
     }
     #staticMenu a{ color:var(--brand); text-decoration:none; font-weight:800; }
     #closeStaticMenu{
@@ -87,37 +93,25 @@
     @keyframes slideOut{ from{opacity:1; transform:translateX(0) scale(1)} to{opacity:0; transform:translateX(140px) scale(.96)} }
     @media (max-width:768px){ #staticSlideMenu{ width:84px; height:84px; } }
 
-    /* Improved Unity-like loader */
+    /* Unity-like loader */
     #loaderCover{
       position:fixed; inset:0; z-index:10; background:radial-gradient(1200px 800px at 50% 40%, #1a2130 0%, #0d0f14 60%, #090b10 100%);
       display:flex; flex-direction:column; align-items:center; justify-content:center; gap:22px;
     }
-    .loader-logo{
-      width:180px; height:120px; display:flex; align-items:center; justify-content:center;
-      filter: drop-shadow(0 8px 30px rgba(94,225,255,.25));
-      animation:logoPop .35s ease-out both;
-    }
+    .loader-logo{ width:180px; height:120px; display:flex; align-items:center; justify-content:center;
+      filter: drop-shadow(0 8px 30px rgba(94,225,255,.25)); }
     .loader-logo img{ width:100%; height:100%; object-fit:contain; }
-    @keyframes logoPop{ from{ transform:scale(.96); opacity:.8 } to{ transform:scale(1); opacity:1 } }
-
-    .loader-bar{
-      width:min(560px, 86vw); height:18px; border-radius:10px; overflow:hidden;
+    .loader-bar{ width:min(560px, 86vw); height:18px; border-radius:10px; overflow:hidden;
       background:linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.03));
-      box-shadow:inset 0 0 0 1px rgba(255,255,255,.10), inset 0 6px 12px rgba(0,0,0,.25), var(--shadow);
-    }
-    .loader-fill{
-      height:100%; width:0%;
+      box-shadow:inset 0 0 0 1px rgba(255,255,255,.10), inset 0 6px 12px rgba(0,0,0,.25), var(--shadow); }
+    .loader-fill{ height:100%; width:0%;
       background:
         linear-gradient(90deg, rgba(255,255,255,.25) 0%, rgba(255,255,255,0) 35%),
         linear-gradient(90deg, var(--brand), var(--brand2));
-      transition:width .12s linear;
-    }
-    .loader-meta{
-      width:min(560px, 86vw); display:flex; justify-content:space-between; align-items:center;
+      transition:width .12s linear; }
+    .loader-meta{ width:min(560px, 86vw); display:flex; justify-content:space-between; align-items:center;
       color:var(--muted); font-weight:700; font-variant-numeric:tabular-nums; letter-spacing:.3px;
-      text-shadow:0 1px 0 rgba(0,0,0,.35);
-    }
-    .loader-meta small{ opacity:.85 }
+      text-shadow:0 1px 0 rgba(0,0,0,.35); }
     .fade-out{ animation:fadeOut .25s ease forwards; }
     @keyframes fadeOut{ to{ opacity:0; visibility:hidden } }
 
@@ -163,7 +157,6 @@
   <div class="seo-hidden" aria-hidden="true">
     <h1>Play Slope - Unblocked 3D Reflex Game</h1>
     <p><strong>Slope</strong> is a fast 3D rolling ball arcade game. Tilt into green ramps, avoid red obstacles, and keep your line clean while the speed climbs. Hosted by <strong>StaticQuasar931</strong>. Chromebook, Windows, macOS, and mobile supported.</p>
-    <p>Keywords: slope unblocked, play slope online, free slope game, slope at school, unblocked 3d game, neon ball runner, StaticQuasar931.</p>
   </div>
 
   <script>
@@ -241,54 +234,94 @@
       apply(ROT[i]); loop();
     })();
 
+    /* -------------------------------------------------------------
+       Network stubs: neutralize calls to ID.net and similar services
+       without needing to toggle Wi-Fi. Keeps the game offline-friendly.
+       ------------------------------------------------------------- */
+
+    // 1) Stub the JSONP autologin callback if some script expects it
+    window.idnet_autologin = window.idnet_autologin || function(){ /* ok */ };
+
+    // 2) Patch fetch to return a harmless response for blocked endpoints
+    (function(){
+      const bad = [
+        /(^https?:\/\/)?(www\.)?id\.net\/api/i,
+        /(^https?:\/\/)?(www\.)?id\.net\/.*autologin/i
+      ];
+      const okJSON = JSON.stringify({ success:true, lists:[], status:"offline" });
+      const origFetch = window.fetch;
+      window.fetch = function(input, init){
+        try{
+          const url = (typeof input === "string") ? input : input.url;
+          if (bad.some(rx => rx.test(url))){
+            return Promise.resolve(new Response(okJSON, {
+              status: 200,
+              headers: { "Content-Type": "application/json" }
+            }));
+          }
+        }catch(e){}
+        return origFetch.apply(this, arguments);
+      };
+    })();
+
+    // 3) Patch XHR for codepaths that still use it (Emscripten 2017 often does)
+    (function(){
+      const BAD = /(^https?:\/\/)?(www\.)?id\.net\/api/i;
+      const okJSON = JSON.stringify({ success:true, lists:[], status:"offline" });
+      const XO = XMLHttpRequest.prototype.open;
+      const XS = XMLHttpRequest.prototype.send;
+      XMLHttpRequest.prototype.open = function(method, url){
+        this.__sqStub = BAD.test(url);
+        this.__sqURL = url;
+        return XO.apply(this, arguments);
+      };
+      XMLHttpRequest.prototype.send = function(body){
+        if (this.__sqStub){
+          const self = this;
+          setTimeout(function(){
+            self.readyState = 4;
+            self.status = 200;
+            self.responseText = okJSON;
+            if (self.onload) self.onload();
+            if (self.onreadystatechange) self.onreadystatechange();
+          }, 0);
+          return;
+        }
+        return XS.apply(this, arguments);
+      };
+    })();
+
     // Accurate progress with smoothing and anti-stall
     (function(){
       const cover = document.getElementById("loaderCover");
       const fill  = document.getElementById("loaderFill");
       const pctEl = document.getElementById("loaderPct");
+      let reported = 0, visual = 0, lastUpdate = performance.now(), rafId = 0;
 
-      let reported = 0;          // latest progress from Unity (0..1)
-      let visual   = 0;          // what we draw to the bar (0..1)
-      let lastUpdate = performance.now();
-      let rafId = 0;
-
-      // Unity onProgress callback
       window.SQProgress = function(_game, p){
         if (typeof p !== "number" || isNaN(p)) return;
-        reported = Math.max(reported, Math.min(1, p)); // monotonic, clamp
+        reported = Math.max(reported, Math.min(1, p));
         lastUpdate = performance.now();
       };
 
-      // Smoothing loop
       function animate(){
         const now = performance.now();
         const dt = Math.min(0.05, (now - (animate.prev || now)) / 1000);
         animate.prev = now;
-
-        // Ease visual toward reported quickly when behind, slowly when close
         const diff = reported - visual;
-        const speed =
-          diff > 0.15 ? 0.50 :      // catch up fast if far behind
-          diff > 0.05 ? 0.30 :
-          0.18;
-        visual += diff * Math.min(1, speed * (dt * 60)); // frame rate independent
+        const speed = diff > 0.15 ? 0.50 : diff > 0.05 ? 0.30 : 0.18;
+        visual += diff * Math.min(1, speed * (dt * 60));
         if (visual > reported) visual = reported;
-
-        // Anti-stall: if no updates for 2.5s and not finished, nudge a tiny bit but never exceed reported + 0.02 and never exceed 0.97
         if (now - lastUpdate > 2500 && visual < 0.97){
           const cap = Math.min(0.97, reported + 0.02);
-          visual = Math.min(cap, visual + 0.0025); // subtle nudge
+          visual = Math.min(cap, visual + 0.0025);
         }
-
-        // Draw
         const pct = Math.round(visual * 100);
         if (fill) fill.style.width = pct + "%";
         if (pctEl) pctEl.textContent = pct + "%";
-
         if (reported >= 1 && visual >= 0.999){
           if (cover) cover.classList.add("fade-out");
-          cancelAnimationFrame(rafId);
-          return;
+          cancelAnimationFrame(rafId); return;
         }
         rafId = requestAnimationFrame(animate);
       }
@@ -298,7 +331,7 @@
       setTimeout(() => { if (cover) cover.classList.add("fade-out"); }, 25000);
     })();
 
-    // Start Unity using our progress hook
+    // Start Unity with our progress hook
     window.addEventListener("load", () => {
       fitGame();
       try{
@@ -306,7 +339,6 @@
           onProgress: window.SQProgress
         });
       } catch (e){
-        // If UnityLoader fails, hide loader and surface an error quietly
         const cover = document.getElementById("loaderCover");
         if (cover) cover.classList.add("fade-out");
         console.error("Unity failed to start:", e);
