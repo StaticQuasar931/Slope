@@ -9,11 +9,10 @@
 
   <title>Slope - Free Unblocked Game | StaticQuasar931</title>
 
+  <!-- Icons and social -->
   <link rel="icon" href="https://res.cloudinary.com/dlq5fztla/image/upload/v1760301648/slope_Staticquasar931_stable_agqxto.png" />
   <meta property="og:image" content="https://res.cloudinary.com/dlq5fztla/image/upload/v1760301648/slope_Staticquasar931_stable_agqxto.png" />
   <meta name="twitter:image" content="https://res.cloudinary.com/dlq5fztla/image/upload/v1760301648/slope_Staticquasar931_stable_agqxto.png" />
-  <meta property="og:image:alt" content="Slope 3D rolling ball on neon track - StaticQuasar931" />
-  <meta name="twitter:image:alt" content="Slope 3D rolling ball on neon track - StaticQuasar931" />
 
   <meta name="description" content="Play Slope free and unblocked. Dodge obstacles, stay on the track, and push your high score. School friendly mirror by StaticQuasar931. Works on Chromebook, PC, and mobile." />
   <meta name="keywords" content="Slope, Slope unblocked, play Slope online, free Slope game, 3D reflex game, school friendly game, StaticQuasar931" />
@@ -25,6 +24,7 @@
   <meta property="og:url" content="https://staticquasar931.github.io/slope/" />
   <meta name="twitter:card" content="summary_large_image" />
 
+  <!-- Preload rotating assets -->
   <link rel="preload" as="image" href="https://res.cloudinary.com/dcsrqennd/image/upload/v1747533056/raw_um4pvq.png" />
   <link rel="preload" as="image" href="https://res.cloudinary.com/dcsrqennd/image/upload/v1758072526/Join_Our_Discord_StaticQuassar931_lcplrf.png" />
   <link rel="preload" as="image" href="https://res.cloudinary.com/dcsrqennd/image/upload/v1747533158/raw_cw34yi.png" />
@@ -47,11 +47,9 @@
       --glow:0 0 12px rgba(94,225,255,.65), 0 0 24px rgba(155,255,183,.35);
       --green:#76ff7a; --red:#ff6b6b;
     }
-    html,body{
-      margin:0; padding:0; height:100%; overflow:hidden;
+    html,body{ margin:0; padding:0; height:100%; overflow:hidden;
       background:linear-gradient(180deg,var(--bg),var(--bg2)); color:var(--text);
-      font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
-    }
+      font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif; }
 
     .webgl-content{ position:fixed; inset:0; display:flex; align-items:center; justify-content:center; }
     #gameContainer{ width:100vw; height:100vh; background:transparent; }
@@ -64,8 +62,7 @@
       background:linear-gradient(135deg, rgba(20,20,28,.92), rgba(20,20,28,.6));
       border:1px solid rgba(94,225,255,.35);
       box-shadow:var(--glow), var(--shadow);
-      font-size:14px; animation:menuEnter .45s ease .1s both;
-      backdrop-filter: blur(8px);
+      font-size:14px; backdrop-filter: blur(8px);
     }
     #staticMenu a{ color:var(--brand); text-decoration:none; font-weight:800; }
     #closeStaticMenu{
@@ -73,7 +70,6 @@
       border:1px solid rgba(255,255,255,.15); background:rgba(255,255,255,.06);
       user-select:none;
     }
-    @keyframes menuEnter{from{opacity:0; transform:translateY(-6px)} to{opacity:1; transform:translateY(0)}}
 
     /* Rotating Icon */
     #staticSlideMenu{
@@ -91,24 +87,32 @@
     @keyframes slideOut{ from{opacity:1; transform:translateX(0) scale(1)} to{opacity:0; transform:translateX(140px) scale(.96)} }
     @media (max-width:768px){ #staticSlideMenu{ width:84px; height:84px; } }
 
-    /* Loader with logo and lights */
+    /* Loader */
     #loaderCover{
       position:fixed; inset:0; z-index:10;
       background:radial-gradient(1200px 800px at 50% 40%, #1a2130 0%, #0d0f14 60%, #090b10 100%);
       display:flex; flex-direction:column; align-items:center; justify-content:center; gap:16px;
       text-align:center;
     }
-    .sq-logo{
-      width:96px; height:96px; border-radius:14px; overflow:hidden;
+
+    .logo-row{
+      display:flex; align-items:center; justify-content:center; gap:18px;
+      opacity:.9;
+    }
+    .sq-logo, .unity-logo{
+      width:86px; height:86px; border-radius:14px; overflow:hidden;
       box-shadow:0 10px 34px rgba(94,225,255,.25);
       animation:logoPulse 3.2s ease-in-out infinite;
+      background:#0b0d12;
+      display:flex; align-items:center; justify-content:center;
     }
-    .sq-logo img{ width:100%; height:100%; object-fit:cover; }
-    @keyframes logoPulse{ 0%,100%{opacity:.75} 50%{opacity:1} }
+    .unity-logo{ animation-delay:1.2s; }
+    .sq-logo img, .unity-logo img{ width:100%; height:100%; object-fit:cover; }
+    @keyframes logoPulse{ 0%,100%{opacity:.7} 50%{opacity:1} }
 
-    .intro{ display:flex; flex-direction:column; align-items:center; gap:6px; pointer-events:auto; user-select:none; }
+    .intro{ display:flex; flex-direction:column; align-items:center; gap:6px; user-select:none; }
     .intro a{ color:#cfe9ff; text-decoration:none; }
-    .intro .title,.intro .subtitle{ font-weight:900; letter-spacing:.4px; font-size:16px; opacity:0; text-shadow:0 2px 10px rgba(0,0,0,.5); }
+    .intro .title,.intro .subtitle{ font-weight:900; letter-spacing:.3px; font-size:16px; opacity:0; text-shadow:0 2px 10px rgba(0,0,0,.5); }
     .fadeIn{ animation:fadeIn .8s ease forwards; }
     .fadeOut{ animation:fadeOut .7s ease forwards; }
     @keyframes fadeIn{ to{opacity:1} }
@@ -116,7 +120,7 @@
 
     .loader-bar{
       position:relative;
-      width:min(600px, 86vw); height:22px; border-radius:12px; overflow:hidden;
+      width:min(620px, 88vw); height:22px; border-radius:12px; overflow:hidden;
       background:linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.03));
       box-shadow:inset 0 0 0 1px rgba(255,255,255,.10), inset 0 6px 12px rgba(0,0,0,.25), var(--shadow);
       margin-inline:auto;
@@ -126,7 +130,7 @@
       background:
         linear-gradient(90deg, rgba(255,255,255,.25) 0%, rgba(255,255,255,0) 35%),
         linear-gradient(90deg, var(--brand), var(--brand2));
-      transition:width .10s linear;
+      transition:width .08s linear;
     }
     .light{
       position:absolute; top:4px; width:12px; height:14px; border-radius:4px;
@@ -138,18 +142,19 @@
     .glow{ box-shadow:0 0 14px currentColor, 0 0 28px currentColor; }
 
     .loader-meta{
-      width:min(600px, 86vw); margin-inline:auto;
+      width:min(620px, 88vw); margin-inline:auto;
       display:flex; justify-content:space-between; align-items:center;
       color:var(--muted); font-weight:700; font-variant-numeric:tabular-nums; letter-spacing:.3px;
       text-shadow:0 1px 0 rgba(0,0,0,.35);
     }
+
     .btn{
       appearance:none; border:1px solid rgba(255,255,255,.18); background:rgba(255,255,255,.06);
       color:#eaf6ff; border-radius:10px; padding:8px 12px; font-weight:700; cursor:pointer;
     }
     .btn:hover{ filter:brightness(1.08); }
 
-    /* Need help button near middle bottom-right */
+    /* Need help */
     #needHelpBtn{
       position:fixed; right:28px; bottom:50%; transform:translateY(160px);
       z-index:11;
@@ -158,7 +163,6 @@
       content:""; position:absolute; left:-8px; top:50%; transform:translateY(-50%);
       width:0; height:0; border-top:8px solid transparent; border-bottom:8px solid transparent; border-right:8px solid rgba(255,255,255,.18);
     }
-
     .help-pop{
       position:fixed; inset:auto 16px 16px auto; z-index:11; width:min(560px, 92vw);
       background:linear-gradient(135deg, rgba(20,24,36,.96), rgba(14,16,24,.9));
@@ -169,7 +173,7 @@
     .help-pop p{ margin:6px 0; font-size:14px; color:#cee6ff }
     .help-pop a{ color:#5ee1ff; font-weight:800; text-decoration:underline }
 
-    /* Flying banners: slower, full width, always clickable */
+    /* Banners: slower and clickable across the full path */
     .fly{
       position:fixed; z-index:12; pointer-events:auto;
       padding:12px 16px; border-radius:12px;
@@ -177,13 +181,13 @@
       color:#bfe7ff; font-weight:800; text-decoration:none;
       box-shadow:var(--glow), var(--shadow);
       top:12%; left:-40%;
-      animation:flyAcross 6s ease-in-out forwards;
+      animation:flyAcross 7s ease-in-out forwards;
     }
     @keyframes flyAcross{
       0%{ left:-40%; opacity:0 }
       10%{ left:2%; opacity:1 }
       50%{ left:48%; opacity:1 }
-      90%{ left:96%; opacity:1 }
+      95%{ left:96%; opacity:1 }
       100%{ left:110%; opacity:0 }
     }
     .fly.bottom{ top:auto; bottom:12%; }
@@ -191,7 +195,6 @@
     .fly.alt{ top:16%; }
 
     .seo-hidden{ position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(1px,1px,1px,1px); white-space:nowrap; }
-
     .coverFade{ animation:coverFade .25s ease forwards; }
     @keyframes coverFade{ to{ opacity:0; visibility:hidden } }
   </style>
@@ -214,8 +217,13 @@
 
   <!-- Loader -->
   <div id="loaderCover" role="status" aria-live="polite">
-    <div class="sq-logo">
-      <img src="https://res.cloudinary.com/dcsrqennd/image/upload/v1760208794/My%20Brand/Static_pfp_2_nqzjkd.jpg" alt="StaticQuasar931 logo">
+    <div class="logo-row">
+      <div class="sq-logo">
+        <img src="https://res.cloudinary.com/dcsrqennd/image/upload/v1760208794/My%20Brand/Static_pfp_2_nqzjkd.jpg" alt="StaticQuasar931 logo">
+      </div>
+      <div class="unity-logo">
+        <img src="https://res.cloudinary.com/dlq5fztla/image/upload/v1760307222/unity_i4qjdf.png" alt="Unity logo">
+      </div>
     </div>
 
     <div class="intro" id="intro">
@@ -255,7 +263,7 @@
 
   <div class="seo-hidden" aria-hidden="true">
     <h1>Slope by StaticQuasar931 - unblocked mirror</h1>
-    <p>StaticQuasar931 hosts a school friendly mirror of Slope for Chromebook, PC, and mobile. If this page appears on a fork, visit the original Slope on StaticQuasar931.</p>
+    <p>StaticQuasar931 hosts a school friendly mirror of Slope for Chromebook, PC, and mobile.</p>
   </div>
 
   <script>
@@ -263,7 +271,6 @@
 
     function fitGame(){
       const el = document.getElementById("gameContainer");
-      if (!el) return;
       const h = window.visualViewport ? window.visualViewport.height : window.innerHeight;
       el.style.width  = window.innerWidth + "px";
       el.style.height = h + "px";
@@ -271,29 +278,23 @@
     addEventListener("resize", fitGame, {passive:true});
     if (window.visualViewport) window.visualViewport.addEventListener("resize", fitGame, {passive:true});
 
-    // Static Menu hide + auto restore
+    // Hide Static UI after y u i pressed in order (session only)
     (function(){
       const menu = document.getElementById("staticMenu");
-      const btn  = document.getElementById("closeStaticMenu");
-      const KEY  = "sq931_staticMenu_hidden_until";
-      const restore = () => { menu.style.display = "flex"; };
-      const maybeHide = () => {
-        const until = parseInt(localStorage.getItem(KEY) || "0", 10);
-        const now = Date.now();
-        if (until && now < until){
-          menu.style.display = "none";
-          setTimeout(restore, until - now);
+      const slide = document.getElementById("staticSlideMenu");
+      let seq = "", last = 0;
+      window.addEventListener("keydown", e=>{
+        const t = performance.now();
+        if (t - last > 1500) seq = "";
+        last = t;
+        const k = e.key.toLowerCase();
+        if (["y","u","i"].includes(k)) seq += k; else seq = "";
+        if (seq.endsWith("yui")){
+          if (menu) menu.style.display = "none";
+          if (slide) slide.style.display = "none";
+          seq = "";
         }
-      };
-      if (btn){
-        btn.onclick = () => {
-          menu.style.display = "none";
-          const until = Date.now() + 180000;
-          localStorage.setItem(KEY, String(until));
-          setTimeout(restore, 180000);
-        };
-      }
-      maybeHide();
+      }, {passive:true});
     })();
 
     // Rotator: Form -> Discord -> Instagram
@@ -330,7 +331,46 @@
       apply(ROT[i]); loop();
     })();
 
-    // Stub id.net requests
+    // Help popup
+    (function(){
+      const btn = document.getElementById("needHelpBtn");
+      const pop = document.getElementById("helpPopup");
+      const cls = document.getElementById("helpClose");
+      const helpURL = "https://sites.google.com/view/staticquasar931/home/help-faq?source_utmwhateverslopewhatnot=&utm_source=slope&utm_medium=loader_help#h.qjb289kqv0nd";
+      const formURL = "https://sites.google.com/view/staticquasar931/google-form?utm_source=slope&utm_medium=loader_help";
+      document.getElementById("helpLink").href = helpURL;
+      document.getElementById("formLink").href = formURL;
+      btn.addEventListener("click", ()=>{ pop.style.display = "block"; });
+      cls.addEventListener("click", ()=>{ pop.style.display = "none"; });
+    })();
+
+    // Banners: Space, J, Shift, K, M
+    (function(){
+      function banner(text, href, cls){
+        const a = document.createElement("a");
+        a.className = "fly" + (cls || "");
+        a.href = href; a.target = "_blank"; a.rel = "noopener";
+        a.textContent = text;
+        document.body.appendChild(a);
+        setTimeout(()=>{ a.remove(); }, 7100);
+      }
+      window.addEventListener("keydown", e=>{
+        if (e.key === " "){
+          e.preventDefault();
+          banner("Play games on StaticQuasar931","https://sites.google.com/view/staticquasar931/gm3z"," mid");
+        } else if (e.key.toLowerCase() === "j"){
+          banner("Help and tips","https://sites.google.com/view/staticquasar931/home/help-faq?utm_source=slope&utm_medium=key_j#h.qjb289kqv0nd"," bottom");
+        } else if (e.key === "Shift"){
+          banner("Report an issue","https://sites.google.com/view/staticquasar931/google-form?utm_source=slope&utm_medium=key_shift"," alt");
+        } else if (e.key.toLowerCase() === "k"){
+          banner("Join the Discord","https://discord.gg/DP2hM7RRhR","");
+        } else if (e.key.toLowerCase() === "m"){
+          banner("Follow on Instagram","https://www.instagram.com/freeschoolgamepage/","");
+        }
+      });
+    })();
+
+    // School network: stub id.net
     window.idnet_autologin = window.idnet_autologin || function(){};
     (function(){
       const bad = [/^https?:\/\/(www\.)?id\.net\//i];
@@ -373,7 +413,7 @@
       setTimeout(()=>{ t2.classList.add("fadeIn"); }, 2600);
     })();
 
-    // Loader: anti stall + lights
+    // Loader anti-stall and lights
     (function(){
       const cover = document.getElementById("loaderCover");
       const fill  = document.getElementById("loaderFill");
@@ -382,24 +422,23 @@
       const green = document.getElementById("greenLight");
       const red   = document.getElementById("redLight");
 
-      let reported = 0;
-      let visual   = 0;
-      let lastUpdate = performance.now();
+      let reported = 0;   // from Unity
+      let visual   = 0;   // shown
       let finished = false;
+      let lastUpdate = performance.now();
 
       async function probeOnline(){
         try{
           const c = new AbortController();
-          setTimeout(()=>c.abort(), 2500);
+          setTimeout(()=>c.abort(), 2000);
           const r = await fetch("slope_new.json", { cache:"no-store", signal:c.signal });
           return r.ok;
         }catch(e){ return false; }
       }
 
-      // called by Unity
+      // Unity calls this function through onProgress
       window.SQProgress = function(_game, p){
-        if (typeof p !== "number" || isNaN(p)) return;
-        if (p > reported){
+        if (typeof p === "number" && p > reported){
           reported = Math.min(1, p);
           lastUpdate = performance.now();
           red.classList.remove("on","glow");
@@ -407,7 +446,8 @@
         if (reported === 1) finished = true;
       };
 
-      const RATE_SLOW = 0.01 / 0.3; // 1% each 0.3s after 70%
+      // rates
+      const RATE_SLOW = 0.01 / 0.3; // 1 percent every 0.3s after 70%
       const RATE_FAST = 1 / 0.2;    // sweep to 100 in 0.2s when finished
 
       async function animate(){
@@ -416,6 +456,8 @@
         animate.prev = now;
 
         const age = now - lastUpdate;
+
+        // offline detection and hard stop when truly offline
         if (!finished && age > 6000){
           red.classList.add("on","glow");
           const ok = await probeOnline();
@@ -426,32 +468,35 @@
           }
         }
 
+        // green light near real 80%
         if (reported >= 0.78 && reported <= 0.86){
-          if (Math.floor(now / 250) % 2 === 0) green.classList.add("on","glow");
+          if (Math.floor(now / 220) % 2 === 0) green.classList.add("on","glow");
           else green.classList.remove("glow");
         } else {
           green.classList.remove("on","glow");
         }
 
-        // never-stall policy after any progress
-        // maintain a shadow target that nudges forward if online and Unity is quiet
+        // never visually freeze once any progress started
+        // compute a target that advances smoothly but never passes 97% before finish
         let target = reported;
 
-        // early micro-stalls like 0.15: nudge gently if online
-        if (reported > 0 && age > 1200){
-          target = Math.max(target, visual + 0.004); // slow nudge
+        // early micro-stalls (like 15%): nudge slowly if Unity is quiet but we are online
+        if (reported > 0 && age > 1000){
+          target = Math.max(target, visual + 0.004);
         }
 
-        // smoothing zone from 70%: steady 0.3s per percent but never pass 97% until done
+        // smoothing zone from 70%
         if (!finished && visual >= 0.70){
           target = Math.min(Math.max(target, visual + RATE_SLOW * dt), 0.97);
         }
 
         // integrate toward target
         if (visual < target){
-          visual = Math.min(target, visual + 0.7 * dt); // gentle ease
+          // gentle approach to target
+          visual = Math.min(target, visual + 0.7 * dt);
         } else if (reported > visual){
-          visual = Math.min(reported, visual + 1.2 * dt); // catch up fast
+          // fast catch up when Unity jumps
+          visual = Math.min(reported, visual + 1.3 * dt);
         }
 
         if (finished){
@@ -471,67 +516,8 @@
       requestAnimationFrame(animate);
     })();
 
-    // Help popup
-    (function(){
-      const btn = document.getElementById("needHelpBtn");
-      const pop = document.getElementById("helpPopup");
-      const cls = document.getElementById("helpClose");
-      const helpURL = "https://sites.google.com/view/staticquasar931/home/help-faq?source_utmwhateverslopewhatnot=&utm_source=slope&utm_medium=loader_help#h.qjb289kqv0nd";
-      const formURL = "https://sites.google.com/view/staticquasar931/google-form?utm_source=slope&utm_medium=loader_help";
-      document.getElementById("helpLink").href = helpURL;
-      document.getElementById("formLink").href = formURL;
-      btn.addEventListener("click", ()=>{ pop.style.display = "block"; });
-      cls.addEventListener("click", ()=>{ pop.style.display = "none"; });
-    })();
-
-    // Hide UI with y then u then i (session only)
-    (function(){
-      const menu = document.getElementById("staticMenu");
-      const slide = document.getElementById("staticSlideMenu");
-      let seq = "";
-      let last = 0;
-      window.addEventListener("keydown", e=>{
-        const t = performance.now();
-        if (t - last > 1500) seq = "";
-        last = t;
-        const k = e.key.toLowerCase();
-        if (["y","u","i"].includes(k)) { seq += k; } else { seq = ""; }
-        if (seq.endsWith("yui")){
-          if (menu) menu.style.display = "none";
-          if (slide) slide.style.display = "none";
-          seq = "";
-        }
-      }, {passive:true});
-    })();
-
-    // Flying banners: slower and clickable across the full path
-    (function(){
-      function banner(text, href, cls){
-        const a = document.createElement("a");
-        a.className = "fly" + (cls || "");
-        a.href = href; a.target = "_blank"; a.rel = "noopener";
-        a.textContent = text;
-        document.body.appendChild(a);
-        setTimeout(()=>{ a.remove(); }, 6200);
-      }
-      window.addEventListener("keydown", e=>{
-        if (e.key === " "){
-          e.preventDefault();
-          banner("Play games on StaticQuasar931","https://sites.google.com/view/staticquasar931/gm3z"," mid");
-        } else if (e.key.toLowerCase() === "j"){
-          banner("Help and tips","https://sites.google.com/view/staticquasar931/home/help-faq?utm_source=slope&utm_medium=key_j#h.qjb289kqv0nd"," bottom");
-        } else if (e.key === "Shift"){
-          banner("Report an issue","https://sites.google.com/view/staticquasar931/google-form?utm_source=slope&utm_medium=key_shift"," alt");
-        } else if (e.key.toLowerCase() === "k"){
-          banner("Join the Discord","https://discord.gg/DP2hM7RRhR","");
-        } else if (e.key.toLowerCase() === "m"){
-          banner("Follow on Instagram","https://www.instagram.com/freeschoolgamepage/","");
-        }
-      });
-    })();
-
-    // Start Unity
-    window.addEventListener("load", () => {
+    // Start Unity after layout is ready
+    function startUnity(){
       fitGame();
       try{
         window.gameInstance = UnityLoader.instantiate("gameContainer", "slope_new.json", {
@@ -541,7 +527,8 @@
         document.getElementById("loaderCover").classList.add("coverFade");
         console.error("Unity failed to start:", e);
       }
-    });
+    }
+    window.addEventListener("load", startUnity);
   </script>
 </body>
 </html>
