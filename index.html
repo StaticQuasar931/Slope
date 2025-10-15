@@ -15,7 +15,7 @@
   <meta name="twitter:image" content="https://res.cloudinary.com/dlq5fztla/image/upload/v1760301648/slope_Staticquasar931_stable_agqxto.png" />
 
   <meta name="description" content="Play Slope free and unblocked. Dodge obstacles, stay on the track, and push your high score. School friendly mirror by StaticQuasar931. Works on Chromebook, PC, and mobile." />
-  <meta name="keywords" content="Slope, Slope unblocked, play Slope online, free Slope game, 3D reflex game, school friendly game, StaticQuasar931" />
+  <meta name="keywords" content="Slope, Slope unblocked, play Slope online, free Slope game, 3D reflex game, unblocked games for school, StaticQuasar931" />
   <meta name="theme-color" content="#131419" />
 
   <meta property="og:title" content="Play Slope - Free Unblocked on StaticQuasar931" />
@@ -95,9 +95,15 @@
       text-align:center;
     }
 
+    .announce{
+      font-size:20px; font-weight:900; letter-spacing:.3px;
+      color:#d9f2ff; text-shadow:0 2px 12px rgba(0,0,0,.55);
+      margin-bottom:4px;
+    }
+
     .logo-row{
       display:flex; align-items:center; justify-content:center; gap:18px;
-      opacity:.9;
+      opacity:.95;
     }
     .sq-logo, .unity-logo{
       width:86px; height:86px; border-radius:14px; overflow:hidden;
@@ -106,8 +112,8 @@
       background:#0b0d12;
       display:flex; align-items:center; justify-content:center;
     }
-    .unity-logo{ animation-delay:1.2s; }
-    .sq-logo img, .unity-logo img{ width:100%; height:100%; object-fit:cover; }
+    .unity-logo img{ width:100%; height:100%; object-fit:contain; opacity:0.82; background:transparent; }
+    .sq-logo img{ width:100%; height:100%; object-fit:cover; }
     @keyframes logoPulse{ 0%,100%{opacity:.7} 50%{opacity:1} }
 
     .intro{ display:flex; flex-direction:column; align-items:center; gap:6px; user-select:none; }
@@ -173,7 +179,7 @@
     .help-pop p{ margin:6px 0; font-size:14px; color:#cee6ff }
     .help-pop a{ color:#5ee1ff; font-weight:800; text-decoration:underline }
 
-    /* Banners: slower and clickable across the full path */
+    /* Banners */
     .fly{
       position:fixed; z-index:12; pointer-events:auto;
       padding:12px 16px; border-radius:12px;
@@ -217,6 +223,8 @@
 
   <!-- Loader -->
   <div id="loaderCover" role="status" aria-live="polite">
+    <div class="announce">Now works without needing to turn off internet!</div>
+
     <div class="logo-row">
       <div class="sq-logo">
         <img src="https://res.cloudinary.com/dcsrqennd/image/upload/v1760208794/My%20Brand/Static_pfp_2_nqzjkd.jpg" alt="StaticQuasar931 logo">
@@ -229,7 +237,7 @@
     <div class="intro" id="intro">
       <a href="https://sites.google.com/view/staticquasar931/gm3z" target="_blank" rel="noopener" id="introLink">
         <div class="title" id="t1">StaticQuasar931 Unblocked Games Presents</div>
-        <div class="subtitle" id="t2">Slope - Stable Unblocked High Quality version</div>
+        <div class="subtitle" id="t2">Slope Stable Unblocked High Quality version</div>
       </a>
     </div>
 
@@ -261,9 +269,15 @@
   <!-- Unity Game -->
   <div class="webgl-content"><div id="gameContainer"></div></div>
 
+  <!-- Hidden SEO -->
   <div class="seo-hidden" aria-hidden="true">
-    <h1>Slope by StaticQuasar931 - unblocked mirror</h1>
-    <p>StaticQuasar931 hosts a school friendly mirror of Slope for Chromebook, PC, and mobile.</p>
+    <h1>Slope by StaticQuasar931 unblocked</h1>
+    <p>Play Slope online at school on the StaticQuasar931 mirror. Safe for Chromebook, Windows, and mobile. If this build appears on a fork, visit the original <a href="https://staticquasar931.github.io/slope/">StaticQuasar931 Slope</a> and the <a href="https://sites.google.com/view/staticquasar931/gm3z">StaticQuasar931 games hub</a>.</p>
+    <ul>
+      <li>Fast reflex game</li>
+      <li>Neon runner</li>
+      <li>No download</li>
+    </ul>
   </div>
 
   <script>
@@ -278,22 +292,24 @@
     addEventListener("resize", fitGame, {passive:true});
     if (window.visualViewport) window.visualViewport.addEventListener("resize", fitGame, {passive:true});
 
-    // Hide Static UI after y u i pressed in order (session only)
+    // Y + U + I pressed at the same time to hide Static UI (session only)
     (function(){
-      const menu = document.getElementById("staticMenu");
+      const menu  = document.getElementById("staticMenu");
       const slide = document.getElementById("staticSlideMenu");
-      let seq = "", last = 0;
-      window.addEventListener("keydown", e=>{
-        const t = performance.now();
-        if (t - last > 1500) seq = "";
-        last = t;
-        const k = e.key.toLowerCase();
-        if (["y","u","i"].includes(k)) seq += k; else seq = "";
-        if (seq.endsWith("yui")){
+      const down = new Set();
+      function checkCombo(){
+        if (down.has("y") && down.has("u") && down.has("i")){
           if (menu) menu.style.display = "none";
           if (slide) slide.style.display = "none";
-          seq = "";
         }
+      }
+      window.addEventListener("keydown", (e)=>{
+        const k = e.key.toLowerCase();
+        if (k === "y" || k === "u" || k === "i"){ down.add(k); checkCombo(); }
+      }, {passive:true});
+      window.addEventListener("keyup", (e)=>{
+        const k = e.key.toLowerCase();
+        if (k === "y" || k === "u" || k === "i"){ down.delete(k); }
       }, {passive:true});
     })();
 
@@ -436,7 +452,7 @@
         }catch(e){ return false; }
       }
 
-      // Unity calls this function through onProgress
+      // Unity calls this through onProgress
       window.SQProgress = function(_game, p){
         if (typeof p === "number" && p > reported){
           reported = Math.min(1, p);
@@ -457,7 +473,7 @@
 
         const age = now - lastUpdate;
 
-        // offline detection and hard stop when truly offline
+        // offline detection: stop faking if truly offline
         if (!finished && age > 6000){
           red.classList.add("on","glow");
           const ok = await probeOnline();
@@ -476,14 +492,11 @@
           green.classList.remove("on","glow");
         }
 
-        // never visually freeze once any progress started
-        // compute a target that advances smoothly but never passes 97% before finish
+        // compute target that advances smoothly but never passes 97% before finish
         let target = reported;
 
-        // early micro-stalls (like 15%): nudge slowly if Unity is quiet but we are online
-        if (reported > 0 && age > 1000){
-          target = Math.max(target, visual + 0.004);
-        }
+        // micro-stall nudge if Unity is quiet
+        if (reported > 0 && age > 900){ target = Math.max(target, visual + 0.004); }
 
         // smoothing zone from 70%
         if (!finished && visual >= 0.70){
@@ -492,11 +505,9 @@
 
         // integrate toward target
         if (visual < target){
-          // gentle approach to target
-          visual = Math.min(target, visual + 0.7 * dt);
+          visual = Math.min(target, visual + 0.7 * dt); // gentle ease
         } else if (reported > visual){
-          // fast catch up when Unity jumps
-          visual = Math.min(reported, visual + 1.3 * dt);
+          visual = Math.min(reported, visual + 1.3 * dt); // catch up fast
         }
 
         if (finished){
@@ -516,7 +527,6 @@
       requestAnimationFrame(animate);
     })();
 
-    // Start Unity after layout is ready
     function startUnity(){
       fitGame();
       try{
