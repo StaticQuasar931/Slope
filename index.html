@@ -4,32 +4,27 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-  <!-- Canonical and Robots -->
   <link rel="canonical" href="https://staticquasar931.github.io/slope/" />
   <meta name="robots" content="index, follow, max-image-preview:large" />
 
   <title>Slope - Free Unblocked Game | StaticQuasar931</title>
 
-  <!-- Favicon and Social -->
   <link rel="icon" href="https://res.cloudinary.com/dlq5fztla/image/upload/v1760301648/slope_Staticquasar931_stable_agqxto.png" />
   <meta property="og:image" content="https://res.cloudinary.com/dlq5fztla/image/upload/v1760301648/slope_Staticquasar931_stable_agqxto.png" />
   <meta name="twitter:image" content="https://res.cloudinary.com/dlq5fztla/image/upload/v1760301648/slope_Staticquasar931_stable_agqxto.png" />
   <meta property="og:image:alt" content="Slope 3D rolling ball on neon track - StaticQuasar931" />
   <meta name="twitter:image:alt" content="Slope 3D rolling ball on neon track - StaticQuasar931" />
 
-  <!-- Core SEO -->
   <meta name="description" content="Play Slope free and unblocked. Dodge obstacles, stay on the track, and push your high score. School friendly mirror by StaticQuasar931. Works on Chromebook, PC, and mobile." />
   <meta name="keywords" content="Slope, Slope unblocked, play Slope online, free Slope game, 3D reflex game, school friendly game, StaticQuasar931" />
   <meta name="theme-color" content="#131419" />
 
-  <!-- Open Graph and Twitter -->
   <meta property="og:title" content="Play Slope - Free Unblocked on StaticQuasar931" />
   <meta property="og:description" content="Fast 3D ball runner. Stay on the slopes, dodge red blocks, and set a new record. Chromebook and mobile friendly." />
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://staticquasar931.github.io/slope/" />
   <meta name="twitter:card" content="summary_large_image" />
 
-  <!-- Preload rotating assets -->
   <link rel="preload" as="image" href="https://res.cloudinary.com/dcsrqennd/image/upload/v1747533056/raw_um4pvq.png" />
   <link rel="preload" as="image" href="https://res.cloudinary.com/dcsrqennd/image/upload/v1758072526/Join_Our_Discord_StaticQuassar931_lcplrf.png" />
   <link rel="preload" as="image" href="https://res.cloudinary.com/dcsrqennd/image/upload/v1747533158/raw_cw34yi.png" />
@@ -111,15 +106,9 @@
     .sq-logo img{ width:100%; height:100%; object-fit:cover; }
     @keyframes logoPulse{ 0%,100%{opacity:.75} 50%{opacity:1} }
 
-    .intro{
-      display:flex; flex-direction:column; align-items:center; gap:6px;
-      pointer-events:auto; user-select:none;
-    }
+    .intro{ display:flex; flex-direction:column; align-items:center; gap:6px; pointer-events:auto; user-select:none; }
     .intro a{ color:#cfe9ff; text-decoration:none; }
-    .intro .title,.intro .subtitle{
-      font-weight:900; letter-spacing:.4px; font-size:16px; opacity:0;
-      text-shadow:0 2px 10px rgba(0,0,0,.5);
-    }
+    .intro .title,.intro .subtitle{ font-weight:900; letter-spacing:.4px; font-size:16px; opacity:0; text-shadow:0 2px 10px rgba(0,0,0,.5); }
     .fadeIn{ animation:fadeIn .8s ease forwards; }
     .fadeOut{ animation:fadeOut .7s ease forwards; }
     @keyframes fadeIn{ to{opacity:1} }
@@ -127,7 +116,7 @@
 
     .loader-bar{
       position:relative;
-      width:min(600px, 86vw); height:20px; border-radius:12px; overflow:hidden;
+      width:min(600px, 86vw); height:22px; border-radius:12px; overflow:hidden;
       background:linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.03));
       box-shadow:inset 0 0 0 1px rgba(255,255,255,.10), inset 0 6px 12px rgba(0,0,0,.25), var(--shadow);
       margin-inline:auto;
@@ -139,15 +128,12 @@
         linear-gradient(90deg, var(--brand), var(--brand2));
       transition:width .10s linear;
     }
-    /* lights inside bar */
     .light{
-      position:absolute; top:3px; width:10px; height:14px; border-radius:4px;
-      opacity:0; transform:translateX(-50%);
-      box-shadow:0 0 12px rgba(0,0,0,.5);
+      position:absolute; top:4px; width:12px; height:14px; border-radius:4px;
+      opacity:0; transform:translateX(-50%); box-shadow:0 0 12px rgba(0,0,0,.5);
     }
     #greenLight{ background:var(--green); left:80%; }
     #redLight{ background:var(--red); left:50%; }
-
     .light.on{ opacity:1; }
     .glow{ box-shadow:0 0 14px currentColor, 0 0 28px currentColor; }
 
@@ -157,20 +143,15 @@
       color:var(--muted); font-weight:700; font-variant-numeric:tabular-nums; letter-spacing:.3px;
       text-shadow:0 1px 0 rgba(0,0,0,.35);
     }
-    .loader-actions{
-      display:flex; gap:12px; align-items:center; justify-content:center;
-      margin-top:6px;
-    }
     .btn{
       appearance:none; border:1px solid rgba(255,255,255,.18); background:rgba(255,255,255,.06);
       color:#eaf6ff; border-radius:10px; padding:8px 12px; font-weight:700; cursor:pointer;
     }
     .btn:hover{ filter:brightness(1.08); }
 
-    /* Need help button - middle bottom-right with arrow */
+    /* Need help button near middle bottom-right */
     #needHelpBtn{
-      position:fixed;
-      right:28px; bottom:50%; transform:translateY(160px);
+      position:fixed; right:28px; bottom:50%; transform:translateY(160px);
       z-index:11;
     }
     #needHelpBtn::after{
@@ -188,48 +169,33 @@
     .help-pop p{ margin:6px 0; font-size:14px; color:#cee6ff }
     .help-pop a{ color:#5ee1ff; font-weight:800; text-decoration:underline }
 
-    /* Flying banners for key actions */
+    /* Flying banners: slower, full width, always clickable */
     .fly{
-      position:fixed; top:14%; left:-40%; z-index:12;
-      padding:10px 14px; border-radius:12px;
-      background:rgba(20,24,36,.85); border:1px solid rgba(94,225,255,.35);
+      position:fixed; z-index:12; pointer-events:auto;
+      padding:12px 16px; border-radius:12px;
+      background:rgba(20,24,36,.92); border:1px solid rgba(94,225,255,.35);
       color:#bfe7ff; font-weight:800; text-decoration:none;
-      opacity:.85; pointer-events:auto;
-      transform:translateY(0);
-      animation:flyAcross 2.2s ease forwards;
+      box-shadow:var(--glow), var(--shadow);
+      top:12%; left:-40%;
+      animation:flyAcross 6s ease-in-out forwards;
     }
     @keyframes flyAcross{
-      0%{ left:-40%; top:14%; opacity:.0 }
-      10%{ left:4%; top:12%; opacity:.85 }
-      50%{ left:42%; top:10% }
-      100%{ left:110%; top:12%; opacity:.0 }
+      0%{ left:-40%; opacity:0 }
+      10%{ left:2%; opacity:1 }
+      50%{ left:48%; opacity:1 }
+      90%{ left:96%; opacity:1 }
+      100%{ left:110%; opacity:0 }
     }
+    .fly.bottom{ top:auto; bottom:12%; }
+    .fly.mid{ top:20%; }
+    .fly.alt{ top:16%; }
 
-    .fly2{ top:auto; bottom:10%; animation:flyAcross2 2.4s ease forwards; }
-    @keyframes flyAcross2{
-      0%{ left:-40%; bottom:10%; opacity:.0 }
-      10%{ left:6%; bottom:12%; opacity:.9 }
-      60%{ left:46%; bottom:14% }
-      100%{ left:110%; bottom:10%; opacity:.0 }
-    }
-
-    .fly3{ top:24%; animation:flyAcross3 2.0s ease forwards; }
-    @keyframes flyAcross3{
-      0%{ left:-30%; top:24%; opacity:.0 }
-      15%{ left:8%; top:22%; opacity:.9 }
-      70%{ left:54%; top:20% }
-      100%{ left:110%; top:22%; opacity:.0 }
-    }
-
-    /* Hidden SEO */
     .seo-hidden{ position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(1px,1px,1px,1px); white-space:nowrap; }
 
-    /* Fade cover at the end */
     .coverFade{ animation:coverFade .25s ease forwards; }
     @keyframes coverFade{ to{ opacity:0; visibility:hidden } }
   </style>
 
-  <!-- Unity loader -->
   <script src="UnityLoader.js"></script>
 </head>
 <body>
@@ -248,7 +214,9 @@
 
   <!-- Loader -->
   <div id="loaderCover" role="status" aria-live="polite">
-    <div class="sq-logo"><img src="https://res.cloudinary.com/dcsrqennd/image/upload/v1760208794/My%20Brand/Static_pfp_2_nqzjkd.jpg" alt="StaticQuasar931 logo"></div>
+    <div class="sq-logo">
+      <img src="https://res.cloudinary.com/dcsrqennd/image/upload/v1760208794/My%20Brand/Static_pfp_2_nqzjkd.jpg" alt="StaticQuasar931 logo">
+    </div>
 
     <div class="intro" id="intro">
       <a href="https://sites.google.com/view/staticquasar931/gm3z" target="_blank" rel="noopener" id="introLink">
@@ -268,7 +236,6 @@
       <div id="loaderPct">0%</div>
     </div>
 
-    <!-- Need help button near bottom-right middle with arrow -->
     <button class="btn" id="needHelpBtn" type="button">Need help?</button>
   </div>
 
@@ -286,15 +253,12 @@
   <!-- Unity Game -->
   <div class="webgl-content"><div id="gameContainer"></div></div>
 
-  <!-- Hidden SEO -->
   <div class="seo-hidden" aria-hidden="true">
     <h1>Slope by StaticQuasar931 - unblocked mirror</h1>
     <p>StaticQuasar931 hosts a school friendly mirror of Slope for Chromebook, PC, and mobile. If this page appears on a fork, visit the original Slope on StaticQuasar931.</p>
-    <p>Tags: StaticQuasar931 Slope, play Slope unblocked, Slope online, fast 3D reflex runner, neon ball, safe for school.</p>
   </div>
 
   <script>
-    // Leave warning
     window.onbeforeunload = () => "Are you sure you want to leave? Your progress may not be saved.";
 
     function fitGame(){
@@ -366,7 +330,7 @@
       apply(ROT[i]); loop();
     })();
 
-    /* School network fix: stub id.net quietly */
+    // Stub id.net requests
     window.idnet_autologin = window.idnet_autologin || function(){};
     (function(){
       const bad = [/^https?:\/\/(www\.)?id\.net\//i];
@@ -400,16 +364,16 @@
       };
     })();
 
-    /* Intro sequence */
+    // Intro titles
     (function(){
       const t1 = document.getElementById("t1");
       const t2 = document.getElementById("t2");
-      setTimeout(()=>{ t1.classList.add("fadeIn"); }, 120);
-      setTimeout(()=>{ t1.classList.add("fadeOut"); }, 1600);
-      setTimeout(()=>{ t2.classList.add("fadeIn"); }, 2400);
+      setTimeout(()=>{ t1.classList.add("fadeIn"); }, 150);
+      setTimeout(()=>{ t1.classList.add("fadeOut"); }, 1800);
+      setTimeout(()=>{ t2.classList.add("fadeIn"); }, 2600);
     })();
 
-    /* Loader progress control with anti-stall and lights */
+    // Loader: anti stall + lights
     (function(){
       const cover = document.getElementById("loaderCover");
       const fill  = document.getElementById("loaderFill");
@@ -418,11 +382,10 @@
       const green = document.getElementById("greenLight");
       const red   = document.getElementById("redLight");
 
-      let reported = 0;     // Unity reported progress
-      let visual   = 0;     // shown progress
+      let reported = 0;
+      let visual   = 0;
       let lastUpdate = performance.now();
       let finished = false;
-      let stalledSince = null;
 
       async function probeOnline(){
         try{
@@ -433,19 +396,18 @@
         }catch(e){ return false; }
       }
 
-      // Hook used by Unity
+      // called by Unity
       window.SQProgress = function(_game, p){
         if (typeof p !== "number" || isNaN(p)) return;
-        if (p > reported) {
+        if (p > reported){
           reported = Math.min(1, p);
           lastUpdate = performance.now();
-          stalledSince = null;
+          red.classList.remove("on","glow");
         }
         if (reported === 1) finished = true;
       };
 
-      // rates
-      const RATE_SLOW = 0.01 / 0.3; // 1 percent each 0.3s from 70%+
+      const RATE_SLOW = 0.01 / 0.3; // 1% each 0.3s after 70%
       const RATE_FAST = 1 / 0.2;    // sweep to 100 in 0.2s when finished
 
       async function animate(){
@@ -453,21 +415,17 @@
         const dt = Math.min(0.05, (now - (animate.prev || now)) / 1000);
         animate.prev = now;
 
-        // detect stall
-        const since = now - lastUpdate;
-        if (since > 6000 && !finished){
-          if (!stalledSince) stalledSince = now;
+        const age = now - lastUpdate;
+        if (!finished && age > 6000){
           red.classList.add("on","glow");
-          const online = await probeOnline();
-          if (!online){
+          const ok = await probeOnline();
+          if (!ok){
             msgEl.textContent = "No connection. Please check your internet.";
-            // do not fake when offline
+            requestAnimationFrame(animate);
+            return;
           }
-        } else {
-          red.classList.remove("on","glow");
         }
 
-        // green light flicker around true 80%
         if (reported >= 0.78 && reported <= 0.86){
           if (Math.floor(now / 250) % 2 === 0) green.classList.add("on","glow");
           else green.classList.remove("glow");
@@ -475,43 +433,29 @@
           green.classList.remove("on","glow");
         }
 
-        // choose speed
-        let speed;
-        if (finished){
-          speed = RATE_FAST;
-        } else if (visual >= 0.70){
-          speed = RATE_SLOW;  // smooth 0.3s per 1%
-        } else {
-          // before 70, follow reported but avoid freezing at small steps
-          const diff = Math.max(0, reported - visual);
-          speed = diff > 0.12 ? 0.6 : 0.35;
+        // never-stall policy after any progress
+        // maintain a shadow target that nudges forward if online and Unity is quiet
+        let target = reported;
+
+        // early micro-stalls like 0.15: nudge gently if online
+        if (reported > 0 && age > 1200){
+          target = Math.max(target, visual + 0.004); // slow nudge
         }
 
-        // if online and stalled but Unity is slow, gently inch forward, capped below 97
-        let target = reported;
+        // smoothing zone from 70%: steady 0.3s per percent but never pass 97% until done
         if (!finished && visual >= 0.70){
-          target = Math.min(reported, 0.97);
-          // if we have some progress and no update for 3s but online, nudge target by small epsilon
-          if (reported > 0 && (now - lastUpdate) > 3000){
-            target = Math.min(0.97, Math.max(target, visual + 0.003));
-          }
-        } else if (reported > 0 && (now - lastUpdate) > 3000){
-          // early phase soft nudge to avoid visible 15% stall
-          target = Math.max(target, visual + 0.005);
+          target = Math.min(Math.max(target, visual + RATE_SLOW * dt), 0.97);
         }
 
         // integrate toward target
         if (visual < target){
-          visual = Math.min(target, visual + speed * dt);
+          visual = Math.min(target, visual + 0.7 * dt); // gentle ease
         } else if (reported > visual){
-          // catch up when Unity jumps
-          const catchup = Math.max(0.5, speed * 2.0);
-          visual = Math.min(reported, visual + catchup * dt);
+          visual = Math.min(reported, visual + 1.2 * dt); // catch up fast
         }
 
-        // finalize to 100 when finished
         if (finished){
-          visual = Math.min(1, visual + speed * dt);
+          visual = Math.min(1, visual + RATE_FAST * dt);
         }
 
         const pct = Math.round(visual * 100);
@@ -527,7 +471,7 @@
       requestAnimationFrame(animate);
     })();
 
-    // Help popup and links
+    // Help popup
     (function(){
       const btn = document.getElementById("needHelpBtn");
       const pop = document.getElementById("helpPopup");
@@ -560,7 +504,7 @@
       }, {passive:true});
     })();
 
-    // Fun key banners: Space, I, Shift
+    // Flying banners: slower and clickable across the full path
     (function(){
       function banner(text, href, cls){
         const a = document.createElement("a");
@@ -568,16 +512,20 @@
         a.href = href; a.target = "_blank"; a.rel = "noopener";
         a.textContent = text;
         document.body.appendChild(a);
-        setTimeout(()=>{ a.remove(); }, 2400);
+        setTimeout(()=>{ a.remove(); }, 6200);
       }
       window.addEventListener("keydown", e=>{
         if (e.key === " "){
           e.preventDefault();
-          banner("Play games on StaticQuasar931","https://sites.google.com/view/staticquasar931/gm3z","");
-        } else if (e.key.toLowerCase() === "i"){
-          banner("Tips and help","https://sites.google.com/view/staticquasar931/home/help-faq?utm_source=slope&utm_medium=key_i#h.qjb289kqv0nd"," fly2");
+          banner("Play games on StaticQuasar931","https://sites.google.com/view/staticquasar931/gm3z"," mid");
+        } else if (e.key.toLowerCase() === "j"){
+          banner("Help and tips","https://sites.google.com/view/staticquasar931/home/help-faq?utm_source=slope&utm_medium=key_j#h.qjb289kqv0nd"," bottom");
         } else if (e.key === "Shift"){
-          banner("Report an issue","https://sites.google.com/view/staticquasar931/google-form?utm_source=slope&utm_medium=key_shift"," fly3");
+          banner("Report an issue","https://sites.google.com/view/staticquasar931/google-form?utm_source=slope&utm_medium=key_shift"," alt");
+        } else if (e.key.toLowerCase() === "k"){
+          banner("Join the Discord","https://discord.gg/DP2hM7RRhR","");
+        } else if (e.key.toLowerCase() === "m"){
+          banner("Follow on Instagram","https://www.instagram.com/freeschoolgamepage/","");
         }
       });
     })();
