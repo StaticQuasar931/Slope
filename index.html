@@ -8,7 +8,7 @@
   <link rel="canonical" href="https://staticquasar931.github.io/slope/" />
   <meta name="robots" content="index, follow, max-image-preview:large" />
 
-  <title>Slope — Free Unblocked Game | StaticQuasar931</title>
+  <title>Slope - Free Unblocked Game | StaticQuasar931</title>
 
   <!-- Favicon and Social -->
   <link rel="icon" href="https://res.cloudinary.com/dlq5fztla/image/upload/v1760301648/slope_Staticquasar931_stable_agqxto.png" />
@@ -50,7 +50,7 @@
       --text:#e8f3ff; --muted:#b9d7ff;
       --shadow:0 8px 28px rgba(0,0,0,.45);
       --glow:0 0 12px rgba(94,225,255,.65), 0 0 24px rgba(155,255,183,.35);
-      --accent:#7fffd4;
+      --green:#76ff7a; --red:#ff6b6b;
     }
     html,body{
       margin:0; padding:0; height:100%; overflow:hidden;
@@ -96,37 +96,38 @@
     @keyframes slideOut{ from{opacity:1; transform:translateX(0) scale(1)} to{opacity:0; transform:translateX(140px) scale(.96)} }
     @media (max-width:768px){ #staticSlideMenu{ width:84px; height:84px; } }
 
-    /* Loader with intro splash */
+    /* Loader with logo and lights */
     #loaderCover{
       position:fixed; inset:0; z-index:10;
       background:radial-gradient(1200px 800px at 50% 40%, #1a2130 0%, #0d0f14 60%, #090b10 100%);
       display:flex; flex-direction:column; align-items:center; justify-content:center; gap:16px;
       text-align:center;
     }
+    .sq-logo{
+      width:96px; height:96px; border-radius:14px; overflow:hidden;
+      box-shadow:0 10px 34px rgba(94,225,255,.25);
+      animation:logoPulse 3.2s ease-in-out infinite;
+    }
+    .sq-logo img{ width:100%; height:100%; object-fit:cover; }
+    @keyframes logoPulse{ 0%,100%{opacity:.75} 50%{opacity:1} }
+
     .intro{
-      display:flex; flex-direction:column; align-items:center; gap:8px;
+      display:flex; flex-direction:column; align-items:center; gap:6px;
       pointer-events:auto; user-select:none;
     }
     .intro a{ color:#cfe9ff; text-decoration:none; }
-    .intro .title{
-      font-weight:900; letter-spacing:.4px; font-size:18px; opacity:0;
+    .intro .title,.intro .subtitle{
+      font-weight:900; letter-spacing:.4px; font-size:16px; opacity:0;
       text-shadow:0 2px 10px rgba(0,0,0,.5);
     }
-    .intro .subtitle{
-      font-weight:800; letter-spacing:.4px; font-size:16px; opacity:0;
-      text-shadow:0 2px 10px rgba(0,0,0,.5);
-    }
-    .intro .logo{
-      width:140px; height:84px; opacity:0;
-      filter: drop-shadow(0 10px 34px rgba(94,225,255,.3));
-    }
-    .fadeIn{ animation:fadeIn .9s ease forwards; }
-    .fadeOut{ animation:fadeOut .8s ease forwards; }
+    .fadeIn{ animation:fadeIn .8s ease forwards; }
+    .fadeOut{ animation:fadeOut .7s ease forwards; }
     @keyframes fadeIn{ to{opacity:1} }
     @keyframes fadeOut{ to{opacity:0} }
 
     .loader-bar{
-      width:min(560px, 86vw); height:18px; border-radius:10px; overflow:hidden;
+      position:relative;
+      width:min(600px, 86vw); height:20px; border-radius:12px; overflow:hidden;
       background:linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.03));
       box-shadow:inset 0 0 0 1px rgba(255,255,255,.10), inset 0 6px 12px rgba(0,0,0,.25), var(--shadow);
       margin-inline:auto;
@@ -138,8 +139,20 @@
         linear-gradient(90deg, var(--brand), var(--brand2));
       transition:width .10s linear;
     }
+    /* lights inside bar */
+    .light{
+      position:absolute; top:3px; width:10px; height:14px; border-radius:4px;
+      opacity:0; transform:translateX(-50%);
+      box-shadow:0 0 12px rgba(0,0,0,.5);
+    }
+    #greenLight{ background:var(--green); left:80%; }
+    #redLight{ background:var(--red); left:50%; }
+
+    .light.on{ opacity:1; }
+    .glow{ box-shadow:0 0 14px currentColor, 0 0 28px currentColor; }
+
     .loader-meta{
-      width:min(560px, 86vw); margin-inline:auto;
+      width:min(600px, 86vw); margin-inline:auto;
       display:flex; justify-content:space-between; align-items:center;
       color:var(--muted); font-weight:700; font-variant-numeric:tabular-nums; letter-spacing:.3px;
       text-shadow:0 1px 0 rgba(0,0,0,.35);
@@ -153,6 +166,18 @@
       color:#eaf6ff; border-radius:10px; padding:8px 12px; font-weight:700; cursor:pointer;
     }
     .btn:hover{ filter:brightness(1.08); }
+
+    /* Need help button - middle bottom-right with arrow */
+    #needHelpBtn{
+      position:fixed;
+      right:28px; bottom:50%; transform:translateY(160px);
+      z-index:11;
+    }
+    #needHelpBtn::after{
+      content:""; position:absolute; left:-8px; top:50%; transform:translateY(-50%);
+      width:0; height:0; border-top:8px solid transparent; border-bottom:8px solid transparent; border-right:8px solid rgba(255,255,255,.18);
+    }
+
     .help-pop{
       position:fixed; inset:auto 16px 16px auto; z-index:11; width:min(560px, 92vw);
       background:linear-gradient(135deg, rgba(20,24,36,.96), rgba(14,16,24,.9));
@@ -163,22 +188,43 @@
     .help-pop p{ margin:6px 0; font-size:14px; color:#cee6ff }
     .help-pop a{ color:#5ee1ff; font-weight:800; text-decoration:underline }
 
-    /* Need help button: middle bottom-right with arrow */
-    #needHelpBtn{
-      position:fixed;
-      right:28px; bottom:50%; transform:translateY(160px);
-      z-index:11;
+    /* Flying banners for key actions */
+    .fly{
+      position:fixed; top:14%; left:-40%; z-index:12;
+      padding:10px 14px; border-radius:12px;
+      background:rgba(20,24,36,.85); border:1px solid rgba(94,225,255,.35);
+      color:#bfe7ff; font-weight:800; text-decoration:none;
+      opacity:.85; pointer-events:auto;
+      transform:translateY(0);
+      animation:flyAcross 2.2s ease forwards;
     }
-    #needHelpBtn::after{
-      content:"";
-      position:absolute; left:-8px; top:50%; transform:translateY(-50%);
-      width:0; height:0; border-top:8px solid transparent; border-bottom:8px solid transparent; border-right:8px solid rgba(255,255,255,.18);
+    @keyframes flyAcross{
+      0%{ left:-40%; top:14%; opacity:.0 }
+      10%{ left:4%; top:12%; opacity:.85 }
+      50%{ left:42%; top:10% }
+      100%{ left:110%; top:12%; opacity:.0 }
+    }
+
+    .fly2{ top:auto; bottom:10%; animation:flyAcross2 2.4s ease forwards; }
+    @keyframes flyAcross2{
+      0%{ left:-40%; bottom:10%; opacity:.0 }
+      10%{ left:6%; bottom:12%; opacity:.9 }
+      60%{ left:46%; bottom:14% }
+      100%{ left:110%; bottom:10%; opacity:.0 }
+    }
+
+    .fly3{ top:24%; animation:flyAcross3 2.0s ease forwards; }
+    @keyframes flyAcross3{
+      0%{ left:-30%; top:24%; opacity:.0 }
+      15%{ left:8%; top:22%; opacity:.9 }
+      70%{ left:54%; top:20% }
+      100%{ left:110%; top:22%; opacity:.0 }
     }
 
     /* Hidden SEO */
     .seo-hidden{ position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(1px,1px,1px,1px); white-space:nowrap; }
 
-    /* Loader fade out */
+    /* Fade cover at the end */
     .coverFade{ animation:coverFade .25s ease forwards; }
     @keyframes coverFade{ to{ opacity:0; visibility:hidden } }
   </style>
@@ -200,34 +246,40 @@
     </a>
   </div>
 
-  <!-- Loader with splash -->
+  <!-- Loader -->
   <div id="loaderCover" role="status" aria-live="polite">
+    <div class="sq-logo"><img src="https://res.cloudinary.com/dcsrqennd/image/upload/v1760208794/My%20Brand/Static_pfp_2_nqzjkd.jpg" alt="StaticQuasar931 logo"></div>
+
     <div class="intro" id="intro">
       <a href="https://sites.google.com/view/staticquasar931/gm3z" target="_blank" rel="noopener" id="introLink">
         <div class="title" id="t1">StaticQuasar931 Unblocked Games Presents</div>
         <div class="subtitle" id="t2">Slope - Stable Unblocked High Quality version</div>
-        <img class="logo" id="t3" src="https://res.cloudinary.com/dcsrqennd/image/upload/v1760208794/My%20Brand/Static_pfp_2_nqzjkd.jpg" alt="StaticQuasar931 logo" />
       </a>
     </div>
 
-    <div class="loader-bar"><div class="loader-fill" id="loaderFill"></div></div>
+    <div class="loader-bar">
+      <div class="loader-fill" id="loaderFill"></div>
+      <div id="greenLight" class="light"></div>
+      <div id="redLight" class="light"></div>
+    </div>
+
     <div class="loader-meta">
       <small id="loaderMsg">Initializing WebGL</small>
       <div id="loaderPct">0%</div>
     </div>
 
-    <!-- The help button sits near bottom-right middle with arrow -->
+    <!-- Need help button near bottom-right middle with arrow -->
     <button class="btn" id="needHelpBtn" type="button">Need help?</button>
   </div>
 
   <!-- Help popup -->
   <div class="help-pop" id="helpPopup" role="dialog" aria-modal="true" aria-labelledby="hpTitle">
-    <h3 id="hpTitle">Troubleshooting Slope: How to Get It Working at School</h3>
+    <h3 id="hpTitle">Troubleshooting Slope - School Tips</h3>
     <p>You should no longer need to turn off your internet, but if the game loads and looks frozen, try this:</p>
-    <p>1) Wait until the loading bar reaches about 75%.</p>
+    <p>1) When the green light inside the bar flickers near 80 percent, wait a moment.</p>
     <p>2) Turn off your Wi-Fi.</p>
     <p>3) Let the game finish loading.</p>
-    <p>For help see the <a target="_blank" rel="noopener" id="helpLink">help page</a>. If that does not help, use the <a target="_blank" rel="noopener" id="formLink">Google Form</a>.</p>
+    <p>Help: <a target="_blank" rel="noopener" id="helpLink">open the help page</a>. If that does not help, use the <a target="_blank" rel="noopener" id="formLink">Google Form</a>.</p>
     <div style="margin-top:8px"><button class="btn" id="helpClose">Close</button></div>
   </div>
 
@@ -236,7 +288,7 @@
 
   <!-- Hidden SEO -->
   <div class="seo-hidden" aria-hidden="true">
-    <h1>Slope by StaticQuasar931 — unblocked mirror</h1>
+    <h1>Slope by StaticQuasar931 - unblocked mirror</h1>
     <p>StaticQuasar931 hosts a school friendly mirror of Slope for Chromebook, PC, and mobile. If this page appears on a fork, visit the original Slope on StaticQuasar931.</p>
     <p>Tags: StaticQuasar931 Slope, play Slope unblocked, Slope online, fast 3D reflex runner, neon ball, safe for school.</p>
   </div>
@@ -245,8 +297,6 @@
     // Leave warning
     window.onbeforeunload = () => "Are you sure you want to leave? Your progress may not be saved.";
 
-    /* light helpers */
-    function _b64(s){ try{ return atob(s); }catch(e){ return ""; } }
     function fitGame(){
       const el = document.getElementById("gameContainer");
       if (!el) return;
@@ -316,7 +366,7 @@
       apply(ROT[i]); loop();
     })();
 
-    /* ---------- School network fix: stub id.net quietly ---------- */
+    /* School network fix: stub id.net quietly */
     window.idnet_autologin = window.idnet_autologin || function(){};
     (function(){
       const bad = [/^https?:\/\/(www\.)?id\.net\//i];
@@ -350,31 +400,30 @@
       };
     })();
 
-    /* ---------- Intro splash sequencing ---------- */
+    /* Intro sequence */
     (function(){
       const t1 = document.getElementById("t1");
       const t2 = document.getElementById("t2");
-      const t3 = document.getElementById("t3");
-      // Sequence: t1 fade in -> hold -> fade out -> t2+logo fade in
-      setTimeout(()=>{ t1.classList.add("fadeIn"); }, 100);
+      setTimeout(()=>{ t1.classList.add("fadeIn"); }, 120);
       setTimeout(()=>{ t1.classList.add("fadeOut"); }, 1600);
-      setTimeout(()=>{ t2.classList.add("fadeIn"); t3.classList.add("fadeIn"); }, 2400);
+      setTimeout(()=>{ t2.classList.add("fadeIn"); }, 2400);
     })();
 
-    /* ---------- Loader progress control ---------- */
+    /* Loader progress control with anti-stall and lights */
     (function(){
       const cover = document.getElementById("loaderCover");
       const fill  = document.getElementById("loaderFill");
       const pctEl = document.getElementById("loaderPct");
       const msgEl = document.getElementById("loaderMsg");
+      const green = document.getElementById("greenLight");
+      const red   = document.getElementById("redLight");
 
-      let reported = 0;            // Unity progress
-      let visual   = 0;            // drawn progress
+      let reported = 0;     // Unity reported progress
+      let visual   = 0;     // shown progress
       let lastUpdate = performance.now();
       let finished = false;
-      let rafId = 0;
+      let stalledSince = null;
 
-      // Helper: detect total offline to avoid faking
       async function probeOnline(){
         try{
           const c = new AbortController();
@@ -384,61 +433,80 @@
         }catch(e){ return false; }
       }
 
-      // Hook for Unity
+      // Hook used by Unity
       window.SQProgress = function(_game, p){
         if (typeof p !== "number" || isNaN(p)) return;
-        reported = Math.max(reported, Math.min(1, p));
-        lastUpdate = performance.now();
+        if (p > reported) {
+          reported = Math.min(1, p);
+          lastUpdate = performance.now();
+          stalledSince = null;
+        }
         if (reported === 1) finished = true;
       };
 
-      const RATE_SLOW = 0.01 / 0.3; // 1 percent per 0.3s => 0.033333...
-      const RATE_FAST = 1 / 0.2;    // to go to 100 in 0.2s when done
+      // rates
+      const RATE_SLOW = 0.01 / 0.3; // 1 percent each 0.3s from 70%+
+      const RATE_FAST = 1 / 0.2;    // sweep to 100 in 0.2s when finished
 
       async function animate(){
         const now = performance.now();
         const dt = Math.min(0.05, (now - (animate.prev || now)) / 1000);
         animate.prev = now;
 
-        // decide speed
-        let speed; // in fraction per second
-        if (finished){
-          // glide to 100 quickly
-          speed = RATE_FAST;
-        }else if (visual >= 0.70){
-          // smoothing zone from 70% until reported catches up
-          // do not exceed either reported or 0.97 while smoothing
-          speed = RATE_SLOW;
-        }else{
-          // before 70 just follow reported smoothly
-          const diff = Math.max(0, reported - visual);
-          speed = diff > 0.15 ? 0.6 : 0.35;
-        }
-
-        // if we are offline early, do not fake
-        if (!finished && visual < 0.70 && now - lastUpdate > 3500){
-          const ok = await probeOnline();
-          if (!ok){
+        // detect stall
+        const since = now - lastUpdate;
+        if (since > 6000 && !finished){
+          if (!stalledSince) stalledSince = now;
+          red.classList.add("on","glow");
+          const online = await probeOnline();
+          if (!online){
             msgEl.textContent = "No connection. Please check your internet.";
-            // do not advance visual here
-            requestAnimationFrame(animate);
-            return;
+            // do not fake when offline
           }
+        } else {
+          red.classList.remove("on","glow");
         }
 
-        // target we can approach this frame
+        // green light flicker around true 80%
+        if (reported >= 0.78 && reported <= 0.86){
+          if (Math.floor(now / 250) % 2 === 0) green.classList.add("on","glow");
+          else green.classList.remove("glow");
+        } else {
+          green.classList.remove("on","glow");
+        }
+
+        // choose speed
+        let speed;
+        if (finished){
+          speed = RATE_FAST;
+        } else if (visual >= 0.70){
+          speed = RATE_SLOW;  // smooth 0.3s per 1%
+        } else {
+          // before 70, follow reported but avoid freezing at small steps
+          const diff = Math.max(0, reported - visual);
+          speed = diff > 0.12 ? 0.6 : 0.35;
+        }
+
+        // if online and stalled but Unity is slow, gently inch forward, capped below 97
         let target = reported;
         if (!finished && visual >= 0.70){
           target = Math.min(reported, 0.97);
+          // if we have some progress and no update for 3s but online, nudge target by small epsilon
+          if (reported > 0 && (now - lastUpdate) > 3000){
+            target = Math.min(0.97, Math.max(target, visual + 0.003));
+          }
+        } else if (reported > 0 && (now - lastUpdate) > 3000){
+          // early phase soft nudge to avoid visible 15% stall
+          target = Math.max(target, visual + 0.005);
         }
 
         // integrate toward target
         if (visual < target){
           visual = Math.min(target, visual + speed * dt);
-        }else{
-          // reported jumped ahead, catch up faster
-          const catchup = Math.max(0.5, speed * 2.5);
-          visual = Math.min(target, visual + catchup * dt);
+        } else if (reported > visual){
+          // catch up when Unity jumps
+          const catchup = Math.max(0.5, speed * 2.0);
+          visual = Math.min(reported, visual + catchup * dt);
         }
 
         // finalize to 100 when finished
@@ -472,21 +540,46 @@
       cls.addEventListener("click", ()=>{ pop.style.display = "none"; });
     })();
 
-    // 15 min soft promo only on forks or non SQ domains, not when embedded from SQ
+    // Hide UI with y then u then i (session only)
     (function(){
-      const isSQ = location.hostname === "staticquasar931.github.io";
-      const fromSQ = document.referrer && document.referrer.includes("staticquasar931.github.io/slope");
-      if (isSQ || fromSQ) return;
-      function mkPromo(){
+      const menu = document.getElementById("staticMenu");
+      const slide = document.getElementById("staticSlideMenu");
+      let seq = "";
+      let last = 0;
+      window.addEventListener("keydown", e=>{
+        const t = performance.now();
+        if (t - last > 1500) seq = "";
+        last = t;
+        const k = e.key.toLowerCase();
+        if (["y","u","i"].includes(k)) { seq += k; } else { seq = ""; }
+        if (seq.endsWith("yui")){
+          if (menu) menu.style.display = "none";
+          if (slide) slide.style.display = "none";
+          seq = "";
+        }
+      }, {passive:true});
+    })();
+
+    // Fun key banners: Space, I, Shift
+    (function(){
+      function banner(text, href, cls){
         const a = document.createElement("a");
-        a.href = "https://sites.google.com/view/staticquasar931/gm3z"; a.target = "_blank"; a.rel = "noopener";
-        a.textContent = "S t a t i c Q u a s a r 9 3 1";
-        a.style.cssText = "position:fixed;top:50%;right:18px;transform:translateY(-50%);z-index:8;background:rgba(20,24,36,.92);color:#aee6ff;padding:10px 12px;border:1px solid rgba(94,225,255,.35);border-radius:12px;box-shadow:0 8px 20px rgba(0,0,0,.45);font-weight:800;text-decoration:none;opacity:.07;transition:opacity .2s ease;writing-mode:vertical-rl;text-orientation:mixed;";
-        a.onmouseenter = ()=> a.style.opacity = ".85";
-        a.onmouseleave = ()=> a.style.opacity = ".07";
+        a.className = "fly" + (cls || "");
+        a.href = href; a.target = "_blank"; a.rel = "noopener";
+        a.textContent = text;
         document.body.appendChild(a);
+        setTimeout(()=>{ a.remove(); }, 2400);
       }
-      setTimeout(mkPromo, 15 * 60 * 1000);
+      window.addEventListener("keydown", e=>{
+        if (e.key === " "){
+          e.preventDefault();
+          banner("Play games on StaticQuasar931","https://sites.google.com/view/staticquasar931/gm3z","");
+        } else if (e.key.toLowerCase() === "i"){
+          banner("Tips and help","https://sites.google.com/view/staticquasar931/home/help-faq?utm_source=slope&utm_medium=key_i#h.qjb289kqv0nd"," fly2");
+        } else if (e.key === "Shift"){
+          banner("Report an issue","https://sites.google.com/view/staticquasar931/google-form?utm_source=slope&utm_medium=key_shift"," fly3");
+        }
+      });
     })();
 
     // Start Unity
