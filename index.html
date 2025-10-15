@@ -4,13 +4,13 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-  <!-- Canonical & Robots -->
+  <!-- Canonical and Robots -->
   <link rel="canonical" href="https://staticquasar931.github.io/slope/" />
   <meta name="robots" content="index, follow, max-image-preview:large" />
 
   <title>Slope — Free Unblocked Game | StaticQuasar931</title>
 
-  <!-- Favicon / Social Image -->
+  <!-- Favicon and Social -->
   <link rel="icon" href="https://res.cloudinary.com/dlq5fztla/image/upload/v1760301648/slope_Staticquasar931_stable_agqxto.png" />
   <meta property="og:image" content="https://res.cloudinary.com/dlq5fztla/image/upload/v1760301648/slope_Staticquasar931_stable_agqxto.png" />
   <meta name="twitter:image" content="https://res.cloudinary.com/dlq5fztla/image/upload/v1760301648/slope_Staticquasar931_stable_agqxto.png" />
@@ -19,10 +19,10 @@
 
   <!-- Core SEO -->
   <meta name="description" content="Play Slope free and unblocked. Dodge obstacles, stay on the track, and push your high score. School friendly mirror by StaticQuasar931. Works on Chromebook, PC, and mobile." />
-  <meta name="keywords" content="Slope, Slope unblocked, play Slope, Slope online, Slope browser game, reflex game, neon ball, unblocked 3D game, school friendly game, StaticQuasar931" />
+  <meta name="keywords" content="Slope, Slope unblocked, play Slope online, free Slope game, 3D reflex game, school friendly game, StaticQuasar931" />
   <meta name="theme-color" content="#131419" />
 
-  <!-- Open Graph / Twitter -->
+  <!-- Open Graph and Twitter -->
   <meta property="og:title" content="Play Slope - Free Unblocked on StaticQuasar931" />
   <meta property="og:description" content="Fast 3D ball runner. Stay on the slopes, dodge red blocks, and set a new record. Chromebook and mobile friendly." />
   <meta property="og:type" content="website" />
@@ -35,12 +35,12 @@
   <link rel="preload" as="image" href="https://res.cloudinary.com/dcsrqennd/image/upload/v1747533158/raw_cw34yi.png" />
 
   <!-- Google Analytics -->
-  <!-- Google tag (gtag.js) -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-27S3Y4TS0Y"></script>
   <script>
     window.dataLayer = window.dataLayer || [];
     function gtag(){ dataLayer.push(arguments); }
-    gtag('js', new Date()); gtag('config', 'G-27S3Y4TS0Y');
+    gtag('js', new Date());
+    gtag('config', 'G-27S3Y4TS0Y');
   </script>
 
   <style>
@@ -50,6 +50,7 @@
       --text:#e8f3ff; --muted:#b9d7ff;
       --shadow:0 8px 28px rgba(0,0,0,.45);
       --glow:0 0 12px rgba(94,225,255,.65), 0 0 24px rgba(155,255,183,.35);
+      --accent:#7fffd4;
     }
     html,body{
       margin:0; padding:0; height:100%; overflow:hidden;
@@ -95,18 +96,35 @@
     @keyframes slideOut{ from{opacity:1; transform:translateX(0) scale(1)} to{opacity:0; transform:translateX(140px) scale(.96)} }
     @media (max-width:768px){ #staticSlideMenu{ width:84px; height:84px; } }
 
-    /* Unity-like loader */
+    /* Loader with intro splash */
     #loaderCover{
       position:fixed; inset:0; z-index:10;
       background:radial-gradient(1200px 800px at 50% 40%, #1a2130 0%, #0d0f14 60%, #090b10 100%);
       display:flex; flex-direction:column; align-items:center; justify-content:center; gap:16px;
       text-align:center;
     }
-    .loader-logo{
-      width:180px; height:120px; display:flex; align-items:center; justify-content:center;
-      filter: drop-shadow(0 8px 30px rgba(94,225,255,.25));
+    .intro{
+      display:flex; flex-direction:column; align-items:center; gap:8px;
+      pointer-events:auto; user-select:none;
     }
-    .loader-logo img{ width:100%; height:100%; object-fit:contain; }
+    .intro a{ color:#cfe9ff; text-decoration:none; }
+    .intro .title{
+      font-weight:900; letter-spacing:.4px; font-size:18px; opacity:0;
+      text-shadow:0 2px 10px rgba(0,0,0,.5);
+    }
+    .intro .subtitle{
+      font-weight:800; letter-spacing:.4px; font-size:16px; opacity:0;
+      text-shadow:0 2px 10px rgba(0,0,0,.5);
+    }
+    .intro .logo{
+      width:140px; height:84px; opacity:0;
+      filter: drop-shadow(0 10px 34px rgba(94,225,255,.3));
+    }
+    .fadeIn{ animation:fadeIn .9s ease forwards; }
+    .fadeOut{ animation:fadeOut .8s ease forwards; }
+    @keyframes fadeIn{ to{opacity:1} }
+    @keyframes fadeOut{ to{opacity:0} }
+
     .loader-bar{
       width:min(560px, 86vw); height:18px; border-radius:10px; overflow:hidden;
       background:linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.03));
@@ -144,11 +162,25 @@
     .help-pop h3{ margin:0 0 6px; font-size:16px }
     .help-pop p{ margin:6px 0; font-size:14px; color:#cee6ff }
     .help-pop a{ color:#5ee1ff; font-weight:800; text-decoration:underline }
-    .fade-out{ animation:fadeOut .25s ease forwards; }
-    @keyframes fadeOut{ to{ opacity:0; visibility:hidden } }
 
-    /* Hidden SEO block */
+    /* Need help button: middle bottom-right with arrow */
+    #needHelpBtn{
+      position:fixed;
+      right:28px; bottom:50%; transform:translateY(160px);
+      z-index:11;
+    }
+    #needHelpBtn::after{
+      content:"";
+      position:absolute; left:-8px; top:50%; transform:translateY(-50%);
+      width:0; height:0; border-top:8px solid transparent; border-bottom:8px solid transparent; border-right:8px solid rgba(255,255,255,.18);
+    }
+
+    /* Hidden SEO */
     .seo-hidden{ position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(1px,1px,1px,1px); white-space:nowrap; }
+
+    /* Loader fade out */
+    .coverFade{ animation:coverFade .25s ease forwards; }
+    @keyframes coverFade{ to{ opacity:0; visibility:hidden } }
   </style>
 
   <!-- Unity loader -->
@@ -168,19 +200,24 @@
     </a>
   </div>
 
-  <!-- Loader -->
+  <!-- Loader with splash -->
   <div id="loaderCover" role="status" aria-live="polite">
-    <div class="loader-logo">
-      <img src="https://res.cloudinary.com/dlq5fztla/image/upload/v1760307222/unity_i4qjdf.png" alt="Loading" />
+    <div class="intro" id="intro">
+      <a href="https://sites.google.com/view/staticquasar931/gm3z" target="_blank" rel="noopener" id="introLink">
+        <div class="title" id="t1">StaticQuasar931 Unblocked Games Presents</div>
+        <div class="subtitle" id="t2">Slope - Stable Unblocked High Quality version</div>
+        <img class="logo" id="t3" src="https://res.cloudinary.com/dcsrqennd/image/upload/v1760208794/My%20Brand/Static_pfp_2_nqzjkd.jpg" alt="StaticQuasar931 logo" />
+      </a>
     </div>
+
     <div class="loader-bar"><div class="loader-fill" id="loaderFill"></div></div>
     <div class="loader-meta">
       <small id="loaderMsg">Initializing WebGL</small>
       <div id="loaderPct">0%</div>
     </div>
-    <div class="loader-actions">
-      <button class="btn" id="needHelpBtn">Need help?</button>
-    </div>
+
+    <!-- The help button sits near bottom-right middle with arrow -->
+    <button class="btn" id="needHelpBtn" type="button">Need help?</button>
   </div>
 
   <!-- Help popup -->
@@ -190,7 +227,7 @@
     <p>1) Wait until the loading bar reaches about 75%.</p>
     <p>2) Turn off your Wi-Fi.</p>
     <p>3) Let the game finish loading.</p>
-    <p>If you need further help, read the <a id="helpLink" target="_blank" rel="noopener">help page</a>. If that does not help, use the <a id="formLink" target="_blank" rel="noopener">Google Form</a>.</p>
+    <p>For help see the <a target="_blank" rel="noopener" id="helpLink">help page</a>. If that does not help, use the <a target="_blank" rel="noopener" id="formLink">Google Form</a>.</p>
     <div style="margin-top:8px"><button class="btn" id="helpClose">Close</button></div>
   </div>
 
@@ -208,25 +245,8 @@
     // Leave warning
     window.onbeforeunload = () => "Are you sure you want to leave? Your progress may not be saved.";
 
-    /* -------------------------------------------
-       Super light obfuscation helpers
-       ------------------------------------------- */
+    /* light helpers */
     function _b64(s){ try{ return atob(s); }catch(e){ return ""; } }
-    function _j(a){ return a.join(""); }
-
-    // Obfuscated strings for links and label
-    const _sqHost = "staticquasar931.github.io";   // used in checks only
-    const L_help = _b64("aHR0cHM6Ly9zaXRlcy5nb29nbGUuY29tL3ZpZXcvc3RhdGljcXVhc2FyOTMxL2hvbWUvaGVscC1mYXE/c291cmNlX3V0bXdoYXRldmVyc2xvcGV3aGF0bm90");
-    const L_form = _b64("aHR0cHM6Ly9zaXRlcy5nb29nbGUuY29tL3ZpZXcvc3RhdGljcXVhc2FyOTMxL2dvb2dsZS1mb3JtP3NvdXJjZVRISVNUT08=");
-    const L_gm3z = _b64("aHR0cHM6Ly9zaXRlcy5nb29nbGUuY29tL3ZpZXcvc3RhdGljcXVhc2FyOTMxL2dtM3o=");
-    const P_label = _j(["S","ta","ti","cQ","ua","sa","r9","31"," Un","blo","cke","d g","am","es"]);
-
-    // add UTM to help links
-    function addUTM(u){ try {
-      const url = new URL(u); url.searchParams.set("utm_source","slope"); url.searchParams.set("utm_medium","loader_help");
-      return url.href; } catch(e){ return u; } }
-
-    // Fit canvas to viewport
     function fitGame(){
       const el = document.getElementById("gameContainer");
       if (!el) return;
@@ -262,7 +282,7 @@
       maybeHide();
     })();
 
-    // Rotator: Google Form -> Discord -> Instagram
+    // Rotator: Form -> Discord -> Instagram
     (function(){
       const wrap = document.getElementById("staticSlideMenu");
       const a    = document.getElementById("staticSlideLink");
@@ -272,7 +292,6 @@
       const FORM = { src:"https://res.cloudinary.com/dcsrqennd/image/upload/v1747533056/raw_um4pvq.png", alt:"Feedback and requests", link:"https://sites.google.com/view/staticquasar931/google-form", cls:"" };
       const DISCORD = { src:"https://res.cloudinary.com/dcsrqennd/image/upload/v1758072526/Join_Our_Discord_StaticQuassar931_lcplrf.png", alt:"Join the Discord", link:"https://discord.gg/DP2hM7RRhR", cls:"discord" };
       const INSTA = { src:"https://res.cloudinary.com/dcsrqennd/image/upload/v1747533158/raw_cw34yi.png", alt:"Instagram", link:"https://www.instagram.com/freeschoolgamepage/", cls:"" };
-
       const ROT = [FORM, DISCORD, INSTA];
       ROT.forEach(o => { const p = new Image(); p.src = o.src; });
 
@@ -331,105 +350,140 @@
       };
     })();
 
-    /* ---------- Loader progress: smooth 0–100, no fake when offline ---------- */
+    /* ---------- Intro splash sequencing ---------- */
+    (function(){
+      const t1 = document.getElementById("t1");
+      const t2 = document.getElementById("t2");
+      const t3 = document.getElementById("t3");
+      // Sequence: t1 fade in -> hold -> fade out -> t2+logo fade in
+      setTimeout(()=>{ t1.classList.add("fadeIn"); }, 100);
+      setTimeout(()=>{ t1.classList.add("fadeOut"); }, 1600);
+      setTimeout(()=>{ t2.classList.add("fadeIn"); t3.classList.add("fadeIn"); }, 2400);
+    })();
+
+    /* ---------- Loader progress control ---------- */
     (function(){
       const cover = document.getElementById("loaderCover");
       const fill  = document.getElementById("loaderFill");
       const pctEl = document.getElementById("loaderPct");
       const msgEl = document.getElementById("loaderMsg");
 
-      let reported = 0;           // progress from Unity
-      let visual   = 0;           // what we draw
+      let reported = 0;            // Unity progress
+      let visual   = 0;            // drawn progress
       let lastUpdate = performance.now();
-      let onlineSeen = navigator.onLine;
-      let rafId = 0, stalledTimer = null;
+      let finished = false;
+      let rafId = 0;
 
-      // connectivity probe only if we appear stalled early
-      function probeOnce(){
-        try {
+      // Helper: detect total offline to avoid faking
+      async function probeOnline(){
+        try{
           const c = new AbortController();
-          setTimeout(() => c.abort(), 3000);
-          return fetch("slope_new.json", {cache:"no-store", signal:c.signal}).then(r => {
-            onlineSeen = r.ok; return onlineSeen;
-          }).catch(() => { onlineSeen = false; return false; });
-        } catch { onlineSeen = false; return Promise.resolve(false); }
+          setTimeout(()=>c.abort(), 2500);
+          const r = await fetch("slope_new.json", { cache:"no-store", signal:c.signal });
+          return r.ok;
+        }catch(e){ return false; }
       }
 
+      // Hook for Unity
       window.SQProgress = function(_game, p){
         if (typeof p !== "number" || isNaN(p)) return;
         reported = Math.max(reported, Math.min(1, p));
         lastUpdate = performance.now();
+        if (reported === 1) finished = true;
       };
 
-      function animate(){
+      const RATE_SLOW = 0.01 / 0.3; // 1 percent per 0.3s => 0.033333...
+      const RATE_FAST = 1 / 0.2;    // to go to 100 in 0.2s when done
+
+      async function animate(){
         const now = performance.now();
         const dt = Math.min(0.05, (now - (animate.prev || now)) / 1000);
         animate.prev = now;
 
-        // easing profile: quick start, graceful 80–100 smoothing
-        const diff = reported - visual;
-        // slow zone starts at 0.80 to avoid the 90 percent wall feeling
-        const inSlowZone = visual >= 0.80;
-        const baseSpeed = inSlowZone ? 0.15 : 0.50;
-        const catchup    = diff > 0.10 ? 0.35 : 0.20;
-        const speed = Math.max(baseSpeed, catchup);
-        visual += diff * Math.min(1, speed * (dt * 60));
-        if (visual > reported) visual = reported;
+        // decide speed
+        let speed; // in fraction per second
+        if (finished){
+          // glide to 100 quickly
+          speed = RATE_FAST;
+        }else if (visual >= 0.70){
+          // smoothing zone from 70% until reported catches up
+          // do not exceed either reported or 0.97 while smoothing
+          speed = RATE_SLOW;
+        }else{
+          // before 70 just follow reported smoothly
+          const diff = Math.max(0, reported - visual);
+          speed = diff > 0.15 ? 0.6 : 0.35;
+        }
 
-        // if no updates for a while, check connectivity
-        if (!stalledTimer && now - lastUpdate > 3500 && visual < 0.75){
-          stalledTimer = setTimeout(async ()=>{
-            const ok = await probeOnce();
-            if (!ok){
-              msgEl.textContent = "No connection. Please check your internet.";
-              return; // do not fake progress
-            }
-          }, 0);
+        // if we are offline early, do not fake
+        if (!finished && visual < 0.70 && now - lastUpdate > 3500){
+          const ok = await probeOnline();
+          if (!ok){
+            msgEl.textContent = "No connection. Please check your internet.";
+            // do not advance visual here
+            requestAnimationFrame(animate);
+            return;
+          }
+        }
+
+        // target we can approach this frame
+        let target = reported;
+        if (!finished && visual >= 0.70){
+          target = Math.min(reported, 0.97);
+        }
+
+        // integrate toward target
+        if (visual < target){
+          visual = Math.min(target, visual + speed * dt);
+        }else{
+          // reported jumped ahead, catch up faster
+          const catchup = Math.max(0.5, speed * 2.5);
+          visual = Math.min(target, visual + catchup * dt);
+        }
+
+        // finalize to 100 when finished
+        if (finished){
+          visual = Math.min(1, visual + speed * dt);
         }
 
         const pct = Math.round(visual * 100);
         fill.style.width = pct + "%";
         pctEl.textContent = pct + "%";
 
-        if (reported >= 1 && visual >= 0.999){
-          cover.classList.add("fade-out");
-          cancelAnimationFrame(rafId);
+        if (visual >= 0.999){
+          cover.classList.add("coverFade");
           return;
         }
-        rafId = requestAnimationFrame(animate);
+        requestAnimationFrame(animate);
       }
-      rafId = requestAnimationFrame(animate);
-
-      // Safety hide if Unity finishes but we miss final event
-      setTimeout(() => { cover.classList.add("fade-out"); }, 25000);
+      requestAnimationFrame(animate);
     })();
 
-    // Help popup
+    // Help popup and links
     (function(){
       const btn = document.getElementById("needHelpBtn");
       const pop = document.getElementById("helpPopup");
       const cls = document.getElementById("helpClose");
-      const hl  = document.getElementById("helpLink");
-      const fl  = document.getElementById("formLink");
-      hl.href = addUTM(L_help);
-      fl.href = addUTM(L_form);
+      const helpURL = "https://sites.google.com/view/staticquasar931/home/help-faq?source_utmwhateverslopewhatnot=&utm_source=slope&utm_medium=loader_help#h.qjb289kqv0nd";
+      const formURL = "https://sites.google.com/view/staticquasar931/google-form?utm_source=slope&utm_medium=loader_help";
+      document.getElementById("helpLink").href = helpURL;
+      document.getElementById("formLink").href = formURL;
       btn.addEventListener("click", ()=>{ pop.style.display = "block"; });
       cls.addEventListener("click", ()=>{ pop.style.display = "none"; });
     })();
 
-    // 15 min soft promo, only on forks or non-SQ domains, not when embedded from SQ
+    // 15 min soft promo only on forks or non SQ domains, not when embedded from SQ
     (function(){
-      const isSQ = location.hostname === _sqHost;
-      const fromSQ = document.referrer && document.referrer.includes(_sqHost + "/slope");
-      if (isSQ || fromSQ) return; // do not show on your domain or when iframed by your domain
-
+      const isSQ = location.hostname === "staticquasar931.github.io";
+      const fromSQ = document.referrer && document.referrer.includes("staticquasar931.github.io/slope");
+      if (isSQ || fromSQ) return;
       function mkPromo(){
         const a = document.createElement("a");
-        a.href = L_gm3z; a.target = "_blank"; a.rel = "noopener";
-        a.textContent = P_label;
-        a.style.cssText = "position:fixed;top:50%;right:18px;transform:translateY(-50%);z-index:8;background:rgba(20,24,36,.92);color:#aee6ff;padding:10px 12px;border:1px solid rgba(94,225,255,.35);border-radius:12px;box-shadow:0 8px 20px rgba(0,0,0,.45);font-weight:800;text-decoration:none;opacity:.08;transition:opacity .2s ease;writing-mode:vertical-rl;text-orientation:mixed;";
+        a.href = "https://sites.google.com/view/staticquasar931/gm3z"; a.target = "_blank"; a.rel = "noopener";
+        a.textContent = "S t a t i c Q u a s a r 9 3 1";
+        a.style.cssText = "position:fixed;top:50%;right:18px;transform:translateY(-50%);z-index:8;background:rgba(20,24,36,.92);color:#aee6ff;padding:10px 12px;border:1px solid rgba(94,225,255,.35);border-radius:12px;box-shadow:0 8px 20px rgba(0,0,0,.45);font-weight:800;text-decoration:none;opacity:.07;transition:opacity .2s ease;writing-mode:vertical-rl;text-orientation:mixed;";
         a.onmouseenter = ()=> a.style.opacity = ".85";
-        a.onmouseleave = ()=> a.style.opacity = ".08";
+        a.onmouseleave = ()=> a.style.opacity = ".07";
         document.body.appendChild(a);
       }
       setTimeout(mkPromo, 15 * 60 * 1000);
@@ -443,7 +497,7 @@
           onProgress: window.SQProgress
         });
       } catch (e){
-        document.getElementById("loaderCover").classList.add("fade-out");
+        document.getElementById("loaderCover").classList.add("coverFade");
         console.error("Unity failed to start:", e);
       }
     });
