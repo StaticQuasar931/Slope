@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-  <!-- Canonical & robots -->
+  <!-- Canonical and robots -->
   <link rel="canonical" href="https://staticquasar931.github.io/slope/" />
   <meta name="robots" content="index, follow, max-image-preview:large" />
 
@@ -100,20 +100,19 @@
       text-align:center;
     }
 
-    /* BIGGER announcement, higher on the screen */
+    /* Bigger, higher announcement */
     .announce{
-      position:absolute; top:8%; left:50%; transform:translateX(-50%);
+      position:absolute; top:6%; left:50%; transform:translateX(-50%);
       max-width:92vw;
-      font-size:34px; font-weight:1000; letter-spacing:.2px; line-height:1.12;
+      font-size:38px; font-weight:1000; letter-spacing:.2px; line-height:1.1;
       color:#eafbff; text-shadow:0 3px 12px rgba(0,0,0,.55);
-      margin-bottom:2px;
       animation:annPulse 3.5s ease-in-out infinite;
     }
     @keyframes annPulse{ 0%,100%{transform:translateX(-50%) translateY(0)} 50%{transform:translateX(-50%) translateY(-1px)} }
 
     .logo-row{
       display:flex; align-items:center; justify-content:center; gap:18px;
-      opacity:.98; margin-top:40px;
+      opacity:.98; margin-top:48px;
     }
     .sq-logo, .unity-logo{
       width:90px; height:90px; border-radius:16px; overflow:hidden;
@@ -129,22 +128,22 @@
       background:transparent !important; opacity:.92;
     }
 
-    /* "Presents" back under logos */
+    /* Presents under logos */
     .intro{ display:flex; flex-direction:column; align-items:center; gap:8px; user-select:none; }
     .intro a{ color:#cfe9ff; text-decoration:none; }
     .intro .title{
       font-weight:1000; letter-spacing:.3px; font-size:18px; opacity:0;
       text-shadow:0 2px 10px rgba(0,0,0,.5);
-      animation:fadeIn .9s ease .2s forwards, fadeOut .7s ease 2.3s forwards;
+      animation:fadeIn .8s ease .2s forwards, fadeOut .6s ease 2.3s forwards;
     }
     .intro .subtitle{
       font-weight:900; letter-spacing:.3px; font-size:16px; opacity:0;
       text-shadow:0 2px 10px rgba(0,0,0,.5);
-      animation:fadeIn .9s ease 3.1s forwards;
+      animation:fadeIn .9s ease 3.0s forwards;
     }
     .sq-banner{
       font-weight:900; color:#d2eeff;
-      opacity:0; animation:bannerIn 1.0s ease 3.6s forwards, bannerPulse 6s ease-in-out 4.0s infinite;
+      opacity:0; animation:bannerIn .9s ease 3.4s forwards, bannerPulse 6s ease-in-out 4.0s infinite;
     }
     @keyframes fadeIn{ from{opacity:0; transform:translateY(2px)} to{opacity:1; transform:none}}
     @keyframes fadeOut{ to{opacity:0} }
@@ -163,7 +162,7 @@
       background:
         linear-gradient(90deg, rgba(255,255,255,.25) 0%, rgba(255,255,255,0) 35%),
         linear-gradient(90deg, var(--brand), var(--brand2));
-      transition:width .08s linear;
+      transition:width .06s linear;
     }
     .light{
       position:absolute; top:5px; width:12px; height:14px; border-radius:4px;
@@ -261,7 +260,6 @@
       </div>
     </div>
 
-    <!-- Presents back here -->
     <div class="intro" id="intro">
       <a href="https://sites.google.com/view/staticquasar931/gm3z" target="_blank" rel="noopener" id="introLink">
         <div class="title">StaticQuasar931 Unblocked Games Presents</div>
@@ -309,6 +307,7 @@
 
     function fitGame(){
       const el = document.getElementById("gameContainer");
+      if (!el) return;
       const h = window.visualViewport ? window.visualViewport.height : window.innerHeight;
       el.style.width  = window.innerWidth + "px";
       el.style.height = h + "px";
@@ -321,26 +320,27 @@
       const menu  = document.getElementById("staticMenu");
       const slide = document.getElementById("staticSlideMenu");
       const targets = [menu, slide];
-      const original = new Map(targets.map(el => [el, el ? getComputedStyle(el).display : ""]));
+      const original = new Map(targets.map(el => [el, el ? getComputedStyle(el).display || "" : ""]));
       let hidden = false;
-
       const down = new Set();
-      function apply(){
-        hidden = !hidden;
+      function setHidden(h){
+        hidden = h;
         targets.forEach(el=>{
           if (!el) return;
-          el.style.display = hidden ? "none" : original.get(el) || "";
+          el.style.display = hidden ? "none" : (original.get(el) || "");
         });
       }
       function checkCombo(){
-        if (down.has("y") && down.has("u") && down.has("i")) apply();
+        if (down.has("y") && down.has("u") && down.has("i")){
+          setHidden(!hidden);
+        }
       }
       window.addEventListener("keydown", (e)=>{
-        const k = e.key.toLowerCase();
+        const k = e.key && e.key.toLowerCase();
         if (k === "y" || k === "u" || k === "i"){ down.add(k); checkCombo(); }
       }, {passive:true});
       window.addEventListener("keyup", (e)=>{
-        const k = e.key.toLowerCase();
+        const k = e.key && e.key.toLowerCase();
         if (k === "y" || k === "u" || k === "i"){ down.delete(k); }
       }, {passive:true});
     })();
@@ -384,10 +384,12 @@
       const btn = document.getElementById("needHelpBtn");
       const pop = document.getElementById("helpPopup");
       const cls = document.getElementById("helpClose");
+      const helpA = document.getElementById("helpLink");
+      const formA = document.getElementById("formLink");
+      if (!btn || !pop || !cls || !helpA || !formA) return;
       const helpURL = "https://sites.google.com/view/staticquasar931/home/help-faq?source_utmwhateverslopewhatnot=&utm_source=slope&utm_medium=loader_help#h.qjb289kqv0nd";
       const formURL = "https://sites.google.com/view/staticquasar931/google-form?utm_source=slope&utm_medium=loader_help";
-      document.getElementById("helpLink").href = helpURL;
-      document.getElementById("formLink").href = formURL;
+      helpA.href = helpURL; formA.href = formURL;
       btn.addEventListener("click", ()=>{ pop.style.display = "block"; });
       cls.addEventListener("click", ()=>{ pop.style.display = "none"; });
     })();
@@ -406,53 +408,57 @@
         if (e.key === " "){
           e.preventDefault();
           banner("Play games on StaticQuasar931","https://sites.google.com/view/staticquasar931/gm3z"," mid");
-        } else if (e.key.toLowerCase() === "j"){
+        } else if ((e.key || "").toLowerCase() === "j"){
           banner("Help and tips","https://sites.google.com/view/staticquasar931/home/help-faq?utm_source=slope&utm_medium=key_j#h.qjb289kqv0nd"," bottom");
         } else if (e.key === "Shift"){
           banner("Report an issue","https://sites.google.com/view/staticquasar931/google-form?utm_source=slope&utm_medium=key_shift"," alt");
-        } else if (e.key.toLowerCase() === "k"){
+        } else if ((e.key || "").toLowerCase() === "k"){
           banner("Join the Discord","https://discord.gg/DP2hM7RRhR","");
-        } else if (e.key.toLowerCase() === "m"){
+        } else if ((e.key || "").toLowerCase() === "m"){
           banner("Follow on Instagram","https://www.instagram.com/freeschoolgamepage/","");
         }
       });
     })();
 
-    // School network: stub id.net to reduce late hangs
+    // School network: stub id.net
     window.idnet_autologin = window.idnet_autologin || function(){};
     (function(){
       const bad = [/^https?:\/\/(www\.)?id\.net\//i];
       const okJSON = JSON.stringify({ success:true, lists:[], status:"offline" });
 
       const origFetch = window.fetch;
-      window.fetch = function(input){
-        try{
-          const url = typeof input === "string" ? input : input.url;
-          if (bad.some(rx => rx.test(url))){
-            return Promise.resolve(new Response(okJSON, { status:200, headers:{'Content-Type':'application/json'} }));
-          }
-        }catch(e){}
-        return origFetch.apply(this, arguments);
-      };
+      if (origFetch){
+        window.fetch = function(input){
+          try{
+            const url = typeof input === "string" ? input : input.url;
+            if (bad.some(rx => rx.test(url))){
+              return Promise.resolve(new Response(okJSON, { status:200, headers:{'Content-Type':'application/json'} }));
+            }
+          }catch(e){}
+          return origFetch.apply(this, arguments);
+        };
+      }
 
-      const XO = XMLHttpRequest.prototype.open;
-      const XS = XMLHttpRequest.prototype.send;
-      XMLHttpRequest.prototype.open = function(m, url){
-        this.__sqStub = bad.some(rx => rx.test(String(url))); return XO.apply(this, arguments);
-      };
-      XMLHttpRequest.prototype.send = function(){
-        if (this.__sqStub){
-          const self = this;
-          setTimeout(function(){
-            self.readyState = 4; self.status = 200; self.responseText = okJSON;
-            self.onload && self.onload(); self.onreadystatechange && self.onreadystatechange();
-          }, 0); return;
-        }
-        return XS.apply(this, arguments);
-      };
+      if (window.XMLHttpRequest){
+        const XO = XMLHttpRequest.prototype.open;
+        const XS = XMLHttpRequest.prototype.send;
+        XMLHttpRequest.prototype.open = function(m, url){
+          this.__sqStub = bad.some(rx => rx.test(String(url))); return XO.apply(this, arguments);
+        };
+        XMLHttpRequest.prototype.send = function(){
+          if (this.__sqStub){
+            const self = this;
+            setTimeout(function(){
+              self.readyState = 4; self.status = 200; self.responseText = okJSON;
+              self.onload && self.onload(); self.onreadystatechange && self.onreadystatechange();
+            }, 0); return;
+          }
+          return XS.apply(this, arguments);
+        };
+      }
     })();
 
-    // Smooth loader: always-climb baseline + real progress catch-up
+    // Smooth loader: baseline 1% per 0.1s + real progress catch-up
     (function(){
       const cover = document.getElementById("loaderCover");
       const fill  = document.getElementById("loaderFill");
@@ -461,21 +467,21 @@
       const green = document.getElementById("greenLight");
       const red   = document.getElementById("redLight");
 
-      let reported = 0;   // from Unity
+      let reported = 0;   // unity progress
       let visual   = 0;   // shown
       let finished = false;
       let lastUpdate = performance.now();
 
-      // Baselined climb: about 1% every 300ms while < 97%
-      const BASE_PPS = 0.01 / 0.30; // percent per second -> 1% each 0.3s
-      const FINISH_SWEEP_PPS = 1 / 0.20; // to 100% in 0.2s once finished
+      // 1 percent every 0.1s baseline
+      const BASE_PPS = 0.01 / 0.10;
+      const FINISH_SWEEP_PPS = 1 / 0.20;
 
-      // Unity progress hook
+      // unity progress hook
       window.SQProgress = function(_game, p){
         if (typeof p === "number" && p > reported){
           reported = Math.min(1, p);
           lastUpdate = performance.now();
-          red.classList.remove("on","glow");
+          if (red){ red.classList.remove("on","glow"); }
         }
         if (reported === 1) finished = true;
       };
@@ -485,46 +491,43 @@
         const dt = Math.min(0.05, (now - (animate.prev || now)) / 1000);
         animate.prev = now;
 
-        // green light near real 80%
         if (reported >= 0.78 && reported <= 0.86){
-          if (Math.floor(now / 220) % 2 === 0) green.classList.add("on","glow");
-          else green.classList.remove("glow");
-        } else {
+          if (green){
+            if (Math.floor(now / 220) % 2 === 0) green.classList.add("on","glow");
+            else green.classList.remove("glow");
+          }
+        } else if (green){
           green.classList.remove("on","glow");
         }
 
-        // Always-climb baseline tick, capped to 97% until finished
+        // baseline always climbs toward 97
         const baselineTarget = Math.min(0.97, visual + BASE_PPS * dt);
 
-        // Follow real progress if it is ahead
+        // real progress takes priority when faster
         const realTarget = Math.max(baselineTarget, reported);
 
-        // Integrate toward target smoothly
         if (!finished){
-          // ease up to target without overshoot
           if (visual < realTarget){
-            visual = Math.min(realTarget, visual + 1.2 * dt);
+            visual = Math.min(realTarget, visual + 1.6 * dt);
           }
         } else {
-          // after finished, sweep to 100% quickly
           visual = Math.min(1, visual + FINISH_SWEEP_PPS * dt);
         }
 
-        // Lights for long pause
         const age = now - lastUpdate;
         if (!finished && age > 6000){
-          red.classList.add("on","glow");
-          msgEl.textContent = "Network is slow. Please wait…";
-        } else {
+          if (red){ red.classList.add("on","glow"); }
+          if (msgEl){ msgEl.textContent = "Network is slow. Please wait…"; }
+        } else if (red){
           red.classList.remove("on","glow");
         }
 
         const pct = Math.round(visual * 100);
-        fill.style.width = pct + "%";
-        pctEl.textContent = pct + "%";
+        if (fill) fill.style.width = pct + "%";
+        if (pctEl) pctEl.textContent = pct + "%";
 
         if (visual >= 0.999){
-          cover.classList.add("coverFade");
+          if (cover) cover.classList.add("coverFade");
           return;
         }
         requestAnimationFrame(animate);
@@ -535,11 +538,18 @@
     function startUnity(){
       fitGame();
       try{
-        window.gameInstance = UnityLoader.instantiate("gameContainer", "slope_new.json", {
-          onProgress: window.SQProgress
-        });
+        if (window.UnityLoader && typeof UnityLoader.instantiate === "function"){
+          window.gameInstance = UnityLoader.instantiate("gameContainer", "slope_new.json", {
+            onProgress: window.SQProgress
+          });
+        } else {
+          console.error("UnityLoader.js not found or invalid");
+          const cover = document.getElementById("loaderCover");
+          if (cover) cover.classList.add("coverFade");
+        }
       } catch (e){
-        document.getElementById("loaderCover").classList.add("coverFade");
+        const cover = document.getElementById("loaderCover");
+        if (cover) cover.classList.add("coverFade");
         console.error("Unity failed to start:", e);
       }
     }
