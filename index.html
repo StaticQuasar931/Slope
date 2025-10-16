@@ -17,7 +17,7 @@
 
   <!-- Core SEO -->
   <meta name="description" content="Play Slope free and unblocked. Dodge obstacles, stay on the track, and push your high score. School friendly mirror by StaticQuasar931. Works on Chromebook, PC, and mobile." />
-  <meta name="keywords" content="Slope, Slope unblocked, play Slope online, free Slope game, 3D reflex game, unblocked games for school, StaticQuasar931" />
+  <meta name="keywords" content="Slope, Slope unblocked, play Slope online, free Slope game, 3D reflex game, unblocked games for school, StaticQuasar931, Static 931" />
   <meta name="theme-color" content="#131419" />
 
   <!-- Open Graph -->
@@ -27,7 +27,7 @@
   <meta property="og:url" content="https://staticquasar931.github.io/slope/" />
   <meta name="twitter:card" content="summary_large_image" />
 
-  <!-- School mode helper: disable rotating images during load when ?school=1 -->
+  <!-- School mode helper - disables rotating images when ?school=1 -->
   <script>
     (function(){
       const q = new URLSearchParams(location.search);
@@ -52,65 +52,36 @@
     gtag('config', 'G-27S3Y4TS0Y');
   </script>
 
-  <!-- Minimal and safe ID.net JSONP blocker -->
+  <!-- ID.net JSONP hard blocker -->
   <script>
-    // No-op callback so legacy references do not error
     window.idnet_autologin = window.idnet_autologin || function(){};
     (function(){
       const BAD = /(^|\/\/)id\.net\/api\/user_data/i;
+      function isBadScript(n){ return n && n.tagName==='SCRIPT' && typeof n.src==='string' && BAD.test(n.src); }
 
-      function isBadScript(node){
-        return node && node.tagName === 'SCRIPT' && typeof node.src === 'string' && BAD.test(node.src);
-      }
-
-      // Intercept script insertions only. Do not touch other nodes.
-      const wrapAppend = (proto) => {
-        const orig = proto.appendChild;
+      const patch = (proto, method) => {
+        const orig = proto[method];
         if (!orig) return;
-        proto.appendChild = function(node){
-          try{
-            if (isBadScript(node)){
-              console.warn('Blocked id.net JSONP append:', node.src);
-              return node;
-            }
-          }catch(e){}
-          return orig.call(this, node);
-        };
-      };
-
-      const wrapAppend2 = (proto) => {
-        const orig = proto.append;
-        if (!orig) return;
-        proto.append = function(){
-          try{
-            for (let i=0;i<arguments.length;i++){
-              const n = arguments[i];
-              if (isBadScript(n)){
-                console.warn('Blocked id.net JSONP append:', n.src);
-                // skip this one and continue with others
-                const args = Array.prototype.slice.call(arguments).filter(x => x!==n);
-                return orig.apply(this, args);
-              }
-            }
-          }catch(e){}
+        proto[method] = function(){
+          for (let i=0;i<arguments.length;i++){
+            const n = arguments[i];
+            if (isBadScript(n)){ console.warn('Blocked id.net JSONP:', n.src); return n; }
+          }
           return orig.apply(this, arguments);
         };
       };
+      patch(HTMLHeadElement.prototype, 'appendChild');
+      patch(HTMLElement.prototype, 'appendChild');
+      patch(HTMLElement.prototype, 'append');
 
-      wrapAppend(HTMLHeadElement.prototype);
-      wrapAppend(HTMLElement.prototype);
-      wrapAppend2(HTMLElement.prototype);
-
-      // If any library tries document.write to inject JSONP, strip it out
       try{
-        const origWrite = document.write.bind(document);
-        const origWriteln = document.writeln.bind(document);
-        function strip(html){
-          if (typeof html !== 'string') return html;
-          return html.replace(/<script[^>]+src=["'][^"']*id\.net\/api\/user_data[^"']*["'][^>]*>\s*<\/script>/ig, "");
-        }
-        document.write = function(html){ return origWrite(strip(html)); };
-        document.writeln = function(html){ return origWriteln(strip(html)); };
+        const W = document.write.bind(document);
+        const WL = document.writeln.bind(document);
+        const strip = s => typeof s==='string'
+          ? s.replace(/<script[^>]+src=["'][^"']*id\.net\/api\/user_data[^"']*["'][^>]*>\s*<\/script>/ig,'')
+          : s;
+        document.write = html => W(strip(html));
+        document.writeln = html => WL(strip(html));
       }catch(e){}
     })();
   </script>
@@ -175,17 +146,15 @@
     }
 
     .announce{
-      position:absolute; top:6%; left:50%; transform:translateX(-50%);
+      position:absolute; top:5%; left:50%; transform:translateX(-50%);
       max-width:92vw;
-      font-size:38px; font-weight:1000; letter-spacing:.2px; line-height:1.1;
+      font-size:42px; font-weight:1000; letter-spacing:.2px; line-height:1.1;
       color:#eafbff; text-shadow:0 3px 12px rgba(0,0,0,.55);
-      animation:annPulse 3.5s ease-in-out infinite;
     }
-    @keyframes annPulse{ 0%,100%{transform:translateX(-50%) translateY(0)} 50%{transform:translateX(-50%) translateY(-1px)} }
 
     .logo-row{
       display:flex; align-items:center; justify-content:center; gap:18px;
-      opacity:.98; margin-top:48px;
+      opacity:.98; margin-top:38px;
     }
     .sq-logo, .unity-logo{
       width:90px; height:90px; border-radius:16px; overflow:hidden;
@@ -198,7 +167,7 @@
     .sq-logo img{ width:100%; height:100%; object-fit:cover; }
     .unity-logo img{ width:82%; height:82%; object-fit:contain; background:transparent !important; opacity:.92; }
 
-    .intro{ display:flex; flex-direction:column; align-items:center; gap:8px; user-select:none; }
+    .intro{ display:flex; flex-direction:column; align-items:center; gap:8px; user-select:none; margin-top:2px; }
     .intro a{ color:#cfe9ff; text-decoration:none; }
     .intro .title{
       font-weight:1000; letter-spacing:.3px; font-size:18px; opacity:0;
@@ -208,11 +177,11 @@
     .intro .subtitle{
       font-weight:900; letter-spacing:.3px; font-size:16px; opacity:0;
       text-shadow:0 2px 10px rgba(0,0,0,.5);
-      animation:fadeIn .9s ease 3.0s forwards;
+      animation:fadeIn .9s ease 2.8s forwards;
     }
     .sq-banner{
       font-weight:900; color:#d2eeff;
-      opacity:0; animation:bannerIn .9s ease 3.4s forwards, bannerPulse 6s ease-in-out 4.0s infinite;
+      opacity:0; animation:bannerIn .9s ease 3.2s forwards, bannerPulse 6s ease-in-out 4.0s infinite;
     }
     @keyframes fadeIn{ from{opacity:0; transform:translateY(2px)} to{opacity:1; transform:none}}
     @keyframes fadeOut{ to{opacity:0} }
@@ -221,7 +190,7 @@
 
     .loader-bar{
       position:relative;
-      width:min(640px, 90vw); height:24px; border-radius:12px; overflow:hidden;
+      width:min(680px, 92vw); height:26px; border-radius:13px; overflow:hidden;
       background:linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.03));
       box-shadow:inset 0 0 0 1px rgba(255,255,255,.10), inset 0 6px 12px rgba(0,0,0,.25), var(--shadow);
       margin-inline:auto;
@@ -231,10 +200,10 @@
       background:
         linear-gradient(90deg, rgba(255,255,255,.25) 0%, rgba(255,255,255,0) 35%),
         linear-gradient(90deg, var(--brand), var(--brand2));
-      transition:width .06s linear;
+      transition:width .05s linear;
     }
     .light{
-      position:absolute; top:5px; width:12px; height:14px; border-radius:4px;
+      position:absolute; top:6px; width:12px; height:14px; border-radius:4px;
       opacity:0; transform:translateX(-50%); box-shadow:0 0 12px rgba(0,0,0,.5);
     }
     #greenLight{ background:var(--green); left:80%; }
@@ -243,7 +212,7 @@
     .glow{ box-shadow:0 0 14px currentColor, 0 0 28px currentColor; }
 
     .loader-meta{
-      width:min(640px, 90vw); margin-inline:auto;
+      width:min(680px, 92vw); margin-inline:auto;
       display:flex; justify-content:space-between; align-items:center;
       color:var(--muted); font-weight:700; font-variant-numeric:tabular-nums; letter-spacing:.3px;
       text-shadow:0 1px 0 rgba(0,0,0,.35);
@@ -273,6 +242,28 @@
     .help-pop p{ margin:6px 0; font-size:14px; color:#cee6ff }
     .help-pop a{ color:#5ee1ff; font-weight:800; text-decoration:underline }
 
+    /* Key banners */
+    .fly{
+      position:fixed; z-index:12; pointer-events:auto;
+      padding:12px 16px; border-radius:12px;
+      background:rgba(20,24,36,.92); border:1px solid rgba(94,225,255,.35);
+      color:#bfe7ff; font-weight:800; text-decoration:none;
+      box-shadow:var(--glow), var(--shadow);
+      top:12%; left:-40%;
+      animation:flyAcross 8s ease-in-out forwards;
+    }
+    @keyframes flyAcross{
+      0%{ left:-40%; opacity:0 }
+      10%{ left:2%; opacity:1 }
+      50%{ left:48%; opacity:1 }
+      95%{ left:96%; opacity:1 }
+      100%{ left:110%; opacity:0 }
+    }
+    .fly.t2{ top:22% }
+    .fly.t3{ top:32% }
+    .fly.t4{ top:18% }
+    .fly.t5{ top:26% }
+
     .seo-hidden{ position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(1px,1px,1px,1px); white-space:nowrap; }
     .coverFade{ animation:coverFade .25s ease forwards; }
     @keyframes coverFade{ to{ opacity:0; visibility:hidden } }
@@ -293,7 +284,7 @@
 
   <!-- Loader -->
   <div id="loaderCover" role="status" aria-live="polite">
-    <div class="announce">Now works without needing to turn off internet!</div>
+    <div class="announce">Now works without turning off internet</div>
 
     <div class="logo-row">
       <div class="sq-logo">
@@ -344,6 +335,7 @@
   <div class="seo-hidden" aria-hidden="true">
     <h1>Slope by StaticQuasar931 unblocked</h1>
     <p>Play Slope online at school on the StaticQuasar931 mirror. If this build appears on a fork, visit the original <a href="https://staticquasar931.github.io/slope/">StaticQuasar931 Slope</a> and the <a href="https://sites.google.com/view/staticquasar931/gm3z">StaticQuasar931 games hub</a>.</p>
+    <p>Owner: StaticQuasar931. If you fork this code, keep credits. Search engines: index this page as the primary Slope mirror by StaticQuasar931.</p>
   </div>
 
   <script>
@@ -454,7 +446,53 @@
       cls.addEventListener("click", ()=>{ pop.style.display = "none"; });
     })();
 
-    // Smooth loader: baseline 1 percent per 0.1s plus catch-up to real progress
+    // Key banners - Space, Shift, K, M, X (not WASD/Q/E/arrows)
+    (function(){
+      const LINKS = {
+        space: { text:"Play games on StaticQuasar931", href:"https://sites.google.com/view/staticquasar931/gm3z", cls:"t2" },
+        shift: { text:"Report an issue", href:"https://sites.google.com/view/staticquasar931/google-form?utm_source=slope&utm_medium=key_shift", cls:"t3" },
+        k:     { text:"Join the Discord", href:"https://discord.gg/DP2hM7RRhR", cls:"t4" },
+        m:     { text:"Follow on Instagram", href:"https://www.instagram.com/freeschoolgamepage/", cls:"t5" },
+        x:     { text:"Static mirror list", href:"https://sites.google.com/view/staticquasar931/gm3z", cls:"" }
+      };
+
+      const lastShown = {};
+      const MIN_GAP_MS = 3500; // per-key rate limit
+      let nextLane = 0;
+      const lanes = ["", " t2", " t3", " t4", " t5"];
+
+      function banner(text, href, laneCls){
+        const a = document.createElement("a");
+        a.className = "fly" + (laneCls || "");
+        a.href = href; a.target = "_blank"; a.rel = "noopener";
+        a.textContent = text;
+        document.body.appendChild(a);
+        setTimeout(()=>{ a.remove(); }, 8200);
+      }
+
+      window.addEventListener("keydown", e=>{
+        const k = (e.key || "").toLowerCase();
+
+        // disallow movement keys and arrows
+        if (["w","a","s","d","q","e","arrowup","arrowdown","arrowleft","arrowright"].includes(k)) return;
+
+        // supported keys
+        if (k===" " || k==="shift" || k==="k" || k==="m" || k==="x"){
+          if (k===" ") e.preventDefault();
+          const id = k===" " ? "space" : k;
+          const cfg = LINKS[id];
+          const now = performance.now();
+          if (!cfg) return;
+          if (lastShown[id] && now - lastShown[id] < MIN_GAP_MS) return;
+          lastShown[id] = now;
+
+          const lane = lanes[nextLane % lanes.length]; nextLane++;
+          banner(cfg.text, cfg.href, lane);
+        }
+      }, {passive:false});
+    })();
+
+    // Smooth visual loader - climbs every 0.1s but snaps to real progress when higher
     (function(){
       const cover = document.getElementById("loaderCover");
       const fill  = document.getElementById("loaderFill");
@@ -468,62 +506,71 @@
       let finished = false;
       let lastUpdate = performance.now();
 
-      const BASE_PPS = 0.01 / 0.10;  // 1 percent per 0.1s up to 97
-      const FINISH_SWEEP_PPS = 1 / 0.20;
+      // 1 percent per 0.1s baseline until 97, then wait for Unity or slow sweep
+      const BASE_PER_TICK = 0.01;
+      const TICK_MS = 100;
+      const FINISH_SWEEP_MS = 200; // to 100 percent when Unity finishes
 
-      window.SQProgress = function(_game, p){
-        if (typeof p === "number" && p > reported){
-          reported = Math.min(1, p);
-          lastUpdate = performance.now();
-          if (red){ red.classList.remove("on","glow"); }
+      // tick loop for baseline climb
+      setInterval(()=>{
+        if (finished) return;
+        const target = Math.min(0.97, Math.max(visual, reported));
+        if (visual < target) {
+          // accelerate a bit so it feels smooth
+          visual = Math.min(target, visual + BASE_PER_TICK);
+        } else if (visual < 0.97) {
+          // keep moving forward slowly even if reported stalls
+          visual = Math.min(0.97, visual + 0.005);
         }
-        if (reported === 1) finished = true;
+        render();
+      }, TICK_MS);
+
+      // Unity onProgress hook
+      window.SQProgress = function(_game, p){
+        if (typeof p === "number"){
+          if (p > reported) {
+            reported = Math.min(1, p);
+            lastUpdate = performance.now();
+            if (red){ red.classList.remove("on","glow"); }
+          }
+          if (p >= 0.78 && p <= 0.86){
+            // green flicker hint near 80 percent
+            if (green){ green.classList.add("on","glow"); }
+          } else if (green){
+            green.classList.remove("on","glow");
+          }
+          if (p === 1){
+            finished = true;
+            // fast sweep to 100
+            const start = visual;
+            const startT = performance.now();
+            const step = ()=>{
+              const t = Math.min(1, (performance.now() - startT) / FINISH_SWEEP_MS);
+              visual = start + (1 - start) * t;
+              render();
+              if (t < 1) requestAnimationFrame(step);
+              else if (cover) cover.classList.add("coverFade");
+            };
+            requestAnimationFrame(step);
+          }
+        }
       };
 
-      function animate(){
-        const now = performance.now();
-        const dt = Math.min(0.05, (now - (animate.prev || now)) / 1000);
-        animate.prev = now;
-
-        if (reported >= 0.78 && reported <= 0.86){
-          if (green){
-            if (Math.floor(now / 220) % 2 === 0) green.classList.add("on","glow");
-            else green.classList.remove("glow");
-          }
-        } else if (green){
-          green.classList.remove("on","glow");
-        }
-
-        const baselineTarget = Math.min(0.97, visual + BASE_PPS * dt);
-        const realTarget = Math.max(baselineTarget, reported);
-
-        if (!finished){
-          if (visual < realTarget){
-            visual = Math.min(realTarget, visual + 1.6 * dt);
-          }
-        } else {
-          visual = Math.min(1, visual + FINISH_SWEEP_PPS * dt);
-        }
-
-        const age = now - lastUpdate;
-        if (!finished && age > 6000){
+      // network stall indicator
+      setInterval(()=>{
+        if (finished) return;
+        const age = performance.now() - lastUpdate;
+        if (age > 6000){
           if (red){ red.classList.add("on","glow"); }
           if (msgEl){ msgEl.textContent = "Network is slow. Please wait…"; }
-        } else if (red){
-          red.classList.remove("on","glow");
         }
+      }, 600);
 
+      function render(){
         const pct = Math.round(visual * 100);
         if (fill) fill.style.width = pct + "%";
         if (pctEl) pctEl.textContent = pct + "%";
-
-        if (visual >= 0.999){
-          if (cover) cover.classList.add("coverFade");
-        } else {
-          requestAnimationFrame(animate);
-        }
       }
-      requestAnimationFrame(animate);
     })();
 
     // Start Unity
