@@ -132,14 +132,13 @@
     #staticSlideMenu{
       position:fixed; bottom:24px; right:24px; z-index:9;
       width:100px; height:100px; pointer-events:none; opacity:0;
-      transform:translateX(140px) scale(1);
+      transform:translateX(140px);
       filter: drop-shadow(0 6px 18px rgba(0,0,0,.45));
     }
     #staticSlideMenu a{ display:block; width:100%; height:100%; }
     #staticSlideMenu img{ width:100%; height:100%; object-fit:cover; border-radius:50%; }
-    #staticSlideMenu.discord img{ transform:none; }
-    .slide-in{ animation:slideIn 1.1s ease forwards; }
-    .slide-out{ animation:slideOut 1.0s ease forwards; }
+    .slide-in{ animation:slideIn 0.9s ease forwards; }
+    .slide-out{ animation:slideOut 0.8s ease forwards; }
     @keyframes slideIn{ from{opacity:0; transform:translateX(140px)} to{opacity:1; transform:translateX(0)} }
     @keyframes slideOut{ from{opacity:1; transform:translateX(0)} to{opacity:0; transform:translateX(140px)} }
     @media (max-width:768px){ #staticSlideMenu{ width:84px; height:84px; } }
@@ -153,9 +152,9 @@
     }
 
     .announce{
-      position:absolute; top:5%; left:50%; transform:translateX(-50%);
+      position:absolute; top:4.5%; left:50%; transform:translateX(-50%);
       max-width:92vw;
-      font-size:44px; font-weight:1000; letter-spacing:.2px; line-height:1.1;
+      font-size:50px; font-weight:1000; letter-spacing:.2px; line-height:1.1;
       color:#eafbff; text-shadow:0 3px 12px rgba(0,0,0,.55);
     }
 
@@ -179,16 +178,16 @@
     .intro .title{
       font-weight:1000; letter-spacing:.3px; font-size:18px; opacity:0;
       text-shadow:0 2px 10px rgba(0,0,0,.5);
-      animation:fadeIn .8s ease .2s forwards, fadeOut .6s ease 2.3s forwards;
+      animation:fadeIn .6s ease .1s forwards, fadeOut .5s ease 2.0s forwards;
     }
     .intro .subtitle{
       font-weight:900; letter-spacing:.3px; font-size:16px; opacity:0;
       text-shadow:0 2px 10px rgba(0,0,0,.5);
-      animation:fadeIn .9s ease 2.8s forwards;
+      animation:fadeIn .7s ease 2.4s forwards;
     }
     .sq-banner{
       font-weight:900; color:#d2eeff;
-      opacity:0; animation:bannerIn .9s ease 3.2s forwards, bannerPulse 6s ease-in-out 4.0s infinite;
+      opacity:0; animation:bannerIn .7s ease 2.8s forwards, bannerPulse 5s ease-in-out 3.2s infinite;
     }
     @keyframes fadeIn{ from{opacity:0; transform:translateY(2px)} to{opacity:1; transform:none}}
     @keyframes fadeOut{ to{opacity:0} }
@@ -250,7 +249,7 @@
     .help-pop p{ margin:6px 0; font-size:14px; color:#cee6ff }
     .help-pop a{ color:#5ee1ff; font-weight:800; text-decoration:underline }
 
-    /* Key banners - consistent sizing, no scale change at edges */
+    /* Key banners - instant entry with on-screen start. Fixed size. */
     .fly{
       position:fixed; z-index:12; pointer-events:auto;
       padding:12px 16px; border-radius:12px;
@@ -259,64 +258,72 @@
       box-shadow:var(--glow), var(--shadow);
       will-change: transform, opacity;
       white-space:nowrap;
+      width:max-content; /* prevent width shift at edge */
     }
-    /* 1) Straight left to right */
-    .fly.ltr{ top:14%; left:-40%; animation:fly_ltr 8s ease-in-out forwards; }
+
+    /* 1) Straight L->R, starts on-screen immediately */
+    .fly.ltr{ top:14%; left:2%; animation:fly_ltr 7.2s cubic-bezier(.25,.1,.25,1) forwards; }
     @keyframes fly_ltr{
-      0%{ transform:translateX(-40vw); opacity:0 }
-      10%{ transform:translateX(0); opacity:1 }
-      90%{ transform:translateX(88vw); opacity:1 }
-      100%{ transform:translateX(105vw); opacity:0 }
+      0%{ transform:translateX(0); opacity:1 }
+      90%{ transform:translateX(86vw); opacity:1 }
+      100%{ transform:translateX(102vw); opacity:0 }
     }
-    /* 2) Sine wave - plane vibe */
-    .fly.sine{ top:24%; left:-40%; animation:fly_sine 9s linear forwards; }
+
+    /* 2) Sine wave across screen */
+    .fly.sine{ top:24%; left:2%; animation:fly_sine 8.0s linear forwards; }
     @keyframes fly_sine{
-      0%{ transform:translate(-40vw, 0); opacity:0 }
-      8%{ opacity:1 }
-      25%{ transform:translate(0, -10px) }
-      50%{ transform:translate(40vw, 10px) }
-      75%{ transform:translate(80vw, -8px) }
-      95%{ opacity:1 }
-      100%{ transform:translate(105vw, 0); opacity:0 }
+      0%{ transform:translate(0, 0); opacity:1 }
+      20%{ transform:translate(20vw, -10px) }
+      40%{ transform:translate(40vw, 10px) }
+      60%{ transform:translate(60vw, -8px) }
+      80%{ transform:translate(80vw, 6px) }
+      100%{ transform:translate(102vw, 0); opacity:0 }
     }
-    /* 3) Plane icon with slight tilt */
-    .fly.plane{ top:34%; left:-40%; padding:12px 18px 12px 32px; background:rgba(0,0,0,.55); border:1px solid rgba(255,255,255,.25); animation:fly_plane 8.5s ease-in-out forwards; }
+
+    /* 3) Plane icon glide */
+    .fly.plane{ top:34%; left:2%; padding:12px 18px 12px 32px; background:rgba(0,0,0,.55); border:1px solid rgba(255,255,255,.25); animation:fly_plane 8.0s ease-in-out forwards; }
     .fly.plane::before{
       content:"✈"; position:absolute; left:10px; top:50%; transform:translateY(-50%) rotate(-6deg); opacity:.9;
     }
     @keyframes fly_plane{
-      0%{ transform:translate(-40vw, -6px) rotate(-1deg); opacity:0 }
-      10%{ transform:translate(0, 0) rotate(-1deg); opacity:1 }
-      60%{ transform:translate(60vw, -4px) rotate(-1deg); opacity:1 }
-      100%{ transform:translate(105vw, 0) rotate(-1deg); opacity:0 }
-    }
-    /* 4) Float up and down while moving right */
-    .fly.float{ top:18%; left:-40%; animation:fly_float 9s ease-in-out forwards; }
-    @keyframes fly_float{
-      0%{ transform:translate(-40vw, 0); opacity:0 }
-      10%{ opacity:1 }
-      25%{ transform:translate(0, -6px) }
-      50%{ transform:translate(40vw, 6px) }
-      75%{ transform:translate(80vw, -6px) }
-      100%{ transform:translate(105vw, 0); opacity:0 }
-    }
-    /* 5) Glide low near bottom */
-    .fly.low{ top:82%; left:-40%; animation:fly_low 8.2s ease-in-out forwards; }
-    @keyframes fly_low{
-      0%{ transform:translate(-40vw, 0); opacity:0 }
-      8%{ opacity:1 }
-      90%{ transform:translate(88vw, 0); opacity:1 }
-      100%{ transform:translate(105vw, 0); opacity:0 }
+      0%{ transform:translate(0, -4px) rotate(-1deg); opacity:1 }
+      70%{ transform:translate(74vw, -3px) rotate(-1deg); opacity:1 }
+      100%{ transform:translate(102vw, 0) rotate(-1deg); opacity:0 }
     }
 
-    .seo-hidden{ position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(1px,1px,1px,1px); white-space:nowrap; }
-    .coverFade{ animation:coverFade .25s ease forwards; }
-    @keyframes coverFade{ to{ opacity:0; visibility:hidden } }
+    /* 4) Float up-down while moving right */
+    .fly.float{ top:18%; left:2%; animation:fly_float 8.2s ease-in-out forwards; }
+    @keyframes fly_float{
+      0%{ transform:translate(0, 0); opacity:1 }
+      25%{ transform:translate(20vw, -6px) }
+      50%{ transform:translate(42vw, 6px) }
+      75%{ transform:translate(66vw, -6px) }
+      100%{ transform:translate(102vw, 0); opacity:0 }
+    }
+
+    /* 5) Low glide near bottom */
+    .fly.low{ top:82%; left:2%; animation:fly_low 7.5s ease-in-out forwards; }
+    @keyframes fly_low{
+      0%{ transform:translate(0, 0); opacity:1 }
+      90%{ transform:translate(88vw, 0); opacity:1 }
+      100%{ transform:translate(102vw, 0); opacity:0 }
+    }
+
+    /* 6) Bounce-y up-down */
+    .fly.bounce{ top:58%; left:2%; animation:fly_bounce 7.8s ease-in-out forwards; }
+    @keyframes fly_bounce{
+      0%{ transform:translate(0,0); opacity:1 }
+      20%{ transform:translate(18vw,-14px) }
+      40%{ transform:translate(36vw,10px) }
+      60%{ transform:translate(54vw,-10px) }
+      80%{ transform:translate(72vw,6px) }
+      100%{ transform:translate(102vw,0); opacity:0 }
+    }
 
     /* Loader tips bottom-left */
     #tipsBox{
       position:fixed; bottom:14px; left:14px; z-index:11;
-      width:min(440px, 90vw);
+      width:min(480px, 92vw);
       background:rgba(12,14,20,.62);
       border:1px solid rgba(255,255,255,.12);
       border-radius:10px; padding:10px 12px;
@@ -325,6 +332,10 @@
       text-align:left;
     }
     #tipsBox .label{ display:block; font-size:12px; color:#8fbef8; margin-bottom:4px; font-weight:900 }
+
+    .seo-hidden{ position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(1px,1px,1px,1px); white-space:nowrap; }
+    .coverFade{ animation:coverFade .25s ease forwards; }
+    @keyframes coverFade{ to{ opacity:0; visibility:hidden } }
   </style>
 
   <!-- Unity loader after the blocker -->
@@ -469,11 +480,11 @@
       if (!a || !img) return;
 
       const FORM = { src:"https://res.cloudinary.com/dcsrqennd/image/upload/v1747533056/raw_um4pvq.png", alt:"Feedback and requests", link:"https://sites.google.com/view/staticquasar931/google-form", cls:"" };
-      const DISCORD = { src:"https://res.cloudinary.com/dcsrqennd/image/upload/v1758072526/Join_Our_Discord_StaticQuassar931_lcplrf.png", alt:"Join the Discord", link:"https://discord.gg/DP2hM7RRhR", cls:"discord" };
+      const DISCORD = { src:"https://res.cloudinary.com/dcsrqennd/image/upload/v1758072526/Join_Our_Discord_StaticQuassar931_lcplrf.png", alt:"Join the Discord", link:"https://discord.gg/DP2hM7RRhR", cls:"" };
       const INSTA = { src:"https://res.cloudinary.com/dcsrqennd/image/upload/v1747533158/raw_cw34yi.png", alt:"Instagram", link:"https://www.instagram.com/freeschoolgamepage/", cls:"" };
       const ROT = [FORM, DISCORD, INSTA];
 
-      const T_IN = 1100, T_SHOW = 4200, T_OUT = 900, T_GAP = 12000;
+      const T_IN = 900, T_SHOW = 3600, T_OUT = 800, T_GAP = 11000;
       let i = 0;
       function apply(o){ img.src=o.src; img.alt=o.alt; a.href=o.link; wrap.className=o.cls; }
       async function loop(){
@@ -509,7 +520,7 @@
       cls.addEventListener("click", ()=>{ pop.style.display = "none"; });
     })();
 
-    // Key banners - Space, Shift, K, M, X plus two more: Z, C
+    // Key banners - visible instantly with unique animations
     (function(){
       const LINKS = {
         space: { text:"Play games on StaticQuasar931", href:"https://sites.google.com/view/staticquasar931/gm3z", cls:"ltr"  },
@@ -518,7 +529,7 @@
         m:     { text:"Follow on Instagram",            href:"https://www.instagram.com/freeschoolgamepage/", cls:"float" },
         x:     { text:"Static other games",             href:"https://sites.google.com/view/staticquasar931/gm3z", cls:"low" },
         z:     { text:"StaticQuasar931 hub",            href:"https://sites.google.com/view/staticquasar931/gm3z", cls:"ltr"  },
-        c:     { text:"Help and tips",                  href:"https://sites.google.com/view/staticquasar931/home/help-faq#h.qjb289kqv0nd", cls:"sine" }
+        c:     { text:"Help and tips",                  href:"https://sites.google.com/view/staticquasar931/home/help-faq#h.qjb289kqv0nd", cls:"bounce" }
       };
 
       const cooldown = 200; // ms per key
@@ -529,10 +540,8 @@
         a.className = "fly " + className;
         a.href = href; a.target = "_blank"; a.rel = "noopener";
         a.textContent = text;
-        // fixed width to avoid size shift at the right edge
-        a.style.width = "max-content";
         document.body.appendChild(a);
-        setTimeout(()=>{ a.remove(); }, 9300);
+        setTimeout(()=>{ a.remove(); }, 9000);
       }
 
       window.addEventListener("keydown", e=>{
@@ -563,9 +572,10 @@
       }, {passive:false});
     })();
 
-    // Loader tips rotation
+    // Loader tips rotation - robust and inclusive of your new lists
     (function(){
       const tips = [
+        // Your originals
         "Use D to go right. Unless you are facing left. Then you are wrong.",
         "Jumping is faster. Probably.",
         "Red things? Yeah, do not touch those.",
@@ -586,37 +596,79 @@
         "Reloading is faster than dying.",
         "The save button saves. Unless it does not.",
         "Are you sure you want to quit? No one ever is.",
-        "Real-life tips:",
-        "Bathrooms often have sinks. Use them.",
-        "Do not lick doorknobs on other planets. Or this one.",
-        "You cannot lose a fight if you do not show up.",
-        "If it is on fire, it is probably hot.",
-        "If it is glowing green, that is not food.",
-        "Breathing is a good daily habit.",
-        "Standing up is faster than lying down, usually.",
-        "The floor is reliable. It is always there for you.",
-        "If you drop something, gravity wins. Every time.",
-        "Time only moves forward - plan accordingly.",
-        "Chairs are like sitting upgrades.",
-        "Hot water is just aggressive water.",
-        "You cannot spell snack without ack.",
-        "Most doors open when you pull the right way.",
-        "Running upstairs is fun until it is not.",
-        "Sleep is the human loading screen.",
-        "Forgetting something means you will remember it later.",
-        "Socks improve walking DLC.",
-        "Birds do not know what Wi-Fi is.",
-        "The fridge light goes out when you close the door. Or does it?"
+        // Obvious Facts You Did not Need
+        "If you punch a wall hard enough, the wall wins.",
+        "Did you know most houses have a floor? Incredible technology.",
+        "Standing in rain makes you wet.",
+        "Falling hurts more the higher you go.",
+        "The sun is really bright. Do not stare at it.",
+        "Eating food stops hunger for a bit.",
+        "Water is often found in wet places.",
+        "If you walk long enough, you will be somewhere else.",
+        "Hitting your head hurts, no matter how confident you are.",
+        "If something is hot, it is not cold.",
+        "Running into trees is rarely productive.",
+        "If your phone battery dies, it turns off.",
+        "Jumping off cliffs is not a reusable strategy.",
+        "Keys open locks. Unless they do not.",
+        "Clouds are not solid. Do not test.",
+        "Breathing underwater only works once.",
+        "Fire is not a toy. Unless you are chaos itself.",
+        "Standing up increases your height slightly.",
+        "You cannot drown in sand, but you can regret it.",
+        "Sleeping at night is the default setting.",
+        // Game Logic & Dumb Gamer Wisdom
+        "Pressing W advances your destiny and your character.",
+        "If it glows, click it. If it explodes, remember that.",
+        "Loot everything. Even if you do not need it. Especially if you do not need it.",
+        "The tutorial is optional until it is not.",
+        "Friendly fire is only funny once.",
+        "Do not jump off the map. You will not win faster.",
+        "Saving the game prevents tragedy. Usually.",
+        "Boss fights are just normal fights with louder music.",
+        "Collectibles do not fill the void, but they try.",
+        "The harder the level, the louder the keyboard.",
+        "Pressing jump twice is not always double jump. Sometimes it is goodbye.",
+        "Explosions solve problems. Sometimes they create them too.",
+        "Crouching in real life does not increase stealth.",
+        "The final boss does not care about your feelings.",
+        "The game is not cheating. You are just losing correctly.",
+        // Life & Chaos
+        "Most doors can be opened. Try it sometime.",
+        "The fridge light turns off. Probably.",
+        "You cannot lose an argument if you stop responding.",
+        "Yelling at the microwave will not make it faster.",
+        "Traffic lights do not care about your schedule.",
+        "Gravity is undefeated since day one.",
+        "Socks come in pairs until they do not.",
+        "Toothpaste tastes worse than it looks.",
+        "Sleep debt cannot be paid with exposure.",
+        "Money can be exchanged for goods and services.",
+        "The faster you run, the sooner you are tired.",
+        "Most mirrors reflect you. The scary ones do not.",
+        "Coffee is basically legal energy theft.",
+        "You cannot delete real life by pressing escape.",
+        "Stairs are vertical regrets.",
+        "The universe does not have patch notes.",
+        "Birds do not pay rent.",
+        "Music makes silence jealous.",
+        "Friends are NPCs with better dialogue.",
+        "If you touch grass, the grass touches back.",
+        "Air is free, but only while supplies last.",
+        "Time flies but it refuses to land.",
+        "Gravity pulls us together mostly toward the floor.",
+        "No one has ever won an argument with Wi-Fi.",
+        "Life is the longest unskippable cutscene."
       ];
-      const box = document.getElementById("tipLine");
-      if (!box) return;
+      const line = document.getElementById("tipLine");
+      if (!line) return;
       let i = 0;
       function tick(){
-        box.textContent = tips[i % tips.length];
+        line.textContent = tips[i % tips.length];
         i++;
       }
       tick();
-      setInterval(tick, 4500);
+      setInterval(tick, 4000); // steady 4s rotation
     })();
 
     // Smooth visual loader - climbs every 0.1s and snaps to real progress when higher
@@ -633,10 +685,15 @@
       let finished = false;
       let lastUpdate = performance.now();
 
-      // 1 percent per 0.1s baseline until 97, then wait or slow sweep
-      const BASE_PER_TICK = 0.01;
+      const BASE_PER_TICK = 0.01; // 1 percent per 0.1s baseline until 97
       const TICK_MS = 100;
       const FINISH_SWEEP_MS = 200;
+
+      function render(){
+        const pct = Math.round(visual * 100);
+        if (fill) fill.style.width = pct + "%";
+        if (pctEl) pctEl.textContent = pct + "%";
+      }
 
       setInterval(()=>{
         if (finished) return;
@@ -685,12 +742,6 @@
           if (msgEl){ msgEl.textContent = "Network is slow. Please wait…"; }
         }
       }, 600);
-
-      function render(){
-        const pct = Math.round(visual * 100);
-        if (fill) fill.style.width = pct + "%";
-        if (pctEl) pctEl.textContent = pct + "%";
-      }
     })();
 
     // Start Unity
