@@ -100,17 +100,20 @@
       text-align:center;
     }
 
+    /* BIGGER announcement, higher on the screen */
     .announce{
-      font-size:26px; font-weight:1000; letter-spacing:.2px; line-height:1.15;
+      position:absolute; top:8%; left:50%; transform:translateX(-50%);
+      max-width:92vw;
+      font-size:34px; font-weight:1000; letter-spacing:.2px; line-height:1.12;
       color:#eafbff; text-shadow:0 3px 12px rgba(0,0,0,.55);
       margin-bottom:2px;
       animation:annPulse 3.5s ease-in-out infinite;
     }
-    @keyframes annPulse{ 0%,100%{transform:translateY(0)} 50%{transform:translateY(-1px)} }
+    @keyframes annPulse{ 0%,100%{transform:translateX(-50%) translateY(0)} 50%{transform:translateX(-50%) translateY(-1px)} }
 
     .logo-row{
       display:flex; align-items:center; justify-content:center; gap:18px;
-      opacity:.98;
+      opacity:.98; margin-top:40px;
     }
     .sq-logo, .unity-logo{
       width:90px; height:90px; border-radius:16px; overflow:hidden;
@@ -121,13 +124,12 @@
     }
     @keyframes logoFade{ 0%,100%{opacity:.75} 50%{opacity:1} }
     .sq-logo img{ width:100%; height:100%; object-fit:cover; }
-    /* Unity image treated as transparent foreground */
     .unity-logo img{
       width:82%; height:82%; object-fit:contain;
-      image-rendering:auto; background:transparent !important;
-      opacity:.92;
+      background:transparent !important; opacity:.92;
     }
 
+    /* "Presents" back under logos */
     .intro{ display:flex; flex-direction:column; align-items:center; gap:8px; user-select:none; }
     .intro a{ color:#cfe9ff; text-decoration:none; }
     .intro .title{
@@ -140,14 +142,12 @@
       text-shadow:0 2px 10px rgba(0,0,0,.5);
       animation:fadeIn .9s ease 3.1s forwards;
     }
-    @keyframes fadeIn{ from{opacity:0; transform:translateY(2px)} to{opacity:1; transform:none}}
-    @keyframes fadeOut{ to{opacity:0} }
-
-    /* SQ banner that breathes nicely */
     .sq-banner{
       font-weight:900; color:#d2eeff;
-      opacity:0; animation:bannerIn 1.2s ease 1.8s forwards, bannerPulse 6s ease-in-out 1.8s infinite;
+      opacity:0; animation:bannerIn 1.0s ease 3.6s forwards, bannerPulse 6s ease-in-out 4.0s infinite;
     }
+    @keyframes fadeIn{ from{opacity:0; transform:translateY(2px)} to{opacity:1; transform:none}}
+    @keyframes fadeOut{ to{opacity:0} }
     @keyframes bannerIn{ to{opacity:1} }
     @keyframes bannerPulse{ 0%,100%{filter:brightness(1)} 50%{filter:brightness(1.08)} }
 
@@ -261,6 +261,7 @@
       </div>
     </div>
 
+    <!-- Presents back here -->
     <div class="intro" id="intro">
       <a href="https://sites.google.com/view/staticquasar931/gm3z" target="_blank" rel="noopener" id="introLink">
         <div class="title">StaticQuasar931 Unblocked Games Presents</div>
@@ -300,13 +301,7 @@
   <!-- Hidden SEO -->
   <div class="seo-hidden" aria-hidden="true">
     <h1>Slope by StaticQuasar931 unblocked</h1>
-    <p>Play Slope online at school on the StaticQuasar931 mirror. Safe for Chromebook, Windows, and mobile. If this build appears on a fork, visit the original <a href="https://staticquasar931.github.io/slope/">StaticQuasar931 Slope</a> and the <a href="https://sites.google.com/view/staticquasar931/gm3z">StaticQuasar931 games hub</a>.</p>
-    <ul>
-      <li>Fast reflex game</li>
-      <li>Neon runner</li>
-      <li>No download</li>
-      <li>School friendly</li>
-    </ul>
+    <p>Play Slope online at school on the StaticQuasar931 mirror. If this build appears on a fork, visit the original <a href="https://staticquasar931.github.io/slope/">StaticQuasar931 Slope</a> and the <a href="https://sites.google.com/view/staticquasar931/gm3z">StaticQuasar931 games hub</a>.</p>
   </div>
 
   <script>
@@ -321,16 +316,24 @@
     addEventListener("resize", fitGame, {passive:true});
     if (window.visualViewport) window.visualViewport.addEventListener("resize", fitGame, {passive:true});
 
-    // Y + U + I pressed at the same time to hide Static UI (session only)
+    // Y + U + I simultaneous TOGGLE for Static UI (session only)
     (function(){
       const menu  = document.getElementById("staticMenu");
       const slide = document.getElementById("staticSlideMenu");
+      const targets = [menu, slide];
+      const original = new Map(targets.map(el => [el, el ? getComputedStyle(el).display : ""]));
+      let hidden = false;
+
       const down = new Set();
+      function apply(){
+        hidden = !hidden;
+        targets.forEach(el=>{
+          if (!el) return;
+          el.style.display = hidden ? "none" : original.get(el) || "";
+        });
+      }
       function checkCombo(){
-        if (down.has("y") && down.has("u") && down.has("i")){
-          if (menu) menu.style.display = "none";
-          if (slide) slide.style.display = "none";
-        }
+        if (down.has("y") && down.has("u") && down.has("i")) apply();
       }
       window.addEventListener("keydown", (e)=>{
         const k = e.key.toLowerCase();
@@ -415,7 +418,7 @@
       });
     })();
 
-    // School network: stub id.net to reduce 90% hang
+    // School network: stub id.net to reduce late hangs
     window.idnet_autologin = window.idnet_autologin || function(){};
     (function(){
       const bad = [/^https?:\/\/(www\.)?id\.net\//i];
@@ -449,7 +452,7 @@
       };
     })();
 
-    // Loader anti-stall and lights
+    // Smooth loader: always-climb baseline + real progress catch-up
     (function(){
       const cover = document.getElementById("loaderCover");
       const fill  = document.getElementById("loaderFill");
@@ -463,14 +466,9 @@
       let finished = false;
       let lastUpdate = performance.now();
 
-      async function probeOnline(){
-        try{
-          const c = new AbortController();
-          setTimeout(()=>c.abort(), 1800);
-          const r = await fetch("slope_new.json", { cache:"no-store", signal:c.signal });
-          return r.ok;
-        }catch(e){ return false; }
-      }
+      // Baselined climb: about 1% every 300ms while < 97%
+      const BASE_PPS = 0.01 / 0.30; // percent per second -> 1% each 0.3s
+      const FINISH_SWEEP_PPS = 1 / 0.20; // to 100% in 0.2s once finished
 
       // Unity progress hook
       window.SQProgress = function(_game, p){
@@ -482,26 +480,10 @@
         if (reported === 1) finished = true;
       };
 
-      const RATE_SLOW = 0.01 / 0.3; // 1 percent every 0.3s after 70%
-      const RATE_FAST = 1 / 0.2;    // sweep to 100 in 0.2s when finished
-
       async function animate(){
         const now = performance.now();
         const dt = Math.min(0.05, (now - (animate.prev || now)) / 1000);
         animate.prev = now;
-
-        const age = now - lastUpdate;
-
-        // offline detection: stop faking if truly offline
-        if (!finished && age > 6000){
-          red.classList.add("on","glow");
-          const ok = await probeOnline();
-          if (!ok){
-            msgEl.textContent = "No connection. Please check your internet.";
-            requestAnimationFrame(animate);
-            return;
-          }
-        }
 
         // green light near real 80%
         if (reported >= 0.78 && reported <= 0.86){
@@ -511,26 +493,30 @@
           green.classList.remove("on","glow");
         }
 
-        // compute target that advances smoothly but never passes 97% before finish
-        let target = reported;
+        // Always-climb baseline tick, capped to 97% until finished
+        const baselineTarget = Math.min(0.97, visual + BASE_PPS * dt);
 
-        // micro-stall nudge if Unity is quiet
-        if (reported > 0 && age > 900){ target = Math.max(target, visual + 0.004); }
+        // Follow real progress if it is ahead
+        const realTarget = Math.max(baselineTarget, reported);
 
-        // smoothing from 70%
-        if (!finished && visual >= 0.70){
-          target = Math.min(Math.max(target, visual + RATE_SLOW * dt), 0.97);
+        // Integrate toward target smoothly
+        if (!finished){
+          // ease up to target without overshoot
+          if (visual < realTarget){
+            visual = Math.min(realTarget, visual + 1.2 * dt);
+          }
+        } else {
+          // after finished, sweep to 100% quickly
+          visual = Math.min(1, visual + FINISH_SWEEP_PPS * dt);
         }
 
-        // integrate toward target
-        if (visual < target){
-          visual = Math.min(target, visual + 0.7 * dt);
-        } else if (reported > visual){
-          visual = Math.min(reported, visual + 1.3 * dt);
-        }
-
-        if (finished){
-          visual = Math.min(1, visual + RATE_FAST * dt);
+        // Lights for long pause
+        const age = now - lastUpdate;
+        if (!finished && age > 6000){
+          red.classList.add("on","glow");
+          msgEl.textContent = "Network is slow. Please wait…";
+        } else {
+          red.classList.remove("on","glow");
         }
 
         const pct = Math.round(visual * 100);
