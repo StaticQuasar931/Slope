@@ -27,22 +27,21 @@
   <meta property="og:url" content="https://staticquasar931.github.io/slope/" />
   <meta name="twitter:card" content="summary_large_image" />
 
-  <!-- Preload rotating assets (skipped in school mode) -->
+  <!-- Mode helper: disable extra images in school mode -->
   <script>
     (function(){
       const q = new URLSearchParams(location.search);
       window.__SQ_SCHOOL__ = q.get("school")==="1";
+      // Preload rotating assets only if not in school mode
       if (!window.__SQ_SCHOOL__) {
-        const p1 = document.createElement("link");
-        p1.rel="preload"; p1.as="image";
-        p1.href="https://res.cloudinary.com/dcsrqennd/image/upload/v1747533056/raw_um4pvq.png";
-        const p2 = document.createElement("link");
-        p2.rel="preload"; p2.as="image";
-        p2.href="https://res.cloudinary.com/dcsrqennd/image/upload/v1758072526/Join_Our_Discord_StaticQuassar931_lcplrf.png";
-        const p3 = document.createElement("link");
-        p3.rel="preload"; p3.as="image";
-        p3.href="https://res.cloudinary.com/dcsrqennd/image/upload/v1747533158/raw_cw34yi.png";
-        document.head.appendChild(p1); document.head.appendChild(p2); document.head.appendChild(p3);
+        ["https://res.cloudinary.com/dcsrqennd/image/upload/v1747533056/raw_um4pvq.png",
+         "https://res.cloudinary.com/dcsrqennd/image/upload/v1758072526/Join_Our_Discord_StaticQuassar931_lcplrf.png",
+         "https://res.cloudinary.com/dcsrqennd/image/upload/v1747533158/raw_cw34yi.png"
+        ].forEach(href=>{
+          const l = document.createElement("link");
+          l.rel="preload"; l.as="image"; l.href=href;
+          document.head.appendChild(l);
+        });
       }
     })();
   </script>
@@ -54,6 +53,94 @@
     function gtag(){ dataLayer.push(arguments); }
     gtag('js', new Date());
     gtag('config', 'G-27S3Y4TS0Y');
+  </script>
+
+  <!-- Hard kill switch for id.net JSONP before any other scripts run -->
+  <script>
+    // No-op callback so any legacy references do not error
+    window.idnet_autologin = window.idnet_autologin || function(){};
+
+    (function(){
+      const isBad = url => typeof url === "string" && /(^|\/\/)id\.net\/api\/user_data/i.test(url);
+
+      // Block src assignments on <script>
+      try{
+        const proto = HTMLScriptElement.prototype;
+        const desc = Object.getOwnPropertyDescriptor(proto, "src");
+        if (desc && desc.set){
+          Object.defineProperty(proto, "src", {
+            set(val){
+              try{ if (isBad(val)) { console.warn("Blocked id.net src:", val); return val; } }catch(e){}
+              return desc.set.call(this, val);
+            },
+            get: desc.get,
+            configurable: true,
+            enumerable: desc.enumerable
+          });
+        }
+      }catch(e){}
+
+      // Block setAttribute('src', ...) on <script>
+      try{
+        const ep = Element.prototype;
+        const oldSetAttr = ep.setAttribute;
+        ep.setAttribute = function(name, value){
+          try{
+            if (this && this.tagName === "SCRIPT" && String(name).toLowerCase() === "src" && isBad(value)){
+              console.warn("Blocked id.net via setAttribute:", value);
+              return;
+            }
+          }catch(e){}
+          return oldSetAttr.apply(this, arguments);
+        };
+      }catch(e){}
+
+      // Block appendChild for any bad script
+      function guardAppend(orig){
+        return function(node){
+          try{
+            if (node && node.tagName === "SCRIPT" && isBad(node.src)){
+              console.warn("Blocked id.net append:", node.src);
+              return node;
+            }
+          }catch(e){}
+          return orig.call(this, node);
+        }
+      }
+      try{
+        Document.prototype.appendChild = guardAppend(Document.prototype.appendChild);
+        HTMLHeadElement.prototype.appendChild = guardAppend(HTMLHeadElement.prototype.appendChild);
+        HTMLElement.prototype.appendChild = guardAppend(HTMLElement.prototype.appendChild);
+      }catch(e){}
+
+      // Block insertBefore and replaceChild too
+      function guardIns(orig){
+        return function(newNode, refNode){
+          try{
+            if (newNode && newNode.tagName === "SCRIPT" && isBad(newNode.src)){
+              console.warn("Blocked id.net insertBefore:", newNode.src);
+              return newNode;
+            }
+          }catch(e){}
+          return orig.call(this, newNode, refNode);
+        }
+      }
+      function guardRep(orig){
+        return function(newNode, oldNode){
+          try{
+            if (newNode && newNode.tagName === "SCRIPT" && isBad(newNode.src)){
+              console.warn("Blocked id.net replaceChild:", newNode.src);
+              return oldNode;
+            }
+          }catch(e){}
+          return orig.call(this, newNode, oldNode);
+        }
+      }
+      try{
+        Node.prototype.insertBefore  = guardIns(Node.prototype.insertBefore);
+        Node.prototype.replaceChild  = guardRep(Node.prototype.replaceChild);
+      }catch(e){}
+    })();
   </script>
 
   <style>
@@ -137,10 +224,7 @@
     }
     @keyframes logoFade{ 0%,100%{opacity:.75} 50%{opacity:1} }
     .sq-logo img{ width:100%; height:100%; object-fit:cover; }
-    .unity-logo img{
-      width:82%; height:82%; object-fit:contain;
-      background:transparent !important; opacity:.92;
-    }
+    .unity-logo img{ width:82%; height:82%; object-fit:contain; background:transparent !important; opacity:.92; }
 
     .intro{ display:flex; flex-direction:column; align-items:center; gap:8px; user-select:none; }
     .intro a{ color:#cfe9ff; text-decoration:none; }
@@ -242,7 +326,7 @@
     @keyframes coverFade{ to{ opacity:0; visibility:hidden } }
   </style>
 
-  <!-- Real Unity loader -->
+  <!-- Unity loader must be after the id.net kill switch -->
   <script src="UnityLoader.js"></script>
 </head>
 <body>
@@ -445,11 +529,10 @@
       let finished = false;
       let lastUpdate = performance.now();
 
-      // 1 percent every 0.1s baseline
-      const BASE_PPS = 0.01 / 0.10;
+      const BASE_PPS = 0.01 / 0.10;  // 1 percent every 0.1s up to 97%
       const FINISH_SWEEP_PPS = 1 / 0.20;
 
-      // unity progress hook
+      // Unity progress hook used by instantiate
       window.SQProgress = function(_game, p){
         if (typeof p === "number" && p > reported){
           reported = Math.min(1, p);
@@ -464,6 +547,7 @@
         const dt = Math.min(0.05, (now - (animate.prev || now)) / 1000);
         animate.prev = now;
 
+        // 80 percent advisory light
         if (reported >= 0.78 && reported <= 0.86){
           if (green){
             if (Math.floor(now / 220) % 2 === 0) green.classList.add("on","glow");
@@ -473,7 +557,9 @@
           green.classList.remove("on","glow");
         }
 
+        // Always climb baseline to 97
         const baselineTarget = Math.min(0.97, visual + BASE_PPS * dt);
+        // Real progress wins if faster
         const realTarget = Math.max(baselineTarget, reported);
 
         if (!finished){
@@ -484,6 +570,7 @@
           visual = Math.min(1, visual + FINISH_SWEEP_PPS * dt);
         }
 
+        // Slow network hint
         const age = now - lastUpdate;
         if (!finished && age > 6000){
           if (red){ red.classList.add("on","glow"); }
