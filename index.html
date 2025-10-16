@@ -27,10 +27,25 @@
   <meta property="og:url" content="https://staticquasar931.github.io/slope/" />
   <meta name="twitter:card" content="summary_large_image" />
 
-  <!-- Preload rotating assets -->
-  <link rel="preload" as="image" href="https://res.cloudinary.com/dcsrqennd/image/upload/v1747533056/raw_um4pvq.png" />
-  <link rel="preload" as="image" href="https://res.cloudinary.com/dcsrqennd/image/upload/v1758072526/Join_Our_Discord_StaticQuassar931_lcplrf.png" />
-  <link rel="preload" as="image" href="https://res.cloudinary.com/dcsrqennd/image/upload/v1747533158/raw_cw34yi.png" />
+  <!-- Preload rotating assets (skipped in school mode) -->
+  <script>
+    (function(){
+      const q = new URLSearchParams(location.search);
+      window.__SQ_SCHOOL__ = q.get("school")==="1";
+      if (!window.__SQ_SCHOOL__) {
+        const p1 = document.createElement("link");
+        p1.rel="preload"; p1.as="image";
+        p1.href="https://res.cloudinary.com/dcsrqennd/image/upload/v1747533056/raw_um4pvq.png";
+        const p2 = document.createElement("link");
+        p2.rel="preload"; p2.as="image";
+        p2.href="https://res.cloudinary.com/dcsrqennd/image/upload/v1758072526/Join_Our_Discord_StaticQuassar931_lcplrf.png";
+        const p3 = document.createElement("link");
+        p3.rel="preload"; p3.as="image";
+        p3.href="https://res.cloudinary.com/dcsrqennd/image/upload/v1747533158/raw_cw34yi.png";
+        document.head.appendChild(p1); document.head.appendChild(p2); document.head.appendChild(p3);
+      }
+    })();
+  </script>
 
   <!-- Google Analytics -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-27S3Y4TS0Y"></script>
@@ -100,7 +115,6 @@
       text-align:center;
     }
 
-    /* Bigger, higher announcement */
     .announce{
       position:absolute; top:6%; left:50%; transform:translateX(-50%);
       max-width:92vw;
@@ -128,7 +142,6 @@
       background:transparent !important; opacity:.92;
     }
 
-    /* Presents under logos */
     .intro{ display:flex; flex-direction:column; align-items:center; gap:8px; user-select:none; }
     .intro a{ color:#cfe9ff; text-decoration:none; }
     .intro .title{
@@ -186,7 +199,6 @@
     }
     .btn:hover{ filter:brightness(1.08); }
 
-    /* Need help */
     #needHelpBtn{
       position:fixed; right:28px; bottom:50%; transform:translateY(160px);
       z-index:11;
@@ -205,7 +217,6 @@
     .help-pop p{ margin:6px 0; font-size:14px; color:#cee6ff }
     .help-pop a{ color:#5ee1ff; font-weight:800; text-decoration:underline }
 
-    /* Banners */
     .fly{
       position:fixed; z-index:12; pointer-events:auto;
       padding:12px 16px; border-radius:12px;
@@ -231,6 +242,7 @@
     @keyframes coverFade{ to{ opacity:0; visibility:hidden } }
   </style>
 
+  <!-- Real Unity loader -->
   <script src="UnityLoader.js"></script>
 </head>
 <body>
@@ -241,11 +253,7 @@
   </div>
 
   <!-- Rotating Icon -->
-  <div id="staticSlideMenu" aria-live="polite">
-    <a id="staticSlideLink" href="https://sites.google.com/view/staticquasar931/google-form" target="_blank" rel="noopener" aria-label="Open Google Form">
-      <img id="staticSlideImg" src="https://res.cloudinary.com/dcsrqennd/image/upload/v1747533056/raw_um4pvq.png" alt="StaticQuasar931 Google Form" />
-    </a>
-  </div>
+  <div id="staticSlideMenu" aria-live="polite" style="display:none"></div>
 
   <!-- Loader -->
   <div id="loaderCover" role="status" aria-live="polite">
@@ -315,7 +323,7 @@
     addEventListener("resize", fitGame, {passive:true});
     if (window.visualViewport) window.visualViewport.addEventListener("resize", fitGame, {passive:true});
 
-    // Y + U + I simultaneous TOGGLE for Static UI (session only)
+    // Y+U+I toggle for Static UI
     (function(){
       const menu  = document.getElementById("staticMenu");
       const slide = document.getElementById("staticSlideMenu");
@@ -345,18 +353,21 @@
       }, {passive:true});
     })();
 
-    // Rotator: Form -> Discord -> Instagram
+    // Rotator only if not in school mode
     (function(){
+      if (window.__SQ_SCHOOL__) return;
       const wrap = document.getElementById("staticSlideMenu");
-      const a    = document.getElementById("staticSlideLink");
-      const img  = document.getElementById("staticSlideImg");
-      if (!wrap || !a || !img) return;
+      if (!wrap) return;
+      wrap.style.display = "block";
+      wrap.innerHTML = '<a id="staticSlideLink" href="#" target="_blank" rel="noopener" aria-label="Open link"><img id="staticSlideImg" alt=""></a>';
+      const a   = document.getElementById("staticSlideLink");
+      const img = document.getElementById("staticSlideImg");
+      if (!a || !img) return;
 
       const FORM = { src:"https://res.cloudinary.com/dcsrqennd/image/upload/v1747533056/raw_um4pvq.png", alt:"Feedback and requests", link:"https://sites.google.com/view/staticquasar931/google-form", cls:"" };
       const DISCORD = { src:"https://res.cloudinary.com/dcsrqennd/image/upload/v1758072526/Join_Our_Discord_StaticQuassar931_lcplrf.png", alt:"Join the Discord", link:"https://discord.gg/DP2hM7RRhR", cls:"discord" };
       const INSTA = { src:"https://res.cloudinary.com/dcsrqennd/image/upload/v1747533158/raw_cw34yi.png", alt:"Instagram", link:"https://www.instagram.com/freeschoolgamepage/", cls:"" };
       const ROT = [FORM, DISCORD, INSTA];
-      ROT.forEach(o => { const p = new Image(); p.src = o.src; });
 
       const T_IN = 1100, T_SHOW = 4200, T_OUT = 900, T_GAP = 12000;
       let i = 0;
@@ -394,7 +405,7 @@
       cls.addEventListener("click", ()=>{ pop.style.display = "none"; });
     })();
 
-    // Banners: Space, J, Shift, K, M
+    // Banners
     (function(){
       function banner(text, href, cls){
         const a = document.createElement("a");
@@ -420,42 +431,12 @@
       });
     })();
 
-    // School network: stub id.net
-    window.idnet_autologin = window.idnet_autologin || function(){};
+    // Safer ID.net dummy JSONP (no fetch/XHR patching)
+    // Many school filters hate runtime monkey-patching. This only provides the callback they expect.
     (function(){
-      const bad = [/^https?:\/\/(www\.)?id\.net\//i];
-      const okJSON = JSON.stringify({ success:true, lists:[], status:"offline" });
-
-      const origFetch = window.fetch;
-      if (origFetch){
-        window.fetch = function(input){
-          try{
-            const url = typeof input === "string" ? input : input.url;
-            if (bad.some(rx => rx.test(url))){
-              return Promise.resolve(new Response(okJSON, { status:200, headers:{'Content-Type':'application/json'} }));
-            }
-          }catch(e){}
-          return origFetch.apply(this, arguments);
-        };
-      }
-
-      if (window.XMLHttpRequest){
-        const XO = XMLHttpRequest.prototype.open;
-        const XS = XMLHttpRequest.prototype.send;
-        XMLHttpRequest.prototype.open = function(m, url){
-          this.__sqStub = bad.some(rx => rx.test(String(url))); return XO.apply(this, arguments);
-        };
-        XMLHttpRequest.prototype.send = function(){
-          if (this.__sqStub){
-            const self = this;
-            setTimeout(function(){
-              self.readyState = 4; self.status = 200; self.responseText = okJSON;
-              self.onload && self.onload(); self.onreadystatechange && self.onreadystatechange();
-            }, 0); return;
-          }
-          return XS.apply(this, arguments);
-        };
-      }
+      window.idnet_autologin = window.idnet_autologin || function(){};
+      // Immediately call it with a harmless offline payload
+      try{ window.idnet_autologin({ success:true, status:"offline", lists:[], user:null }); }catch(e){}
     })();
 
     // Smooth loader: baseline 1% per 0.1s + real progress catch-up
@@ -500,10 +481,7 @@
           green.classList.remove("on","glow");
         }
 
-        // baseline always climbs toward 97
         const baselineTarget = Math.min(0.97, visual + BASE_PPS * dt);
-
-        // real progress takes priority when faster
         const realTarget = Math.max(baselineTarget, reported);
 
         if (!finished){
@@ -535,6 +513,7 @@
       requestAnimationFrame(animate);
     })();
 
+    // Start Unity
     function startUnity(){
       fitGame();
       try{
