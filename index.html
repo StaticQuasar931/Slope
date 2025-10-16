@@ -27,20 +27,7 @@
   <meta property="og:url" content="https://staticquasar931.github.io/slope/" />
   <meta name="twitter:card" content="summary_large_image" />
 
-  <!-- CSP that blocks any external scripts except GA, and blocks external connects except GA.
-       This alone prevents an ID.net network request. Combined with the JS kill switch below,
-       nothing will even try to reach it. -->
-  <meta http-equiv="Content-Security-Policy"
-        content="default-src 'self';
-                 script-src 'self' 'unsafe-inline' https://www.googletagmanager.com;
-                 connect-src 'self' https://www.google-analytics.com blob:;
-                 img-src 'self' data: https://res.cloudinary.com;
-                 style-src 'self' 'unsafe-inline';
-                 worker-src 'self' blob:;
-                 base-uri 'self';
-                 frame-ancestors *">
-
-  <!-- Mode helper: disable extra images in school mode -->
+  <!-- School mode helper: disable rotating images during load when ?school=1 -->
   <script>
     (function(){
       const q = new URLSearchParams(location.search);
@@ -50,9 +37,7 @@
          "https://res.cloudinary.com/dcsrqennd/image/upload/v1758072526/Join_Our_Discord_StaticQuassar931_lcplrf.png",
          "https://res.cloudinary.com/dcsrqennd/image/upload/v1747533158/raw_cw34yi.png"
         ].forEach(href=>{
-          const l = document.createElement("link");
-          l.rel="preload"; l.as="image"; l.href=href;
-          document.head.appendChild(l);
+          const l=document.createElement("link"); l.rel="preload"; l.as="image"; l.href=href; document.head.appendChild(l);
         });
       }
     })();
@@ -67,150 +52,65 @@
     gtag('config', 'G-27S3Y4TS0Y');
   </script>
 
-  <!-- Hardened kill switch for ANY id.net attempt before UnityLoader runs -->
+  <!-- Minimal and safe ID.net JSONP blocker -->
   <script>
-    // no-op jsonp callback so legacy references do not error
+    // No-op callback so legacy references do not error
     window.idnet_autologin = window.idnet_autologin || function(){};
-
     (function(){
-      const bad = /(^|\/\/)id\.net\/api\/user_data/i;
+      const BAD = /(^|\/\/)id\.net\/api\/user_data/i;
 
-      // helper to test URLs and full HTML strings
-      function isBadUrl(u){ try{ return typeof u === 'string' && bad.test(u); }catch(e){ return false; } }
-      function stripBadScripts(html){
-        try{
-          if (typeof html !== 'string') return html;
-          if (!bad.test(html)) return html;
-          // remove any script tag whose src matches id.net
-          return html.replace(/<script[^>]+src=["']?[^"'>]*id\.net\/api\/user_data[^"'>]*["']?[^>]*>\s*<\/script>/ig, "");
-        }catch(e){ return html; }
+      function isBadScript(node){
+        return node && node.tagName === 'SCRIPT' && typeof node.src === 'string' && BAD.test(node.src);
       }
 
-      // Block script src via property
-      try{
-        const P = HTMLScriptElement.prototype;
-        const d = Object.getOwnPropertyDescriptor(P, 'src');
-        if (d && d.set){
-          Object.defineProperty(P, 'src', {
-            set(v){ if (isBadUrl(v)) { console.warn('Blocked id.net src:', v); return v; }
-                    return d.set.call(this, v); },
-            get: d.get, configurable: true, enumerable: d.enumerable
-          });
-        }
-      }catch(e){}
-
-      // Block setAttribute('src', ...)
-      try{
-        const E = Element.prototype;
-        const oldSet = E.setAttribute;
-        E.setAttribute = function(name, value){
-          if (this && this.tagName === 'SCRIPT' && String(name).toLowerCase()==='src' && isBadUrl(value)){
-            console.warn('Blocked id.net via setAttribute:', value);
-            return;
-          }
-          return oldSet.apply(this, arguments);
-        };
-      }catch(e){}
-
-      // Block append flows for script nodes
-      function guardAppend(orig){
-        return function(node){
+      // Intercept script insertions only. Do not touch other nodes.
+      const wrapAppend = (proto) => {
+        const orig = proto.appendChild;
+        if (!orig) return;
+        proto.appendChild = function(node){
           try{
-            if (node && node.tagName === 'SCRIPT' && isBadUrl(node.src)){
-              console.warn('Blocked id.net append:', node.src);
+            if (isBadScript(node)){
+              console.warn('Blocked id.net JSONP append:', node.src);
               return node;
             }
           }catch(e){}
           return orig.call(this, node);
-        }
-      }
-      try{
-        Document.prototype.appendChild     = guardAppend(Document.prototype.appendChild);
-        HTMLHeadElement.prototype.appendChild = guardAppend(HTMLHeadElement.prototype.appendChild);
-        HTMLElement.prototype.appendChild  = guardAppend(HTMLElement.prototype.appendChild);
-        Node.prototype.insertBefore        = (function(orig){ return function(n, r){
-          try{ if (n && n.tagName==='SCRIPT' && isBadUrl(n.src)){ console.warn('Blocked id.net insertBefore:', n.src); return n; } }catch(e){}
-          return orig.call(this, n, r);
-        };})(Node.prototype.insertBefore);
-        Node.prototype.replaceChild        = (function(orig){ return function(n, o){
-          try{ if (n && n.tagName==='SCRIPT' && isBadUrl(n.src)){ console.warn('Blocked id.net replaceChild:', n.src); return o; } }catch(e){}
-          return orig.call(this, n, o);
-        };})(Node.prototype.replaceChild);
-      }catch(e){}
-
-      // Block document.write that tries to inject the JSONP script
-      try{
-        const W = Document.prototype.write;
-        const WL = Document.prototype.writeln;
-        Document.prototype.write = function(html){ return W.call(this, stripBadScripts(html)); };
-        Document.prototype.writeln = function(html){ return WL.call(this, stripBadScripts(html)); };
-      }catch(e){}
-
-      // Block direct network primitives ONLY for id.net
-      // This is surgical and should be safe on school networks.
-      try{
-        const ofetch = window.fetch;
-        if (ofetch){
-          window.fetch = function(input, init){
-            const url = typeof input === 'string' ? input : (input && input.url);
-            if (isBadUrl(url)){ console.warn('Blocked id.net fetch:', url);
-              return Promise.resolve(new Response('', {status:204, headers:{'Content-Type':'text/plain'}})); }
-            return ofetch.apply(this, arguments);
-          };
-        }
-      }catch(e){}
-      try{
-        const XO = XMLHttpRequest.prototype.open;
-        const XS = XMLHttpRequest.prototype.send;
-        XMLHttpRequest.prototype.open = function(method, url){
-          this.__sq_block = isBadUrl(url);
-          if (this.__sq_block){ console.warn('Blocked id.net XHR open:', url); }
-          return XO.apply(this, arguments);
         };
-        XMLHttpRequest.prototype.send = function(){
-          if (this.__sq_block){
-            const self = this;
-            setTimeout(function(){
-              try{
-                self.readyState = 4; self.status = 204; self.responseText = '';
-                self.onload && self.onload(); self.onreadystatechange && self.onreadystatechange();
-              }catch(e){}
-            }, 0);
-            return;
-          }
-          return XS.apply(this, arguments);
+      };
+
+      const wrapAppend2 = (proto) => {
+        const orig = proto.append;
+        if (!orig) return;
+        proto.append = function(){
+          try{
+            for (let i=0;i<arguments.length;i++){
+              const n = arguments[i];
+              if (isBadScript(n)){
+                console.warn('Blocked id.net JSONP append:', n.src);
+                // skip this one and continue with others
+                const args = Array.prototype.slice.call(arguments).filter(x => x!==n);
+                return orig.apply(this, args);
+              }
+            }
+          }catch(e){}
+          return orig.apply(this, arguments);
         };
-      }catch(e){}
+      };
+
+      wrapAppend(HTMLHeadElement.prototype);
+      wrapAppend(HTMLElement.prototype);
+      wrapAppend2(HTMLElement.prototype);
+
+      // If any library tries document.write to inject JSONP, strip it out
       try{
-        const osb = navigator.sendBeacon;
-        if (osb){
-          navigator.sendBeacon = function(url, data){
-            if (isBadUrl(url)){ console.warn('Blocked id.net beacon:', url); return true; }
-            return osb.apply(this, arguments);
-          };
+        const origWrite = document.write.bind(document);
+        const origWriteln = document.writeln.bind(document);
+        function strip(html){
+          if (typeof html !== 'string') return html;
+          return html.replace(/<script[^>]+src=["'][^"']*id\.net\/api\/user_data[^"']*["'][^>]*>\s*<\/script>/ig, "");
         }
-      }catch(e){}
-      try{
-        const IS = Image.prototype;
-        const d = Object.getOwnPropertyDescriptor(IS, 'src');
-        if (d && d.set){
-          Object.defineProperty(IS, 'src', {
-            set(v){ if (isBadUrl(v)){ console.warn('Blocked id.net Image:', v); return v; }
-                    return d.set.call(this, v); },
-            get: d.get, configurable: true, enumerable: d.enumerable
-          });
-        }
-      }catch(e){}
-      try{
-        const IFP = HTMLIFrameElement.prototype;
-        const d2 = Object.getOwnPropertyDescriptor(IFP, 'src');
-        if (d2 && d2.set){
-          Object.defineProperty(IFP, 'src', {
-            set(v){ if (isBadUrl(v)){ console.warn('Blocked id.net iframe:', v); return v; }
-                    return d2.set.call(this, v); },
-            get: d2.get, configurable: true, enumerable: d2.enumerable
-          });
-        }
+        document.write = function(html){ return origWrite(strip(html)); };
+        document.writeln = function(html){ return origWriteln(strip(html)); };
       }catch(e){}
     })();
   </script>
@@ -373,32 +273,12 @@
     .help-pop p{ margin:6px 0; font-size:14px; color:#cee6ff }
     .help-pop a{ color:#5ee1ff; font-weight:800; text-decoration:underline }
 
-    .fly{
-      position:fixed; z-index:12; pointer-events:auto;
-      padding:12px 16px; border-radius:12px;
-      background:rgba(20,24,36,.92); border:1px solid rgba(94,225,255,.35);
-      color:#bfe7ff; font-weight:800; text-decoration:none;
-      box-shadow:var(--glow), var(--shadow);
-      top:12%; left:-40%;
-      animation:flyAcross 7s ease-in-out forwards;
-    }
-    @keyframes flyAcross{
-      0%{ left:-40%; opacity:0 }
-      10%{ left:2%; opacity:1 }
-      50%{ left:48%; opacity:1 }
-      95%{ left:96%; opacity:1 }
-      100%{ left:110%; opacity:0 }
-    }
-    .fly.bottom{ top:auto; bottom:12%; }
-    .fly.mid{ top:20%; }
-    .fly.alt{ top:16%; }
-
     .seo-hidden{ position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(1px,1px,1px,1px); white-space:nowrap; }
     .coverFade{ animation:coverFade .25s ease forwards; }
     @keyframes coverFade{ to{ opacity:0; visibility:hidden } }
   </style>
 
-  <!-- Unity loader must be after the kill switch -->
+  <!-- Unity loader after the blocker -->
   <script src="UnityLoader.js"></script>
 </head>
 <body>
@@ -467,8 +347,10 @@
   </div>
 
   <script>
+    // Leave warning
     window.onbeforeunload = () => "Are you sure you want to leave? Your progress may not be saved.";
 
+    // Fit canvas to viewport
     function fitGame(){
       const el = document.getElementById("gameContainer");
       if (!el) return;
@@ -478,6 +360,17 @@
     }
     addEventListener("resize", fitGame, {passive:true});
     if (window.visualViewport) window.visualViewport.addEventListener("resize", fitGame, {passive:true});
+
+    // Hide and restore menu button
+    (function(){
+      const menu = document.getElementById("staticMenu");
+      const btn  = document.getElementById("closeStaticMenu");
+      if (!btn || !menu) return;
+      btn.onclick = () => {
+        menu.style.display = "none";
+        setTimeout(()=>{ menu.style.display = "flex"; }, 180000);
+      };
+    })();
 
     // Y+U+I toggle for Static UI
     (function(){
@@ -561,33 +454,7 @@
       cls.addEventListener("click", ()=>{ pop.style.display = "none"; });
     })();
 
-    // Keyboard banners
-    (function(){
-      function banner(text, href, cls){
-        const a = document.createElement("a");
-        a.className = "fly" + (cls || "");
-        a.href = href; a.target = "_blank"; a.rel = "noopener";
-        a.textContent = text;
-        document.body.appendChild(a);
-        setTimeout(()=>{ a.remove(); }, 7100);
-      }
-      window.addEventListener("keydown", e=>{
-        if (e.key === " "){
-          e.preventDefault();
-          banner("Play games on StaticQuasar931","https://sites.google.com/view/staticquasar931/gm3z"," mid");
-        } else if ((e.key || "").toLowerCase() === "j"){
-          banner("Help and tips","https://sites.google.com/view/staticquasar931/home/help-faq?utm_source=slope&utm_medium=key_j#h.qjb289kqv0nd"," bottom");
-        } else if (e.key === "Shift"){
-          banner("Report an issue","https://sites.google.com/view/staticquasar931/google-form?utm_source=slope&utm_medium=key_shift"," alt");
-        } else if ((e.key || "").toLowerCase() === "k"){
-          banner("Join the Discord","https://discord.gg/DP2hM7RRhR","");
-        } else if ((e.key || "").toLowerCase() === "m"){
-          banner("Follow on Instagram","https://www.instagram.com/freeschoolgamepage/","");
-        }
-      });
-    })();
-
-    // Smooth loader with baseline 1% per 0.1s and catch-up on real progress
+    // Smooth loader: baseline 1 percent per 0.1s plus catch-up to real progress
     (function(){
       const cover = document.getElementById("loaderCover");
       const fill  = document.getElementById("loaderFill");
@@ -596,12 +463,12 @@
       const green = document.getElementById("greenLight");
       const red   = document.getElementById("redLight");
 
-      let reported = 0;
-      let visual   = 0;
+      let reported = 0;   // from Unity
+      let visual   = 0;   // shown
       let finished = false;
       let lastUpdate = performance.now();
 
-      const BASE_PPS = 0.01 / 0.10;
+      const BASE_PPS = 0.01 / 0.10;  // 1 percent per 0.1s up to 97
       const FINISH_SWEEP_PPS = 1 / 0.20;
 
       window.SQProgress = function(_game, p){
