@@ -431,14 +431,6 @@
       });
     })();
 
-    // Safer ID.net dummy JSONP (no fetch/XHR patching)
-    // Many school filters hate runtime monkey-patching. This only provides the callback they expect.
-    (function(){
-      window.idnet_autologin = window.idnet_autologin || function(){};
-      // Immediately call it with a harmless offline payload
-      try{ window.idnet_autologin({ success:true, status:"offline", lists:[], user:null }); }catch(e){}
-    })();
-
     // Smooth loader: baseline 1% per 0.1s + real progress catch-up
     (function(){
       const cover = document.getElementById("loaderCover");
