@@ -16,6 +16,7 @@ or directly visit the playable version here:
 Created and maintained by **StaticQuasar931**
 
 * 💬 Discord: `StaticQuasar931`
+* 🤔 Discord Server: [Click Here](https://discord.gg/DP2hM7RRhR)
 * 📧 Email: [staticquasar931games@gmail.com](mailto:staticquasar931games@gmail.com)
 
 
