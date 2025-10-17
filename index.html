@@ -18,7 +18,7 @@
   <!-- Core SEO -->
   <meta name="description" content="Play Slope free and unblocked. Dodge obstacles, stay on the track, and push your high score. School friendly mirror by StaticQuasar931. Works on Chromebook, PC, and mobile." />
   <meta name="keywords" content="Slope, Slope unblocked, play Slope online, free Slope game, 3D reflex game, unblocked games for school, StaticQuasar931, Static 931" />
-  <meta name="theme-color" content="#101218" />
+  <meta name="theme-color" content="#131419" />
 
   <!-- Open Graph -->
   <meta property="og:title" content="Play Slope - Free Unblocked on StaticQuasar931" />
@@ -26,22 +26,6 @@
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://staticquasar931.github.io/slope/" />
   <meta name="twitter:card" content="summary_large_image" />
-
-  <!-- School mode helper to skip rotating images when ?school=1 -->
-  <script>
-    (function(){
-      const q = new URLSearchParams(location.search);
-      window.__SQ_SCHOOL__ = q.get("school")==="1";
-      if (!window.__SQ_SCHOOL__) {
-        ["https://res.cloudinary.com/dcsrqennd/image/upload/v1747533056/raw_um4pvq.png",
-         "https://res.cloudinary.com/dcsrqennd/image/upload/v1758072526/Join_Our_Discord_StaticQuassar931_lcplrf.png",
-         "https://res.cloudinary.com/dcsrqennd/image/upload/v1747533158/raw_cw34yi.png"
-        ].forEach(href=>{
-          const l=document.createElement("link"); l.rel="preload"; l.as="image"; l.href=href; document.head.appendChild(l);
-        });
-      }
-    })();
-  </script>
 
   <!-- Google Analytics -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-27S3Y4TS0Y"></script>
@@ -52,54 +36,79 @@
     gtag('config', 'G-27S3Y4TS0Y');
   </script>
 
-  <!-- ID.net JSONP hard blocker -->
+  <!-- Block all id.net script, XHR, and fetch calls -->
   <script>
-    window.idnet_autologin = window.idnet_autologin || function(){};
+    // JSONP block: removes any <script src="...id.net/api/user_data...">
     (function(){
-      const BAD = /(^|\/\/)id\.net\/api\/user_data/i;
-      function isBadScript(n){ return n && n.tagName==='SCRIPT' && typeof n.src==='string' && BAD.test(n.src); }
-      const patch = (proto, method) => {
-        const orig = proto[method];
+      var BAD_JSONP = /(^|\/\/)id\.net\/api\/user_data/i;
+      function badScript(n){ return n && n.tagName==='SCRIPT' && typeof n.src==='string' && BAD_JSONP.test(n.src); }
+      function patchAppend(proto, method){
+        var orig = proto[method];
         if (!orig) return;
         proto[method] = function(){
-          for (let i=0;i<arguments.length;i++){
-            const n = arguments[i];
-            if (isBadScript(n)){ console.warn('Blocked id.net JSONP:', n.src); return n; }
+          for (var i=0;i<arguments.length;i++){
+            var n = arguments[i];
+            if (badScript(n)){ console.warn('Blocked id.net JSONP:', n.src); return n; }
           }
           return orig.apply(this, arguments);
         };
-      };
-      patch(HTMLHeadElement.prototype, 'appendChild');
-      patch(HTMLElement.prototype, 'appendChild');
-      patch(HTMLElement.prototype, 'append');
+      }
+      patchAppend(HTMLHeadElement.prototype,'appendChild');
+      patchAppend(HTMLElement.prototype,'appendChild');
+      patchAppend(HTMLElement.prototype,'append');
       try{
-        const W = document.write.bind(document);
-        const WL = document.writeln.bind(document);
-        const strip = s => typeof s==='string'
+        var W = document.write.bind(document);
+        var WL = document.writeln.bind(document);
+        var strip = function(s){ return typeof s==='string'
           ? s.replace(/<script[^>]+src=["'][^"']*id\.net\/api\/user_data[^"']*["'][^>]*>\s*<\/script>/ig,'')
-          : s;
-        document.write = html => W(strip(html));
-        document.writeln = html => WL(strip(html));
+          : s; };
+        document.write   = function(h){ W(strip(h)); };
+        document.writeln = function(h){ WL(strip(h)); };
       }catch(e){}
+    })();
+    // Fetch + XHR block: any request hitting id.net is rejected/aborted
+    (function(){
+      var BAD = /(^|\/\/)id\.net(\/|$)/i;
+      // fetch
+      var _fetch = window.fetch;
+      if (typeof _fetch === "function"){
+        window.fetch = function(input, init){
+          try{
+            var url = (typeof input === "string") ? input : (input && input.url) || "";
+            if (BAD.test(url)){ console.warn("Blocked id.net fetch:", url); return Promise.reject(new Error("Blocked id.net")); }
+          }catch(e){}
+          return _fetch.apply(this, arguments);
+        };
+      }
+      // XHR
+      var _open = XMLHttpRequest.prototype.open;
+      XMLHttpRequest.prototype.open = function(method, url){
+        try{
+          if (BAD.test(String(url))){ console.warn("Blocked id.net XHR:", url); this.__blocked = true; }
+        }catch(e){}
+        return _open.apply(this, arguments);
+      };
+      var _send = XMLHttpRequest.prototype.send;
+      XMLHttpRequest.prototype.send = function(body){
+        if (this.__blocked){ try{ this.abort(); }catch(e){} return; }
+        return _send.apply(this, arguments);
+      };
     })();
   </script>
 
   <style>
     :root{
       --brand:#5ee1ff; --brand2:#9bffb7;
-      --bg:#101218; --bg2:#0b0d12;
+      --bg:#131419; --bg2:#0d0f14;
       --text:#e8f3ff; --muted:#b9d7ff;
-      --green:#76ff7a; --red:#ff6b6b; --gold:#ffe27a;
-      --shadow:0 10px 28px rgba(0,0,0,.5);
+      --shadow:0 8px 28px rgba(0,0,0,.45);
       --glow:0 0 12px rgba(94,225,255,.65), 0 0 24px rgba(155,255,183,.35);
+      --green:#76ff7a; --red:#ff6b6b;
     }
-    html,body{
-      margin:0; padding:0; height:100%; overflow:hidden;
-      background:radial-gradient(1200px 800px at 50% 40%, #131724 0%, var(--bg) 60%, var(--bg2) 100%);
-      color:var(--text); font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
-    }
+    html,body{ margin:0; padding:0; height:100%; overflow:hidden;
+      background:linear-gradient(180deg,var(--bg),var(--bg2)); color:var(--text);
+      font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif; }
 
-    /* Game mount */
     .webgl-content{ position:fixed; inset:0; display:flex; align-items:center; justify-content:center; }
     #gameContainer{ width:100vw; height:100vh; background:transparent; }
 
@@ -112,80 +121,67 @@
       border:1px solid rgba(94,225,255,.35);
       box-shadow:var(--glow), var(--shadow);
       font-size:14px; backdrop-filter: blur(8px);
-      animation:menuIn .5s ease .15s both;
     }
-    @keyframes menuIn{ from{opacity:0; transform:translateY(-6px)} to{opacity:1; transform:none} }
     #staticMenu a{ color:var(--brand); text-decoration:none; font-weight:800; }
     #closeStaticMenu{
       color:#f55; cursor:pointer; padding:2px 6px; border-radius:6px;
-      border:1px solid rgba(255,255,255,.18); background:rgba(255,255,255,.06);
+      border:1px solid rgba(255,255,255,.15); background:rgba(255,255,255,.06);
       user-select:none;
     }
 
-    /* Loader Cover */
+    /* Loader cover: visible immediately, no fade-in on the cover */
     #loaderCover{
-      position:fixed; inset:0; z-index:10; display:flex;
-      flex-direction:column; align-items:center; justify-content:center; gap:18px;
-      text-align:center; pointer-events:auto;
-      background:radial-gradient(1400px 900px at 50% 42%, #11182a 0%, #0e1119 60%, #0b0d12 100%);
+      position:fixed; inset:0; z-index:10;
+      background:radial-gradient(1200px 800px at 50% 40%, #1a2130 0%, #0d0f14 60%, #090b10 100%);
+      display:flex; flex-direction:column; align-items:center; justify-content:center; gap:18px;
+      text-align:center;
+      /* No opacity/animation here -> the cover itself appears immediately */
     }
+    /* Inner elements can fade */
+    .fadeInFast{ opacity:0; animation:fadeIn .5s ease .05s forwards; }
+    .fadeInMed{  opacity:0; animation:fadeIn .7s ease .20s forwards; }
+    .fadeInSlow{ opacity:0; animation:fadeIn .9s ease .35s forwards; }
+    @keyframes fadeIn{ from{opacity:0; transform:translateY(2px)} to{opacity:1; transform:none}}
 
     .announce{
       position:absolute; top:5%; left:50%; transform:translateX(-50%);
-      max-width:92vw; padding:6px 12px;
-      font-size:48px; font-weight:1000; letter-spacing:.2px; line-height:1.1;
+      max-width:92vw;
+      font-size:42px; font-weight:1000; letter-spacing:.2px; line-height:1.1;
       color:#eafbff; text-shadow:0 3px 12px rgba(0,0,0,.55);
     }
 
-    /* Logos row */
     .logo-row{
-      display:flex; align-items:center; justify-content:center; gap:16px;
-      margin-top:46px;
+      display:flex; align-items:center; justify-content:center; gap:18px;
+      opacity:.98; margin-top:38px;
     }
     .sq-logo, .unity-logo{
       width:90px; height:90px; border-radius:16px; overflow:hidden;
-      display:flex; align-items:center; justify-content:center; background:#0b0d12;
-      box-shadow:0 10px 34px rgba(94,225,255,.25); animation:logoFade 4s ease-in-out infinite;
+      box-shadow:0 10px 34px rgba(94,225,255,.25);
+      background:#0b0d12;
+      display:flex; align-items:center; justify-content:center;
     }
-    @keyframes logoFade{ 0%,100%{opacity:.78} 50%{opacity:1} }
     .sq-logo img{ width:100%; height:100%; object-fit:cover; }
-    .unity-logo img{ width:82%; height:82%; object-fit:contain; opacity:.92; background:transparent !important; }
+    .unity-logo img{ width:82%; height:82%; object-fit:contain; background:transparent !important; opacity:.92; }
 
-    /* Intro */
-    .intro{ display:flex; flex-direction:column; align-items:center; gap:8px; user-select:none; }
+    .intro{ display:flex; flex-direction:column; align-items:center; gap:8px; user-select:none; margin-top:2px; }
     .intro a{ color:#cfe9ff; text-decoration:none; }
-    .intro .title{
-      font-weight:1000; letter-spacing:.3px; font-size:18px; opacity:0;
-      text-shadow:0 2px 10px rgba(0,0,0,.5);
-      animation:fadeIn .8s ease .2s forwards, fadeOut .6s ease 2.6s forwards;
-    }
-    .intro .subtitle{
-      font-weight:900; letter-spacing:.3px; font-size:16px; opacity:0;
-      text-shadow:0 2px 10px rgba(0,0,0,.5);
-      animation:fadeIn .9s ease 3.2s forwards;
-    }
-    .sq-banner{
-      font-weight:900; color:#d2eeff;
-      opacity:0; animation:bannerIn .9s ease 3.6s forwards, bannerPulse 6s ease-in-out 4.0s infinite;
-    }
-    @keyframes fadeIn{ from{opacity:0; transform:translateY(2px)} to{opacity:1; transform:none}}
-    @keyframes fadeOut{ to{opacity:0} }
-    @keyframes bannerIn{ to{opacity:1} }
-    @keyframes bannerPulse{ 0%,100%{filter:brightness(1)} 50%{filter:brightness(1.08)} }
+    .intro .title{ font-weight:1000; letter-spacing:.3px; font-size:18px; }
+    .intro .subtitle{ font-weight:900; letter-spacing:.3px; font-size:16px; }
+    .sq-banner{ font-weight:900; color:#d2eeff; }
 
-    /* Loader bar */
-    .loader-wrap{ width:100%; display:flex; flex-direction:column; align-items:center; gap:8px; }
     .loader-bar{
-      position:relative; width:min(720px, 92vw); height:26px; border-radius:13px; overflow:hidden;
-      background:linear-gradient(180deg, rgba(255,255,255,.10), rgba(255,255,255,.03));
+      position:relative;
+      width:min(680px, 92vw); height:26px; border-radius:13px; overflow:hidden;
+      background:linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.03));
       box-shadow:inset 0 0 0 1px rgba(255,255,255,.10), inset 0 6px 12px rgba(0,0,0,.25), var(--shadow);
+      margin-inline:auto;
     }
     .loader-fill{
       height:100%; width:0%;
       background:
-        linear-gradient(90deg, rgba(255,255,255,.22) 0%, rgba(255,255,255,0) 35%),
+        linear-gradient(90deg, rgba(255,255,255,.25) 0%, rgba(255,255,255,0) 35%),
         linear-gradient(90deg, var(--brand), var(--brand2));
-      transition:width .06s linear;
+      transition:width .05s linear;
     }
     .light{
       position:absolute; top:6px; width:12px; height:14px; border-radius:4px;
@@ -193,23 +189,27 @@
     }
     #greenLight{ background:var(--green); left:80%; }
     #redLight{ background:var(--red); left:50%; }
-    #goldLight{ background:var(--gold); left:96%; }
     .light.on{ opacity:1; }
     .glow{ box-shadow:0 0 14px currentColor, 0 0 28px currentColor; }
 
     .loader-meta{
-      width:min(720px, 92vw);
+      width:min(680px, 92vw); margin-inline:auto;
       display:flex; justify-content:space-between; align-items:center;
-      color:var(--muted); font-weight:800; font-variant-numeric:tabular-nums; letter-spacing:.3px;
+      color:var(--muted); font-weight:700; font-variant-numeric:tabular-nums; letter-spacing:.3px;
       text-shadow:0 1px 0 rgba(0,0,0,.35);
     }
 
-    /* Help and buttons */
+    .tipline{
+      position:absolute; left:16px; bottom:14px; color:#cfe9ff; font-size:13px; opacity:.92;
+      text-align:left; width:min(820px, 92vw);
+    }
+
     .btn{
       appearance:none; border:1px solid rgba(255,255,255,.18); background:rgba(255,255,255,.06);
-      color:#eaf6ff; border-radius:10px; padding:8px 12px; font-weight:800; cursor:pointer;
+      color:#eaf6ff; border-radius:10px; padding:8px 12px; font-weight:700; cursor:pointer;
     }
     .btn:hover{ filter:brightness(1.08); }
+
     #needHelpBtn{
       position:fixed; right:28px; bottom:50%; transform:translateY(160px);
       z-index:11;
@@ -222,81 +222,43 @@
       position:fixed; inset:auto 16px 16px auto; z-index:11; width:min(560px, 92vw);
       background:linear-gradient(135deg, rgba(20,24,36,.96), rgba(14,16,24,.9));
       border:1px solid rgba(94,225,255,.35); box-shadow:var(--glow), var(--shadow);
-      border-radius:14px; padding:14px; display:none; text-align:left;
+      border-radius:14px; padding:14px; display:none;
     }
     .help-pop h3{ margin:0 0 6px; font-size:16px }
     .help-pop p{ margin:6px 0; font-size:14px; color:#cee6ff }
     .help-pop a{ color:#5ee1ff; font-weight:800; text-decoration:underline }
-
-    /* Tip area */
-    #tipArea{
-      position:absolute; left:16px; bottom:16px; max-width: min(720px, 86vw);
-      color: var(--muted); font-weight: 800; font-size: 13.5px; line-height: 1.25;
-      letter-spacing:.2px; text-shadow:0 1px 0 rgba(0,0,0,.35);
-      display:flex; gap:8px; align-items:baseline; opacity:.96;
-    }
-    #tipLabel{ color:#cfe9ff; font-weight:1000; opacity:.95; }
 
     /* Key banners */
     .fly{
       position:fixed; z-index:12; pointer-events:auto;
       padding:12px 16px; border-radius:12px;
       background:rgba(20,24,36,.92); border:1px solid rgba(94,225,255,.35);
-      color:#bfe7ff; font-weight:900; text-decoration:none; white-space:nowrap;
+      color:#bfe7ff; font-weight:800; text-decoration:none;
       box-shadow:var(--glow), var(--shadow);
-      will-change: transform, opacity;
-      contain: layout paint;
-      max-width:60vw;
+      top:12%; left:-40%;
+      animation:flyAcross 8s ease-in-out forwards;
+      will-change: transform, left, opacity;
     }
-    /* straight L to R */
-    .fx-straight{ top:12%; left:-40%; animation:fxStraight 6s ease-in-out forwards; }
-    @keyframes fxStraight{
-      0%{ transform:translateX(0); opacity:0 }
-      10%{ transform:translateX(42vw); opacity:1 }
-      50%{ transform:translateX(86vw); opacity:1 }
-      95%{ transform:translateX(100vw); opacity:1 }
-      100%{ transform:translateX(112vw); opacity:0 }
+    @keyframes flyAcross{
+      0%{ left:-40%; opacity:0 }
+      10%{ left:2%; opacity:1 }
+      50%{ left:48%; opacity:1 }
+      95%{ left:96%; opacity:1 }
+      100%{ left:110%; opacity:0 }
     }
-    /* arc like a plane */
-    .fx-arc{ top:18%; left:-40%; animation:fxArc 7s ease-in-out forwards; }
-    @keyframes fxArc{
-      0%{ transform:translate(0,0); opacity:0 }
-      15%{ transform:translate(16vw,-2vh); opacity:1 }
-      40%{ transform:translate(42vw,-4vh); opacity:1 }
-      75%{ transform:translate(82vw,-1vh); opacity:1 }
-      100%{ transform:translate(112vw,0); opacity:0 }
-    }
-    /* plane look */
-    .fx-plane{ top:22%; left:-40%; padding:10px 14px 10px 38px; animation:fxPlane 7s ease-in-out forwards; }
-    .fx-plane::before{
-      content:"✈"; position:absolute; left:10px; top:50%; transform:translateY(-52%); opacity:.9;
-      filter:drop-shadow(0 2px 2px rgba(0,0,0,.4));
-    }
-    @keyframes fxPlane{
-      0%{ transform:translate(0,0) rotate(-1deg); opacity:0 }
-      10%{ transform:translate(10vw,-1vh) rotate(0deg); opacity:1 }
-      55%{ transform:translate(56vw,-2vh) rotate(1deg); opacity:1 }
-      90%{ transform:translate(98vw,-1vh) rotate(0deg); opacity:1 }
-      100%{ transform:translate(112vw,0) rotate(0deg); opacity:0 }
-    }
-    /* vertical weave */
-    .fx-weave{ left:-40%; animation:fxWeave 7s ease-in-out forwards; }
-    @keyframes fxWeave{
-      0%{ top:28%; transform:translateX(0); opacity:0 }
-      10%{ top:26%; transform:translateX(16vw); opacity:1 }
-      35%{ top:30%; transform:translateX(42vw); opacity:1 }
-      70%{ top:24%; transform:translateX(82vw); opacity:1 }
-      100%{ top:28%; transform:translateX(112vw); opacity:0 }
-    }
+    .fly.t2{ top:22% }
+    .fly.t3{ top:32% }
+    .fly.t4{ top:18% }
+    .fly.t5{ top:26% }
 
-    .coverFade{ animation:coverFade .25s ease forwards; }
-    @keyframes coverFade{ to{ opacity:0; visibility:hidden; pointer-events:none } }
+    /* Hide the loader instantly when asked to hide */
+    .coverHide{ opacity:0; visibility:hidden; transition:opacity .22s ease; }
 
     /* Hidden SEO */
     .seo-hidden{ position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(1px,1px,1px,1px); white-space:nowrap; }
   </style>
 
-  <!-- Local Unity loader -->
+  <!-- Unity loader -->
   <script src="UnityLoader.js"></script>
 </head>
 <body>
@@ -306,54 +268,48 @@
     <span id="closeStaticMenu" title="Hide temporarily">✕</span>
   </div>
 
-  <!-- Loader -->
+  <!-- Loader cover: visible immediately -->
   <div id="loaderCover" role="status" aria-live="polite">
-    <div class="announce">Now works without turning off internet</div>
+    <div class="announce fadeInFast">Now works without turning off internet</div>
 
-    <div class="logo-row">
-      <a class="sq-logo" href="https://sites.google.com/view/staticquasar931/gm3z" target="_blank" rel="noopener" title="StaticQuasar931 hub">
+    <div class="logo-row fadeInMed">
+      <div class="sq-logo">
         <img src="https://res.cloudinary.com/dcsrqennd/image/upload/v1760208794/My%20Brand/Static_pfp_2_nqzjkd.jpg" alt="StaticQuasar931 logo">
-      </a>
-      <div class="unity-logo" title="Unity">
+      </div>
+      <div class="unity-logo">
         <img src="https://res.cloudinary.com/dlq5fztla/image/upload/v1760307222/unity_i4qjdf.png" alt="Unity logo">
       </div>
     </div>
 
-    <div class="intro" id="intro">
+    <div class="intro fadeInSlow" id="intro">
       <a href="https://sites.google.com/view/staticquasar931/gm3z" target="_blank" rel="noopener" id="introLink">
         <div class="title">StaticQuasar931 Unblocked Games Presents</div>
-        <div class="subtitle">Slope stable unblocked high quality version</div>
+        <div class="subtitle">Slope Stable Unblocked High Quality version</div>
         <div class="sq-banner">Visit the hub for more games</div>
       </a>
     </div>
 
-    <div class="loader-wrap">
-      <div class="loader-bar">
-        <div class="loader-fill" id="loaderFill"></div>
-        <div id="greenLight" class="light"></div>
-        <div id="redLight" class="light"></div>
-        <div id="goldLight" class="light"></div>
-      </div>
-      <div class="loader-meta">
-        <small id="loaderMsg">Initializing WebGL</small>
-        <div id="loaderPct">0%</div>
-      </div>
+    <div class="loader-bar fadeInMed">
+      <div class="loader-fill" id="loaderFill"></div>
+      <div id="greenLight" class="light"></div>
+      <div id="redLight" class="light"></div>
     </div>
+
+    <div class="loader-meta fadeInSlow">
+      <small id="loaderMsg">Initializing WebGL</small>
+      <div id="loaderPct">0%</div>
+    </div>
+
+    <div id="tipLine" class="tipline fadeInSlow">Loading tips...</div>
 
     <button class="btn" id="needHelpBtn" type="button">Need help?</button>
-
-    <!-- Tips area -->
-    <div id="tipArea" aria-live="polite">
-      <span id="tipLabel">Tip:</span>
-      <span id="tipLine"></span>
-    </div>
   </div>
 
   <!-- Help popup -->
   <div class="help-pop" id="helpPopup" role="dialog" aria-modal="true" aria-labelledby="hpTitle">
-    <h3 id="hpTitle">Troubleshooting Slope - School tips</h3>
+    <h3 id="hpTitle">Troubleshooting Slope - School Tips</h3>
     <p>You should no longer need to turn off your internet, but if the game loads and looks frozen, try this:</p>
-    <p>1) When the green light in the bar flickers near 80 percent, wait a moment.</p>
+    <p>1) When the green light inside the bar flickers near 80 percent, wait a moment.</p>
     <p>2) Turn off your Wi-Fi.</p>
     <p>3) Let the game finish loading.</p>
     <p>Help: <a target="_blank" rel="noopener" id="helpLink">open the help page</a>. If that does not help, use the <a target="_blank" rel="noopener" id="formLink">Google Form</a>.</p>
@@ -371,280 +327,338 @@
   </div>
 
   <script>
-  "use strict";
+    // Leave warning
+    window.onbeforeunload = () => "Are you sure you want to leave? Your progress may not be saved.";
 
-  // viewport sizing
-  function fitGame(){
-    const el = document.getElementById("gameContainer");
-    if (!el) return;
-    const h = window.visualViewport ? window.visualViewport.height : window.innerHeight;
-    el.style.width  = window.innerWidth + "px";
-    el.style.height = h + "px";
-  }
-  addEventListener("resize", fitGame, {passive:true});
-  if (window.visualViewport) window.visualViewport.addEventListener("resize", fitGame, {passive:true});
-
-  // menu close with auto-restore
-  (function(){
-    const menu = document.getElementById("staticMenu");
-    const btn  = document.getElementById("closeStaticMenu");
-    if (!menu || !btn) return;
-    btn.onclick = () => {
-      menu.style.display = "none";
-      setTimeout(()=>{ menu.style.display = "flex"; }, 180000);
-    };
-  })();
-
-  // Y+U+I toggle for menu
-  (function(){
-    const menu  = document.getElementById("staticMenu");
-    const targets = [menu];
-    const original = new Map(targets.map(el => [el, el ? getComputedStyle(el).display || "" : ""]));
-    let hidden = false;
-    const down = new Set();
-    function setHidden(h){
-      hidden = h;
-      targets.forEach(el=>{
-        if (!el) return;
-        el.style.display = hidden ? "none" : (original.get(el) || "");
-      });
+    // Fit canvas to viewport
+    function fitGame(){
+      const el = document.getElementById("gameContainer");
+      if (!el) return;
+      const h = window.visualViewport ? window.visualViewport.height : window.innerHeight;
+      el.style.width  = window.innerWidth + "px";
+      el.style.height = h + "px";
     }
-    function checkCombo(){
-      if (down.has("y") && down.has("u") && down.has("i")){
-        setHidden(!hidden);
-      }
-    }
-    window.addEventListener("keydown", (e)=>{
-      const k = e.key && e.key.toLowerCase();
-      if (k === "y" || k === "u" || k === "i"){ down.add(k); checkCombo(); }
-    }, {passive:true});
-    window.addEventListener("keyup", (e)=>{
-      const k = e.key && e.key.toLowerCase();
-      if (k === "y" || k === "u" || k === "i"){ down.delete(k); }
-    }, {passive:true});
-  })();
+    addEventListener("resize", fitGame, {passive:true});
+    if (window.visualViewport) window.visualViewport.addEventListener("resize", fitGame, {passive:true});
 
-  // help popup
-  (function(){
-    const btn = document.getElementById("needHelpBtn");
-    const pop = document.getElementById("helpPopup");
-    const cls = document.getElementById("helpClose");
-    const helpA = document.getElementById("helpLink");
-    const formA = document.getElementById("formLink");
-    if (!btn || !pop || !cls || !helpA || !formA) return;
-    const helpURL = "https://sites.google.com/view/staticquasar931/home/help-faq?source_utmwhateverslopewhatnot=&utm_source=slope&utm_medium=loader_help#h.qjb289kqv0nd";
-    const formURL = "https://sites.google.com/view/staticquasar931/google-form?utm_source=slope&utm_medium=loader_help";
-    helpA.href = helpURL; formA.href = formURL;
-    btn.addEventListener("click", ()=>{ pop.style.display = "block"; });
-    cls.addEventListener("click", ()=>{ pop.style.display = "none"; });
-  })();
-
-  // key banners with per-key 0.2s cooldown
-  (function(){
-    const cooldown = new Map();
-    function canFire(key){
-      const now = performance.now();
-      const next = cooldown.get(key) || 0;
-      if (now < next) return false;
-      cooldown.set(key, now + 200);
-      return true;
-    }
-    function spawn(text, href, fxClass){
-      const a = document.createElement("a");
-      a.className = "fly " + fxClass;
-      a.href = href; a.target = "_blank"; a.rel = "noopener";
-      a.textContent = text;
-      document.body.appendChild(a);
-      setTimeout(()=>{ a.remove(); }, 7200);
-    }
-    window.addEventListener("keydown", e=>{
-      const key = (e.key || "").toLowerCase();
-      if (["w","a","s","d","q","e","arrowup","arrowdown","arrowleft","arrowright"].includes(key)) return;
-      if (key === " "){
-        e.preventDefault();
-        if (!canFire("space")) return;
-        spawn("Play games on StaticQuasar931","https://sites.google.com/view/staticquasar931/gm3z","fx-straight");
-      } else if (key === "shift"){
-        if (!canFire("shift")) return;
-        spawn("Report an issue","https://sites.google.com/view/staticquasar931/google-form?utm_source=slope&utm_medium=key_shift","fx-arc");
-      } else if (key === "k"){
-        if (!canFire("k")) return;
-        spawn("Join the Discord","https://discord.gg/DP2hM7RRhR","fx-plane");
-      } else if (key === "m"){
-        if (!canFire("m")) return;
-        spawn("Follow on Instagram","https://www.instagram.com/freeschoolgamepage/","fx-weave");
-      } else if (key === "x"){
-        if (!canFire("x")) return;
-        spawn("Static other games","https://sites.google.com/view/staticquasar931/gm3z","fx-straight");
-      }
-    }, {passive:false});
-  })();
-
-  // tips: randomized order per session, rotate every 4s
-  (function(){
-    const line = document.getElementById("tipLine");
-    if (!line) return;
-    const tips = [
-      "Use D to go right. Unless you are facing left. Then you are wrong.",
-      "Jumping is faster. Probably.",
-      "Red things? Do not touch those.",
-      "You cannot win if you lose. Think about it.",
-      "Enemies cannot kill you if you quit first.",
-      "Press random keys to discover secrets.",
-      "Lag is the universe taking a break.",
-      "Coins do not improve your real finances.",
-      "Gravity is on. Always.",
-      "Try not dying. It helps a lot.",
-      "If you cannot find the exit, maybe you are the exit.",
-      "Reloading is faster than dying.",
-      "Are you sure you want to quit? No one ever is.",
-      "If you punch a wall hard enough, the wall wins.",
-      "Standing in rain makes you wet.",
-      "Falling hurts more the higher you go.",
-      "Eating food stops hunger for a bit.",
-      "Walk long enough and you will be somewhere else.",
-      "Clouds are not solid. Do not test.",
-      "Breathing underwater works once.",
-      "Press W to advance destiny and your character.",
-      "If it glows, click it. If it explodes, remember it.",
-      "Loot everything. Especially what you do not need.",
-      "The tutorial is optional until it is not.",
-      "Friendly fire is funny once.",
-      "Saving prevents tragedy. Usually.",
-      "Boss fights are normal fights with louder music.",
-      "The game is not cheating. You are losing correctly.",
-      "Most doors open. Try it.",
-      "Traffic lights do not care about your schedule.",
-      "Socks come in pairs until they do not.",
-      "Coffee is legal energy theft.",
-      "You cannot press escape on real life.",
-      "Stairs are vertical regrets.",
-      "Time flies and never lands.",
-      "Life is the longest unskippable cutscene."
-    ];
-    function shuffle(arr){
-      const a = arr.slice();
-      for (let i=a.length-1;i>0;i--){
-        const j = Math.floor(Math.random()*(i+1));
-        [a[i],a[j]]=[a[j],a[i]];
-      }
-      return a;
-    }
-    const order = shuffle(tips);
-    let i = Math.floor(Math.random()*order.length);
-    function show(){
-      line.textContent = order[i];
-      i = (i + 1) % order.length;
-    }
-    show();
-    setInterval(show, 4000);
-  })();
-
-  // real progress loader only
-  (function(){
-    const cover = document.getElementById("loaderCover");
-    const fill  = document.getElementById("loaderFill");
-    const pctEl = document.getElementById("loaderPct");
-    const msgEl = document.getElementById("loaderMsg");
-    const green = document.getElementById("greenLight");
-    const red   = document.getElementById("redLight");
-    const gold  = document.getElementById("goldLight");
-
-    let reported = 0;
-    let lastUpdate = performance.now();
-    let hid = false;
-
-    function render(){
-      const pct = Math.max(0, Math.min(100, Math.round(reported*100)));
-      fill.style.width = pct + "%";
-      pctEl.textContent = pct + "%";
-      // lights
-      if (reported >= 0.78 && reported <= 0.86){ green.classList.add("on","glow"); } else { green.classList.remove("on","glow"); }
-      if (reported >= 0.96){ gold.classList.add("on","glow"); } else { gold.classList.remove("on","glow"); }
-    }
-
-    // slow network indicator
-    setInterval(()=>{
-      if (hid) return;
-      const age = performance.now() - lastUpdate;
-      if (age > 6000){
-        red.classList.add("on","glow");
-        if (msgEl) msgEl.textContent = "Network is slow. Please wait";
-      } else {
-        red.classList.remove("on","glow");
-      }
-    }, 600);
-
-    function hideCover(){
-      if (hid) return;
-      hid = true;
-      cover.classList.add("coverFade");
-      setTimeout(()=>{ cover.style.display = "none"; }, 260);
-    }
-
-    // expose for Unity onProgress
-    window.SQProgress = function(_game, p){
-      if (typeof p === "number"){
-        if (p > reported){
-          reported = Math.min(1, p);
-          lastUpdate = performance.now();
-          render();
-        }
-        if (p >= 1){
-          // Give Unity a moment to paint a frame then hide
-          setTimeout(hideCover, 150);
-        }
-      }
-    };
-
-    // canvas watchdog as a backup in case onProgress reaches 1 but cover stays
+    // Hide and restore menu button
     (function(){
-      const container = document.getElementById("gameContainer");
-      function watch(){
-        if (hid) return;
-        const c = container && container.querySelector("canvas");
-        if (c && c.width > 0 && c.height > 0){
-          try{
-            const gl = c.getContext("webgl2") || c.getContext("webgl") || c.getContext("experimental-webgl");
-            if (gl && gl.drawingBufferWidth > 0 && gl.drawingBufferHeight > 0){
-              hideCover();
-              return;
-            }
-          }catch(_){}
-        }
-        requestAnimationFrame(watch);
-      }
-      requestAnimationFrame(watch);
+      const menu = document.getElementById("staticMenu");
+      const btn  = document.getElementById("closeStaticMenu");
+      if (!btn || !menu) return;
+      btn.onclick = () => {
+        menu.style.display = "none";
+        setTimeout(()=>{ menu.style.display = "flex"; }, 180000);
+      };
     })();
 
-    // also hide when runtime says ready
-    window.__SQ_onRuntimeReady = hideCover;
-  })();
-
-  function startUnity(){
-    fitGame();
-    try{
-      if (window.UnityLoader && typeof UnityLoader.instantiate === "function"){
-        window.gameInstance = UnityLoader.instantiate("gameContainer", "slope_new.json", {
-          onProgress: window.SQProgress,
-          Module: {
-            onRuntimeInitialized: function(){ window.__SQ_onRuntimeReady && window.__SQ_onRuntimeReady(); },
-            postRun: function(){ window.__SQ_onRuntimeReady && window.__SQ_onRuntimeReady(); }
-          }
+    // Y+U+I toggle for Static UI
+    (function(){
+      const menu  = document.getElementById("staticMenu");
+      const targets = [menu];
+      const original = new Map(targets.map(el => [el, el ? getComputedStyle(el).display || "" : ""]));
+      let hidden = false;
+      const down = new Set();
+      function setHidden(h){
+        hidden = h;
+        targets.forEach(el=>{
+          if (!el) return;
+          el.style.display = hidden ? "none" : (original.get(el) || "");
         });
-      } else {
-        console.error("UnityLoader.js missing or invalid");
-        document.getElementById("loaderCover").classList.add("coverFade");
       }
-    } catch (e){
-      console.error("Unity failed to start:", e);
-      document.getElementById("loaderCover").classList.add("coverFade");
-    }
-  }
-  window.addEventListener("load", startUnity);
+      function checkCombo(){
+        if (down.has("y") && down.has("u") && down.has("i")){
+          setHidden(!hidden);
+        }
+      }
+      window.addEventListener("keydown", (e)=>{
+        const k = e.key && e.key.toLowerCase();
+        if (k === "y" || k === "u" || k === "i"){ down.add(k); checkCombo(); }
+      }, {passive:true});
+      window.addEventListener("keyup", (e)=>{
+        const k = e.key && e.key.toLowerCase();
+        if (k === "y" || k === "u" || k === "i"){ down.delete(k); }
+      }, {passive:true});
+    })();
 
-  // polite unload guard
-  window.onbeforeunload = () => "Are you sure you want to leave? Your progress may not be saved.";
+    // Help popup with proper links
+    (function(){
+      const btn = document.getElementById("needHelpBtn");
+      const pop = document.getElementById("helpPopup");
+      const cls = document.getElementById("helpClose");
+      const helpA = document.getElementById("helpLink");
+      const formA = document.getElementById("formLink");
+      if (!btn || !pop || !cls || !helpA || !formA) return;
+      const helpURL = "https://sites.google.com/view/staticquasar931/home/help-faq?source_utmwhateverslopewhatnot=&utm_source=slope&utm_medium=loader_help#h.qjb289kqv0nd";
+      const formURL = "https://sites.google.com/view/staticquasar931/google-form?utm_source=slope&utm_medium=loader_help";
+      helpA.href = helpURL; formA.href = formURL;
+      btn.addEventListener("click", ()=>{
+        pop.style.display = "block";
+        pop.setAttribute("tabindex","-1"); pop.focus();
+      });
+      cls.addEventListener("click", ()=>{
+        pop.style.display = "none";
+      });
+    })();
+
+    // Key banners - Space, Shift, K, M, X
+    (function(){
+      const LINKS = {
+        space: { text:"Play games on StaticQuasar931", href:"https://sites.google.com/view/staticquasar931/gm3z", cls:"t2" },
+        shift: { text:"Report an issue", href:"https://sites.google.com/view/staticquasar931/google-form?utm_source=slope&utm_medium=key_shift", cls:"t3" },
+        k:     { text:"Join the Discord", href:"https://discord.gg/DP2hM7RRhR", cls:"t4" },
+        m:     { text:"Follow on Instagram", href:"https://www.instagram.com/freeschoolgamepage/", cls:"t5" },
+        x:     { text:"Static other games", href:"https://sites.google.com/view/staticquasar931/gm3z", cls:"" }
+      };
+      const lastShown = {};
+      const MIN_GAP_MS = 200; // per-key cooldown
+      let nextLane = 0;
+      const lanes = ["", " t2", " t3", " t4", " t5"];
+
+      function banner(text, href, laneCls){
+        const a = document.createElement("a");
+        a.className = "fly" + (laneCls || "");
+        a.href = href; a.target = "_blank"; a.rel = "noopener";
+        a.textContent = text;
+        document.body.appendChild(a);
+        setTimeout(()=>{ a.remove(); }, 8200);
+      }
+
+      window.addEventListener("keydown", e=>{
+        const k = (e.key || "").toLowerCase();
+        if (["w","a","s","d","q","e","arrowup","arrowdown","arrowleft","arrowright"].includes(k)) return;
+        if (k===" " || k==="shift" || k==="k" || k==="m" || k==="x"){
+          if (k===" ") e.preventDefault();
+          const id = k===" " ? "space" : k;
+          const cfg = LINKS[id];
+          const now = performance.now();
+          if (!cfg) return;
+          if (lastShown[id] && now - lastShown[id] < MIN_GAP_MS) return;
+          lastShown[id] = now;
+          const lane = lanes[nextLane % lanes.length]; nextLane++;
+          banner(cfg.text, cfg.href, lane);
+        }
+      }, {passive:false});
+    })();
+
+    // Tip list, random order each load, rotate while loader is up only
+    (function(){
+      const tips = [
+        // Original set
+        "Use D to go right. Unless you’re facing left. Then you’re wrong.",
+        "Jumping is faster. Probably.",
+        "Red things? Yeah, don’t touch those.",
+        "The pause button pauses the game. Revolutionary. (Just not here lol)",
+        "You can’t win if you lose. Think about it.",
+        "Enemies can’t kill you if you quit first.",
+        "Pressing random keys sometimes makes cool sounds. (try it!)",
+        "Lag is just the universe taking a break.",
+        "Sprinting drains stamina. Sitting still doesn’t.",
+        "Fire hurts. It’s been tested.",
+        "Collecting coins doesn’t improve your real finances.",
+        "Gravity is on. Always.",
+        "Try not dying. It helps a lot.",
+        "The walls exist for a reason.",
+        "If you can’t find the exit… maybe you are the exit.",
+        "Taking fall damage? Just don’t fall.",
+        "The secret door isn’t that secret.",
+        "Reloading is faster than dying.",
+        "The save button saves. Unless it doesn’t.",
+        "Are you sure you want to quit? No one ever is.",
+        // Real life
+        "Bathrooms often have sinks. Use them.",
+        "Don’t lick doorknobs on other planets. Or this one.",
+        "You can’t lose a fight if you don’t show up.",
+        "If it’s on fire, it’s probably hot.",
+        "If it’s glowing green, that’s not food.",
+        "Breathing is a good daily habit.",
+        "Standing up is faster than lying down, usually.",
+        "The floor is reliable. It’s always there for you.",
+        "If you drop something, gravity wins. Every time.",
+        "Time only moves forward — plan accordingly.",
+        "Chairs are like sitting upgrades.",
+        "Hot water is just aggressive water.",
+        "You can’t spell snack without ack.",
+        "Most doors open when you pull the right way.",
+        "Running upstairs is fun until it’s not.",
+        "Sleep is the human loading screen.",
+        "Forgetting something means you’ll remember it later.",
+        "Socks improve walking DLC.",
+        "Birds don’t know what Wi-Fi is.",
+        "The fridge light goes out when you close the door. Or does it?",
+        // Obvious
+        "If you punch a wall hard enough, the wall wins.",
+        "Most houses have a floor. Incredible technology.",
+        "Standing in rain makes you wet.",
+        "Falling hurts more the higher you go.",
+        "The sun is really bright. Do not stare at it.",
+        "Eating food stops hunger for a bit.",
+        "Water is often found in wet places.",
+        "If you walk long enough, you’ll be somewhere else.",
+        "Hitting your head hurts, no matter how confident you are.",
+        "If something’s hot, it’s not cold.",
+        "Running into trees is rarely productive.",
+        "If your phone battery dies, it turns off.",
+        "Jumping off cliffs isn’t a reusable strategy.",
+        "Keys open locks. Unless they don’t.",
+        "Clouds are not solid. Do not test.",
+        "Breathing underwater only works once.",
+        "Fire is not a toy. Unless you’re chaos itself.",
+        "Standing up increases your height slightly.",
+        "You can’t drown in sand, but you can regret it.",
+        "Sleeping at night is the default setting.",
+        // Gamer wisdom
+        "Pressing W makes you advance your destiny and your character.",
+        "If it glows, click it. If it explodes, remember that.",
+        "Loot everything. Even if you don’t need it.",
+        "The tutorial is optional until it’s not.",
+        "Friendly fire is only funny once.",
+        "Don’t jump off the map. You won’t win faster.",
+        "Saving the game prevents tragedy. Usually.",
+        "Boss fights are just normal fights with louder music.",
+        "Collectibles don’t fill the void, but they try.",
+        "The harder the level, the louder the keyboard.",
+        "Double jump isn’t guaranteed. Sometimes it’s goodbye.",
+        "Crouching in real life doesn’t increase stealth.",
+        "The final boss doesn’t care about your feelings.",
+        "The game isn’t cheating. You’re just losing correctly.",
+        // Life chaos
+        "Most doors can be opened. Try it sometime.",
+        "The fridge light turns off. Probably.",
+        "You can’t lose an argument if you stop responding.",
+        "Yelling at the microwave won’t make it faster.",
+        "Traffic lights don’t care about your schedule.",
+        "Gravity is undefeated since the beginning of time.",
+        "Socks come in pairs until they don’t.",
+        "Toothpaste tastes worse than it looks.",
+        "Sleep debt can’t be paid with exposure.",
+        "Money can be exchanged for goods and services.",
+        "The faster you run, the sooner you’re tired.",
+        "Most mirrors reflect you. The scary ones don’t.",
+        "Coffee is basically legal energy theft.",
+        "You can’t press escape to quit real life.",
+        "Stairs are vertical regrets.",
+        "The universe doesn’t have patch notes.",
+        "Birds don’t pay rent.",
+        "Music makes silence jealous.",
+        "Friends are NPCs with better dialogue.",
+        "If you touch grass, the grass touches back.",
+        "Air is free, but only while supplies last.",
+        "Time flies but refuses to land.",
+        "Gravity pulls us together mostly toward the floor.",
+        "No one ever won an argument with Wi-Fi.",
+        "Life is the longest unskippable cutscene."
+      ];
+      // shuffle
+      for (let i=tips.length-1;i>0;i--){
+        const j = Math.floor(Math.random()*(i+1));
+        [tips[i], tips[j]] = [tips[j], tips[i]];
+      }
+      const tipEl = document.getElementById("tipLine");
+      if (!tipEl) return;
+      let idx = 0;
+      function setTip(){ tipEl.textContent = tips[idx++ % tips.length]; }
+      setTip();
+      const h = setInterval(setTip, 4000);
+      // allow loader to stop this when it hides
+      window.__sq_registerInterval = window.__sq_registerInterval || function(){};
+      window.__sq_registerInterval(h);
+    })();
+
+    // Loader progress: real values only. Hide only when truly ready.
+    (function(){
+      const cover = document.getElementById("loaderCover");
+      const fill  = document.getElementById("loaderFill");
+      const pctEl = document.getElementById("loaderPct");
+      const msgEl = document.getElementById("loaderMsg");
+      const green = document.getElementById("greenLight");
+      const red   = document.getElementById("redLight");
+
+      let reported = 0;
+      let finished = false;
+      let lastUpdate = performance.now();
+
+      function render(){
+        const pct = Math.max(0, Math.min(100, Math.round(reported*100)));
+        if (fill) fill.style.width = pct + "%";
+        if (pctEl) pctEl.textContent = pct + "%";
+      }
+
+      // green hint near 80
+      function updateLights(p){
+        if (p >= 0.78 && p <= 0.86){
+          green && green.classList.add("on","glow");
+        } else {
+          green && green.classList.remove("on","glow");
+        }
+      }
+
+      // stall detector
+      const stallH = setInterval(()=>{
+        if (finished) return;
+        const age = performance.now() - lastUpdate;
+        if (age > 6000){
+          red && red.classList.add("on","glow");
+          msgEl && (msgEl.textContent = "Network is slow. Please wait…");
+        } else {
+          red && red.classList.remove("on","glow");
+        }
+      }, 600);
+      window.__sq_registerInterval = window.__sq_registerInterval || function(){};
+      window.__sq_registerInterval(stallH);
+
+      // expose for Unity onProgress
+      window.SQProgress = function(_game, p){
+        if (typeof p === "number"){
+          if (p > reported){
+            reported = Math.min(1, p);
+            lastUpdate = performance.now();
+            render();
+            updateLights(reported);
+          }
+          if (p === 1 && !finished){
+            finished = true;
+            // give the engine a frame to present before hiding
+            requestAnimationFrame(()=>requestAnimationFrame(()=>{
+              cover.classList.add("coverHide");
+              // stop intervals
+              window.__sq_stopIntervals && window.__sq_stopIntervals();
+              // optional: fully remove to avoid tab order
+              setTimeout(()=>{ cover.style.display = "none"; }, 240);
+            }));
+          }
+        }
+      };
+    })();
+
+    // Interval registry used by the loader to stop timers
+    (function(){
+      const set = new Set();
+      window.__sq_registerInterval = window.__sq_registerInterval || function(h){ set.add(h); };
+      window.__sq_stopIntervals = function(){ set.forEach(h=>clearInterval(h)); set.clear(); };
+    })();
+
+    // Start Unity
+    function startUnity(){
+      fitGame();
+      try{
+        if (window.UnityLoader && typeof UnityLoader.instantiate === "function"){
+          window.gameInstance = UnityLoader.instantiate("gameContainer", "slope_new.json", {
+            onProgress: window.SQProgress
+          });
+        } else {
+          console.error("UnityLoader.js not found or invalid");
+          const cover = document.getElementById("loaderCover");
+          const msg = document.getElementById("loaderMsg");
+          if (msg) msg.textContent = "Could not start Unity. Check files and try again.";
+        }
+      } catch (e){
+        console.error("Unity failed to start:", e);
+        const msg = document.getElementById("loaderMsg");
+        if (msg) msg.textContent = "Could not load the game. Check your connection or try again.";
+      }
+    }
+    window.addEventListener("load", startUnity);
   </script>
 </body>
 </html>
