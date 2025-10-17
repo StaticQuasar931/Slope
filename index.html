@@ -20,6 +20,15 @@
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:image" content="https://res.cloudinary.com/dlq5fztla/image/upload/v1760301648/slope_Staticquasar931_stable_agqxto.png" />
 
+  <!-- Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-27S3Y4TS0Y"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){ dataLayer.push(arguments); }
+    gtag('js', new Date());
+    gtag('config', 'G-27S3Y4TS0Y');
+  </script>
+
   <style>
     :root{
       --brand:#5ee1ff; --brand2:#9bffb7;
@@ -32,22 +41,23 @@
     .webgl-content{position:fixed;inset:0;display:flex;align-items:center;justify-content:center}
     #gameContainer{width:100vw;height:100vh;background:transparent}
 
-    /* Loader cover - visible immediately, no fade in */
+    /* Loader cover is visible immediately. Only fades out at 100. */
     #loaderCover{position:fixed;inset:0;z-index:10;background:radial-gradient(1200px 800px at 50% 40%, #1a2130 0%, #0d0f14 60%, #090b10 100%);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;text-align:center}
-    .announce{position:absolute;top:3%;left:50%;transform:translateX(-50%);max-width:92vw;font-size:40px;font-weight:1000;letter-spacing:.2px;line-height:1.1;color:#eafbff;text-shadow:0 3px 12px rgba(0,0,0,.55)}
-    .logo-row{display:flex;align-items:center;justify-content:center;gap:18px;margin-top:30px}
-    .sq-logo,.unity-logo{width:90px;height:90px;border-radius:16px;overflow:hidden;box-shadow:0 10px 34px rgba(94,225,255,.25);background:#0b0d12;display:flex;align-items:center;justify-content:center}
+    .announce{position:absolute;top:2.5%;left:50%;transform:translateX(-50%);max-width:92vw;font-size:40px;font-weight:1000;letter-spacing:.2px;line-height:1.1;color:#eafbff;text-shadow:0 3px 12px rgba(0,0,0,.55)}
+    .logo-row{display:flex;align-items:center;justify-content:center;gap:18px;margin-top:26px}
+    .sq-logo,.unity-logo{width:92px;height:92px;border-radius:16px;overflow:hidden;box-shadow:0 10px 34px rgba(94,225,255,.25);background:#0b0d12;display:flex;align-items:center;justify-content:center}
     .sq-logo img{width:100%;height:100%;object-fit:cover}
     .unity-logo img{width:82%;height:82%;object-fit:contain;background:transparent!important;opacity:.92}
+
     .intro{display:flex;flex-direction:column;align-items:center;gap:8px;user-select:none}
     .intro a{color:#cfe9ff;text-decoration:none}
-    .title{font-weight:1000;letter-spacing:.3px;font-size:18px;opacity:0;animation:fadeIn .6s ease .25s forwards}
-    .subtitle{font-weight:900;letter-spacing:.3px;font-size:16px;opacity:0;animation:fadeIn .6s ease .9s forwards}
-    .sq-banner{font-weight:900;color:#d2eeff;opacity:0;animation:fadeIn .6s ease 1.4s forwards}
+    .title{font-weight:1000;letter-spacing:.3px;font-size:18px;opacity:0;animation:fadeIn .5s ease .25s forwards}
+    .subtitle{font-weight:900;letter-spacing:.3px;font-size:16px;opacity:0;animation:fadeIn .5s ease .85s forwards}
+    .sq-banner{font-weight:900;color:#d2eeff;opacity:0;animation:fadeIn .5s ease 1.3s forwards}
     @keyframes fadeIn{from{opacity:0;transform:translateY(2px)}to{opacity:1;transform:none}}
 
     .loader-bar{position:relative;width:min(680px,92vw);height:26px;border-radius:13px;overflow:hidden;background:linear-gradient(180deg,rgba(255,255,255,.10),rgba(255,255,255,.04));box-shadow:inset 0 0 0 1px rgba(255,255,255,.10), inset 0 6px 12px rgba(0,0,0,.25), var(--shadow);margin-inline:auto}
-    .loader-fill{height:100%;width:0%;background:linear-gradient(90deg, rgba(255,255,255,.28) 0%, rgba(255,255,255,0) 35%), linear-gradient(90deg,var(--brand),var(--brand2));transition:width .12s linear}
+    .loader-fill{height:100%;width:1%;background:linear-gradient(90deg, rgba(255,255,255,.28) 0%, rgba(255,255,255,0) 35%), linear-gradient(90deg,var(--brand),var(--brand2));transition:width .10s linear}
     .light{position:absolute;top:6px;width:12px;height:14px;border-radius:4px;opacity:0;transform:translateX(-50%);box-shadow:0 0 12px rgba(0,0,0,.5)}
     #greenLight{background:var(--green);left:80%}
     #redLight{background:var(--red);left:50%}
@@ -69,12 +79,12 @@
     @keyframes coverFade{to{opacity:0;visibility:hidden}}
   </style>
 
-  <!-- block only id.net - do this before any other script -->
+  <!-- Only block id.net. Nothing else. -->
   <script>
     (function(){
-      const BAD = /(^|\/\/)id\.net\/api\/user_data/i;
+      const BAD = /(^|\/\/)(www\.)?id\.net\/api\/user_data/i;
 
-      // block script tags to id.net
+      // Block script tags to id.net
       const OrigCreate = Document.prototype.createElement;
       Document.prototype.createElement = function(tag){
         const el = OrigCreate.call(this, tag);
@@ -82,17 +92,17 @@
           const d = Object.getOwnPropertyDescriptor(HTMLScriptElement.prototype, 'src');
           if (d && d.set){
             const origSet = d.set;
-            d.set.call(el, '');
             Object.defineProperty(el, 'src', {
+              configurable:true,
               set(v){ if (BAD.test(String(v||''))) { console.warn('Blocked id.net script:', v); return; } origSet.call(this, v); },
-              get(){ return origSet.call(this); }
+              get(){ return d.get.call(this); }
             });
           }
         }
         return el;
       };
 
-      // block fetch
+      // Block fetch
       const ofetch = window.fetch;
       window.fetch = function(input, init){
         const url = typeof input === 'string' ? input : (input && input.url) || '';
@@ -100,23 +110,23 @@
         return ofetch.apply(this, arguments);
       };
 
-      // block XHR
+      // Block XHR
       const oOpen = XMLHttpRequest.prototype.open;
       XMLHttpRequest.prototype.open = function(method, url){
         if (BAD.test(String(url||''))) { console.warn('Blocked id.net XHR:', url); this.abort(); return; }
         return oOpen.apply(this, arguments);
       };
 
-      // block WebSocket
-      const oWS = window.WebSocket;
-      if (oWS){
+      // Block WebSocket
+      const OWS = window.WebSocket;
+      if (OWS){
         window.WebSocket = function(url, proto){
           if (BAD.test(String(url||''))) { console.warn('Blocked id.net WS:', url); throw new Error('blocked'); }
-          return new oWS(url, proto);
+          return new OWS(url, proto);
         };
       }
 
-      // block document.write for id.net jsonp
+      // Document.write JSONP cleanup
       const W = document.write.bind(document);
       const WL = document.writeln.bind(document);
       const strip = s => typeof s==='string'
@@ -127,13 +137,45 @@
     })();
   </script>
 
-  <!-- real Unity loader - must be local -->
+  <!-- Load official Unity loader -->
   <script src="UnityLoader.js"></script>
+
+  <!-- Force safer runtime: disable WebAssembly and WebGL2 for problematic devices -->
+  <script>
+    // Must run after UnityLoader.js but before instantiate
+    (function(){
+      try{
+        // Some 2017.4 builds crash with WASM on constrained devices. Force asm.js path.
+        if (UnityLoader && UnityLoader.SystemInfo){
+          UnityLoader.SystemInfo.hasWasm      = false;
+          UnityLoader.SystemInfo.supportsWebAssembly = function(){ return false; };
+          // Force WebGL 1 to lower memory pressure
+          UnityLoader.SystemInfo.hasWebGL2    = false;
+          UnityLoader.SystemInfo.hasWebGL     = true;
+        }
+      }catch(e){}
+    })();
+  </script>
+
+  <!-- Basic JSON-LD so the project is indexable -->
+  <script type="application/ld+json">
+  {
+    "@context":"https://schema.org",
+    "@type":"VideoGame",
+    "name":"Slope",
+    "url":"https://staticquasar931.github.io/slope/",
+    "author":{"@type":"Person","name":"StaticQuasar931"},
+    "genre":"Arcade",
+    "operatingSystem":"Web",
+    "applicationCategory":"Game",
+    "description":"Play Slope free and unblocked. Fast 3D rolling ball runner hosted by StaticQuasar931."
+  }
+  </script>
 </head>
 <body>
   <script>window.onbeforeunload = () => "Are you sure you want to leave? Your progress may not be saved.";</script>
 
-  <!-- Loader - present immediately -->
+  <!-- Loader. Present immediately. Elements inside fade in, but the cover itself does not. -->
   <div id="loaderCover" role="status" aria-live="polite">
     <div class="announce">Now works without turning off internet</div>
 
@@ -155,7 +197,7 @@
     </div>
 
     <div class="loader-bar">
-      <div class="loader-fill" id="loaderFill"></div>
+      <div class="loader-fill" id="loaderFill" style="width:1%"></div>
       <div id="greenLight" class="light"></div>
       <div id="redLight" class="light"></div>
     </div>
@@ -164,7 +206,7 @@
       <div id="loaderPct">1%</div>
     </div>
 
-    <div class="tip" id="tipArea">Tip - Red objects are not friends.</div>
+    <div class="tip" id="tipArea">Tip - Red things are not friends.</div>
 
     <button class="btn" id="needHelpBtn" type="button">Need help?</button>
   </div>
@@ -183,14 +225,16 @@
   <!-- Game target -->
   <div class="webgl-content"><div id="gameContainer"></div></div>
 
-  <!-- Hidden SEO -->
-  <div style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(1px,1px,1px,1px);white-space:nowrap" aria-hidden="true">
-    <h1>Slope by StaticQuasar931 - unblocked mirror</h1>
-    <p>Play Slope online at school on the StaticQuasar931 mirror. If this build appears on a fork, visit the original <a href="https://staticquasar931.github.io/slope/">StaticQuasar931 Slope</a> and the <a href="https://sites.google.com/view/staticquasar931/gm3z">games hub</a>.</p>
-  </div>
+  <!-- Visible fallback text so crawlers index content even if WebGL cannot run -->
+  <noscript>
+    <div style="position:absolute;inset:auto 0 0 0;padding:12px;background:#0d0f14;color:#cfe3ff">
+      Enable JavaScript to play Slope on the StaticQuasar931 mirror.
+      <a href="https://staticquasar931.github.io/slope/" style="color:#5ee1ff">Open Slope</a>
+    </div>
+  </noscript>
 
   <script>
-    // layout
+    // Fit the canvas
     function fitGame(){
       const el = document.getElementById("gameContainer");
       if (!el) return;
@@ -201,7 +245,7 @@
     addEventListener("resize", fitGame, {passive:true});
     if (window.visualViewport) window.visualViewport.addEventListener("resize", fitGame, {passive:true});
 
-    // help links
+    // Help popup links
     (function(){
       const btn = document.getElementById("needHelpBtn");
       const pop = document.getElementById("helpPopup");
@@ -216,7 +260,7 @@
       cls.addEventListener("click", ()=>{ pop.style.display = "none"; });
     })();
 
-    // tip rotator - random order, cycles every 4s while loading
+    // Random rotating tips while loader is visible
     (function(){
       const tips = [
         "Use D to go right. Unless you are facing left.",
@@ -228,11 +272,13 @@
         "Reloading is faster than dying.",
         "The save button saves. Unless it does not.",
         "Breathing is a good daily habit.",
-        "Sleep is the human loading screen."
+        "Sleep is the human loading screen.",
+        "Loot everything. Even if you do not need it.",
+        "Boss fights are just fights with louder music."
       ];
       const el = document.getElementById("tipArea");
       if (!el) return;
-      let order = tips.map((t,i)=>i);
+      let order = tips.map((_,i)=>i);
       for(let i=order.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [order[i],order[j]]=[order[j],order[i]]; }
       let idx = 0;
       setInterval(()=>{
@@ -242,7 +288,7 @@
       }, 4000);
     })();
 
-    // smooth loader - follows Unity onProgress only
+    // Real progress only. No fake catches. Cover goes away exactly at 100.
     (function(){
       const cover = document.getElementById("loaderCover");
       const fill  = document.getElementById("loaderFill");
@@ -265,17 +311,19 @@
 
       window.SQProgress = function(_game, p){
         if (typeof p === "number"){
-          reported = Math.max(reported, Math.min(1, p));
-          lastTick = performance.now();
-          red && red.classList.remove("on");
-          render(reported);
+          if (p > reported) {
+            reported = Math.min(1, p);
+            lastTick = performance.now();
+            red && red.classList.remove("on");
+            render(reported);
+          }
           if (reported >= 1){
             cover && cover.classList.add("coverFade");
           }
         }
       };
 
-      // show slow network after 6s with no progress
+      // slow network indicator after 6s without progress
       setInterval(()=>{
         const age = performance.now() - lastTick;
         if (reported < 1 && age > 6000){
@@ -285,11 +333,13 @@
       }, 600);
     })();
 
-    // start Unity - minimal, no extra checks
+    // Start Unity with safer caps
     function startUnity(){
       fitGame();
       try{
         if (window.UnityLoader && typeof UnityLoader.instantiate === "function"){
+          // Important: your slope_new.json should prefer WebGL 1.0 first.
+          // If you cannot change the json, we already disabled WebGL2 above.
           window.gameInstance = UnityLoader.instantiate("gameContainer", "slope_new.json", {
             onProgress: window.SQProgress
           });
