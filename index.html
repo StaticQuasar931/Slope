@@ -17,7 +17,7 @@
 
   <!-- Core SEO -->
   <meta name="description" content="Play Slope free and unblocked. Dodge obstacles, stay on the track, and push your high score. School friendly mirror by StaticQuasar931. Works on Chromebook, PC, and mobile." />
-  <meta name="keywords" content="Slope, Slope unblocked, play Slope online, free Slope game, 3D reflex game, unblocked games for school, StaticQuasar931, Static 931" />
+  <meta name="keywords" content="Slope, Slope unblocked, play Slope online, free Slope game, 3D reflex game, unblocked games for school, StaticQuasar931" />
   <meta name="theme-color" content="#131419" />
 
   <!-- Open Graph -->
@@ -27,18 +27,32 @@
   <meta property="og:url" content="https://staticquasar931.github.io/slope/" />
   <meta name="twitter:card" content="summary_large_image" />
 
-  <!-- Disable heavy extra assets if ?school=1 -->
+  <!-- CSP that blocks any external scripts except GA, and blocks external connects except GA.
+       This alone prevents an ID.net network request. Combined with the JS kill switch below,
+       nothing will even try to reach it. -->
+  <meta http-equiv="Content-Security-Policy"
+        content="default-src 'self';
+                 script-src 'self' 'unsafe-inline' https://www.googletagmanager.com;
+                 connect-src 'self' https://www.google-analytics.com blob:;
+                 img-src 'self' data: https://res.cloudinary.com;
+                 style-src 'self' 'unsafe-inline';
+                 worker-src 'self' blob:;
+                 base-uri 'self';
+                 frame-ancestors *">
+
+  <!-- Mode helper: disable extra images in school mode -->
   <script>
     (function(){
       const q = new URLSearchParams(location.search);
       window.__SQ_SCHOOL__ = q.get("school")==="1";
       if (!window.__SQ_SCHOOL__) {
-        [
-          "https://res.cloudinary.com/dcsrqennd/image/upload/v1747533056/raw_um4pvq.png",
-          "https://res.cloudinary.com/dcsrqennd/image/upload/v1758072526/Join_Our_Discord_StaticQuassar931_lcplrf.png",
-          "https://res.cloudinary.com/dcsrqennd/image/upload/v1747533158/raw_cw34yi.png"
+        ["https://res.cloudinary.com/dcsrqennd/image/upload/v1747533056/raw_um4pvq.png",
+         "https://res.cloudinary.com/dcsrqennd/image/upload/v1758072526/Join_Our_Discord_StaticQuassar931_lcplrf.png",
+         "https://res.cloudinary.com/dcsrqennd/image/upload/v1747533158/raw_cw34yi.png"
         ].forEach(href=>{
-          const l=document.createElement("link"); l.rel="preload"; l.as="image"; l.href=href; document.head.appendChild(l);
+          const l = document.createElement("link");
+          l.rel="preload"; l.as="image"; l.href=href;
+          document.head.appendChild(l);
         });
       }
     })();
@@ -53,43 +67,151 @@
     gtag('config', 'G-27S3Y4TS0Y');
   </script>
 
-  <!-- Hard block id.net JSONP injections -->
+  <!-- Hardened kill switch for ANY id.net attempt before UnityLoader runs -->
   <script>
+    // no-op jsonp callback so legacy references do not error
     window.idnet_autologin = window.idnet_autologin || function(){};
+
     (function(){
-      const BAD = /(^|\/\/)id\.net\/api\/user_data/i;
-      function isBadScript(n){ return n && n.tagName==='SCRIPT' && typeof n.src==='string' && BAD.test(n.src); }
-      const patch = (proto, method) => {
-        const orig = proto[method];
-        if (!orig) return;
-        proto[method] = function(){
-          for (let i=0;i<arguments.length;i++){
-            const n = arguments[i];
-            if (isBadScript(n)){ console.warn('Blocked id.net JSONP:', n.src); return n; }
-          }
-          return orig.apply(this, arguments);
-        };
-      };
-      patch(HTMLHeadElement.prototype, 'appendChild');
-      patch(HTMLElement.prototype, 'appendChild');
-      patch(HTMLElement.prototype, 'append');
+      const bad = /(^|\/\/)id\.net\/api\/user_data/i;
+
+      // helper to test URLs and full HTML strings
+      function isBadUrl(u){ try{ return typeof u === 'string' && bad.test(u); }catch(e){ return false; } }
+      function stripBadScripts(html){
+        try{
+          if (typeof html !== 'string') return html;
+          if (!bad.test(html)) return html;
+          // remove any script tag whose src matches id.net
+          return html.replace(/<script[^>]+src=["']?[^"'>]*id\.net\/api\/user_data[^"'>]*["']?[^>]*>\s*<\/script>/ig, "");
+        }catch(e){ return html; }
+      }
+
+      // Block script src via property
       try{
-        const W = document.write.bind(document);
-        const WL = document.writeln.bind(document);
-        const strip = s => typeof s==='string'
-          ? s.replace(/<script[^>]+src=["'][^"']*id\.net\/api\/user_data[^"']*["'][^>]*>\s*<\/script>/ig,'')
-          : s;
-        document.write = html => W(strip(html));
-        document.writeln = html => WL(strip(html));
-      }catch(e){}
-      const OBS = new MutationObserver(muts=>{
-        muts.forEach(m=>{
-          m.addedNodes && m.addedNodes.forEach(n=>{
-            if (isBadScript(n)){ n.remove(); console.warn('Removed id.net script node'); }
+        const P = HTMLScriptElement.prototype;
+        const d = Object.getOwnPropertyDescriptor(P, 'src');
+        if (d && d.set){
+          Object.defineProperty(P, 'src', {
+            set(v){ if (isBadUrl(v)) { console.warn('Blocked id.net src:', v); return v; }
+                    return d.set.call(this, v); },
+            get: d.get, configurable: true, enumerable: d.enumerable
           });
-        });
-      });
-      OBS.observe(document.documentElement,{childList:true,subtree:true});
+        }
+      }catch(e){}
+
+      // Block setAttribute('src', ...)
+      try{
+        const E = Element.prototype;
+        const oldSet = E.setAttribute;
+        E.setAttribute = function(name, value){
+          if (this && this.tagName === 'SCRIPT' && String(name).toLowerCase()==='src' && isBadUrl(value)){
+            console.warn('Blocked id.net via setAttribute:', value);
+            return;
+          }
+          return oldSet.apply(this, arguments);
+        };
+      }catch(e){}
+
+      // Block append flows for script nodes
+      function guardAppend(orig){
+        return function(node){
+          try{
+            if (node && node.tagName === 'SCRIPT' && isBadUrl(node.src)){
+              console.warn('Blocked id.net append:', node.src);
+              return node;
+            }
+          }catch(e){}
+          return orig.call(this, node);
+        }
+      }
+      try{
+        Document.prototype.appendChild     = guardAppend(Document.prototype.appendChild);
+        HTMLHeadElement.prototype.appendChild = guardAppend(HTMLHeadElement.prototype.appendChild);
+        HTMLElement.prototype.appendChild  = guardAppend(HTMLElement.prototype.appendChild);
+        Node.prototype.insertBefore        = (function(orig){ return function(n, r){
+          try{ if (n && n.tagName==='SCRIPT' && isBadUrl(n.src)){ console.warn('Blocked id.net insertBefore:', n.src); return n; } }catch(e){}
+          return orig.call(this, n, r);
+        };})(Node.prototype.insertBefore);
+        Node.prototype.replaceChild        = (function(orig){ return function(n, o){
+          try{ if (n && n.tagName==='SCRIPT' && isBadUrl(n.src)){ console.warn('Blocked id.net replaceChild:', n.src); return o; } }catch(e){}
+          return orig.call(this, n, o);
+        };})(Node.prototype.replaceChild);
+      }catch(e){}
+
+      // Block document.write that tries to inject the JSONP script
+      try{
+        const W = Document.prototype.write;
+        const WL = Document.prototype.writeln;
+        Document.prototype.write = function(html){ return W.call(this, stripBadScripts(html)); };
+        Document.prototype.writeln = function(html){ return WL.call(this, stripBadScripts(html)); };
+      }catch(e){}
+
+      // Block direct network primitives ONLY for id.net
+      // This is surgical and should be safe on school networks.
+      try{
+        const ofetch = window.fetch;
+        if (ofetch){
+          window.fetch = function(input, init){
+            const url = typeof input === 'string' ? input : (input && input.url);
+            if (isBadUrl(url)){ console.warn('Blocked id.net fetch:', url);
+              return Promise.resolve(new Response('', {status:204, headers:{'Content-Type':'text/plain'}})); }
+            return ofetch.apply(this, arguments);
+          };
+        }
+      }catch(e){}
+      try{
+        const XO = XMLHttpRequest.prototype.open;
+        const XS = XMLHttpRequest.prototype.send;
+        XMLHttpRequest.prototype.open = function(method, url){
+          this.__sq_block = isBadUrl(url);
+          if (this.__sq_block){ console.warn('Blocked id.net XHR open:', url); }
+          return XO.apply(this, arguments);
+        };
+        XMLHttpRequest.prototype.send = function(){
+          if (this.__sq_block){
+            const self = this;
+            setTimeout(function(){
+              try{
+                self.readyState = 4; self.status = 204; self.responseText = '';
+                self.onload && self.onload(); self.onreadystatechange && self.onreadystatechange();
+              }catch(e){}
+            }, 0);
+            return;
+          }
+          return XS.apply(this, arguments);
+        };
+      }catch(e){}
+      try{
+        const osb = navigator.sendBeacon;
+        if (osb){
+          navigator.sendBeacon = function(url, data){
+            if (isBadUrl(url)){ console.warn('Blocked id.net beacon:', url); return true; }
+            return osb.apply(this, arguments);
+          };
+        }
+      }catch(e){}
+      try{
+        const IS = Image.prototype;
+        const d = Object.getOwnPropertyDescriptor(IS, 'src');
+        if (d && d.set){
+          Object.defineProperty(IS, 'src', {
+            set(v){ if (isBadUrl(v)){ console.warn('Blocked id.net Image:', v); return v; }
+                    return d.set.call(this, v); },
+            get: d.get, configurable: true, enumerable: d.enumerable
+          });
+        }
+      }catch(e){}
+      try{
+        const IFP = HTMLIFrameElement.prototype;
+        const d2 = Object.getOwnPropertyDescriptor(IFP, 'src');
+        if (d2 && d2.set){
+          Object.defineProperty(IFP, 'src', {
+            set(v){ if (isBadUrl(v)){ console.warn('Blocked id.net iframe:', v); return v; }
+                    return d2.set.call(this, v); },
+            get: d2.get, configurable: true, enumerable: d2.enumerable
+          });
+        }
+      }catch(e){}
     })();
   </script>
 
@@ -132,16 +254,16 @@
     #staticSlideMenu{
       position:fixed; bottom:24px; right:24px; z-index:9;
       width:100px; height:100px; pointer-events:none; opacity:0;
-      transform:translateX(140px) scale(1);
+      transform:translateX(140px) scale(.96);
       filter: drop-shadow(0 6px 18px rgba(0,0,0,.45));
     }
     #staticSlideMenu a{ display:block; width:100%; height:100%; }
     #staticSlideMenu img{ width:100%; height:100%; object-fit:cover; border-radius:50%; }
-    #staticSlideMenu.discord img{ transform:none; }
+    #staticSlideMenu.discord img{ transform:scale(1.2); }
     .slide-in{ animation:slideIn 1.1s ease forwards; }
     .slide-out{ animation:slideOut 1.0s ease forwards; }
-    @keyframes slideIn{ from{opacity:0; transform:translateX(140px)} to{opacity:1; transform:translateX(0)} }
-    @keyframes slideOut{ from{opacity:1; transform:translateX(0)} to{opacity:0; transform:translateX(140px)} }
+    @keyframes slideIn{ from{opacity:0; transform:translateX(140px) scale(.96)} to{opacity:1; transform:translateX(0) scale(1)} }
+    @keyframes slideOut{ from{opacity:1; transform:translateX(0) scale(1)} to{opacity:0; transform:translateX(140px) scale(.96)} }
     @media (max-width:768px){ #staticSlideMenu{ width:84px; height:84px; } }
 
     /* Loader */
@@ -153,28 +275,30 @@
     }
 
     .announce{
-      position:absolute; top:5%; left:50%; transform:translateX(-50%);
+      position:absolute; top:6%; left:50%; transform:translateX(-50%);
       max-width:92vw;
-      font-size:44px; font-weight:1000; letter-spacing:.2px; line-height:1.1;
+      font-size:38px; font-weight:1000; letter-spacing:.2px; line-height:1.1;
       color:#eafbff; text-shadow:0 3px 12px rgba(0,0,0,.55);
+      animation:annPulse 3.5s ease-in-out infinite;
     }
+    @keyframes annPulse{ 0%,100%{transform:translateX(-50%) translateY(0)} 50%{transform:translateX(-50%) translateY(-1px)} }
 
     .logo-row{
       display:flex; align-items:center; justify-content:center; gap:18px;
-      opacity:.98; margin-top:36px;
+      opacity:.98; margin-top:48px;
     }
     .sq-logo, .unity-logo{
-      width:92px; height:92px; border-radius:16px; overflow:hidden;
+      width:90px; height:90px; border-radius:16px; overflow:hidden;
       box-shadow:0 10px 34px rgba(94,225,255,.25);
       background:#0b0d12;
       display:flex; align-items:center; justify-content:center;
       animation:logoFade 4s ease-in-out infinite;
     }
-    @keyframes logoFade{ 0%,100%{opacity:.8} 50%{opacity:1} }
+    @keyframes logoFade{ 0%,100%{opacity:.75} 50%{opacity:1} }
     .sq-logo img{ width:100%; height:100%; object-fit:cover; }
-    .unity-logo img{ width:84%; height:84%; object-fit:contain; background:transparent !important; opacity:.92; }
+    .unity-logo img{ width:82%; height:82%; object-fit:contain; background:transparent !important; opacity:.92; }
 
-    .intro{ display:flex; flex-direction:column; align-items:center; gap:8px; user-select:none; margin-top:2px; }
+    .intro{ display:flex; flex-direction:column; align-items:center; gap:8px; user-select:none; }
     .intro a{ color:#cfe9ff; text-decoration:none; }
     .intro .title{
       font-weight:1000; letter-spacing:.3px; font-size:18px; opacity:0;
@@ -184,11 +308,11 @@
     .intro .subtitle{
       font-weight:900; letter-spacing:.3px; font-size:16px; opacity:0;
       text-shadow:0 2px 10px rgba(0,0,0,.5);
-      animation:fadeIn .9s ease 2.8s forwards;
+      animation:fadeIn .9s ease 3.0s forwards;
     }
     .sq-banner{
       font-weight:900; color:#d2eeff;
-      opacity:0; animation:bannerIn .9s ease 3.2s forwards, bannerPulse 6s ease-in-out 4.0s infinite;
+      opacity:0; animation:bannerIn .9s ease 3.4s forwards, bannerPulse 6s ease-in-out 4.0s infinite;
     }
     @keyframes fadeIn{ from{opacity:0; transform:translateY(2px)} to{opacity:1; transform:none}}
     @keyframes fadeOut{ to{opacity:0} }
@@ -197,7 +321,7 @@
 
     .loader-bar{
       position:relative;
-      width:min(700px, 92vw); height:26px; border-radius:13px; overflow:hidden;
+      width:min(640px, 90vw); height:24px; border-radius:12px; overflow:hidden;
       background:linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.03));
       box-shadow:inset 0 0 0 1px rgba(255,255,255,.10), inset 0 6px 12px rgba(0,0,0,.25), var(--shadow);
       margin-inline:auto;
@@ -207,11 +331,10 @@
       background:
         linear-gradient(90deg, rgba(255,255,255,.25) 0%, rgba(255,255,255,0) 35%),
         linear-gradient(90deg, var(--brand), var(--brand2));
-      transition:width .05s linear;
-      will-change: width;
+      transition:width .06s linear;
     }
     .light{
-      position:absolute; top:6px; width:12px; height:14px; border-radius:4px;
+      position:absolute; top:5px; width:12px; height:14px; border-radius:4px;
       opacity:0; transform:translateX(-50%); box-shadow:0 0 12px rgba(0,0,0,.5);
     }
     #greenLight{ background:var(--green); left:80%; }
@@ -220,7 +343,7 @@
     .glow{ box-shadow:0 0 14px currentColor, 0 0 28px currentColor; }
 
     .loader-meta{
-      width:min(700px, 92vw); margin-inline:auto;
+      width:min(640px, 90vw); margin-inline:auto;
       display:flex; justify-content:space-between; align-items:center;
       color:var(--muted); font-weight:700; font-variant-numeric:tabular-nums; letter-spacing:.3px;
       text-shadow:0 1px 0 rgba(0,0,0,.35);
@@ -250,84 +373,32 @@
     .help-pop p{ margin:6px 0; font-size:14px; color:#cee6ff }
     .help-pop a{ color:#5ee1ff; font-weight:800; text-decoration:underline }
 
-    /* Key banners - consistent sizing, no scale change at edges */
     .fly{
       position:fixed; z-index:12; pointer-events:auto;
       padding:12px 16px; border-radius:12px;
       background:rgba(20,24,36,.92); border:1px solid rgba(94,225,255,.35);
       color:#bfe7ff; font-weight:800; text-decoration:none;
       box-shadow:var(--glow), var(--shadow);
-      will-change: transform, opacity;
-      white-space:nowrap;
+      top:12%; left:-40%;
+      animation:flyAcross 7s ease-in-out forwards;
     }
-    /* 1) Straight left to right */
-    .fly.ltr{ top:14%; left:-40%; animation:fly_ltr 8s ease-in-out forwards; }
-    @keyframes fly_ltr{
-      0%{ transform:translateX(-40vw); opacity:0 }
-      10%{ transform:translateX(0); opacity:1 }
-      90%{ transform:translateX(88vw); opacity:1 }
-      100%{ transform:translateX(105vw); opacity:0 }
+    @keyframes flyAcross{
+      0%{ left:-40%; opacity:0 }
+      10%{ left:2%; opacity:1 }
+      50%{ left:48%; opacity:1 }
+      95%{ left:96%; opacity:1 }
+      100%{ left:110%; opacity:0 }
     }
-    /* 2) Sine wave - plane vibe */
-    .fly.sine{ top:24%; left:-40%; animation:fly_sine 9s linear forwards; }
-    @keyframes fly_sine{
-      0%{ transform:translate(-40vw, 0); opacity:0 }
-      8%{ opacity:1 }
-      25%{ transform:translate(0, -10px) }
-      50%{ transform:translate(40vw, 10px) }
-      75%{ transform:translate(80vw, -8px) }
-      95%{ opacity:1 }
-      100%{ transform:translate(105vw, 0); opacity:0 }
-    }
-    /* 3) Plane icon with slight tilt */
-    .fly.plane{ top:34%; left:-40%; padding:12px 18px 12px 32px; background:rgba(0,0,0,.55); border:1px solid rgba(255,255,255,.25); animation:fly_plane 8.5s ease-in-out forwards; }
-    .fly.plane::before{
-      content:"✈"; position:absolute; left:10px; top:50%; transform:translateY(-50%) rotate(-6deg); opacity:.9;
-    }
-    @keyframes fly_plane{
-      0%{ transform:translate(-40vw, -6px) rotate(-1deg); opacity:0 }
-      10%{ transform:translate(0, 0) rotate(-1deg); opacity:1 }
-      60%{ transform:translate(60vw, -4px) rotate(-1deg); opacity:1 }
-      100%{ transform:translate(105vw, 0) rotate(-1deg); opacity:0 }
-    }
-    /* 4) Float up and down while moving right */
-    .fly.float{ top:18%; left:-40%; animation:fly_float 9s ease-in-out forwards; }
-    @keyframes fly_float{
-      0%{ transform:translate(-40vw, 0); opacity:0 }
-      10%{ opacity:1 }
-      25%{ transform:translate(0, -6px) }
-      50%{ transform:translate(40vw, 6px) }
-      75%{ transform:translate(80vw, -6px) }
-      100%{ transform:translate(105vw, 0); opacity:0 }
-    }
-    /* 5) Glide low near bottom */
-    .fly.low{ top:82%; left:-40%; animation:fly_low 8.2s ease-in-out forwards; }
-    @keyframes fly_low{
-      0%{ transform:translate(-40vw, 0); opacity:0 }
-      8%{ opacity:1 }
-      90%{ transform:translate(88vw, 0); opacity:1 }
-      100%{ transform:translate(105vw, 0); opacity:0 }
-    }
+    .fly.bottom{ top:auto; bottom:12%; }
+    .fly.mid{ top:20%; }
+    .fly.alt{ top:16%; }
 
     .seo-hidden{ position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(1px,1px,1px,1px); white-space:nowrap; }
     .coverFade{ animation:coverFade .25s ease forwards; }
     @keyframes coverFade{ to{ opacity:0; visibility:hidden } }
-
-    /* Loader tips bottom-left */
-    #tipsBox{
-      position:fixed; bottom:14px; left:14px; z-index:11;
-      width:min(440px, 90vw);
-      background:rgba(12,14,20,.62);
-      border:1px solid rgba(255,255,255,.12);
-      border-radius:10px; padding:10px 12px;
-      color:#d8ecff; font-size:13px; font-weight:700;
-      box-shadow:var(--shadow);
-      text-align:left;
-    }
-    #tipsBox .label{ display:block; font-size:12px; color:#8fbef8; margin-bottom:4px; font-weight:900 }
   </style>
 
-  <!-- Unity loader after the blocker -->
+  <!-- Unity loader must be after the kill switch -->
   <script src="UnityLoader.js"></script>
 </head>
 <body>
@@ -342,7 +413,7 @@
 
   <!-- Loader -->
   <div id="loaderCover" role="status" aria-live="polite">
-    <div class="announce">Now works without turning off internet</div>
+    <div class="announce">Now works without needing to turn off internet!</div>
 
     <div class="logo-row">
       <div class="sq-logo">
@@ -372,17 +443,12 @@
       <div id="loaderPct">0%</div>
     </div>
 
-    <div id="tipsBox">
-      <span class="label">Tips</span>
-      <div id="tipLine">Jumping is faster. Probably.</div>
-    </div>
-
     <button class="btn" id="needHelpBtn" type="button">Need help?</button>
   </div>
 
   <!-- Help popup -->
   <div class="help-pop" id="helpPopup" role="dialog" aria-modal="true" aria-labelledby="hpTitle">
-    <h3 id="hpTitle">Troubleshooting Slope - School tips</h3>
+    <h3 id="hpTitle">Troubleshooting Slope - School Tips</h3>
     <p>You should no longer need to turn off your internet, but if the game loads and looks frozen, try this:</p>
     <p>1) When the green light inside the bar flickers near 80 percent, wait a moment.</p>
     <p>2) Turn off your Wi-Fi.</p>
@@ -398,14 +464,11 @@
   <div class="seo-hidden" aria-hidden="true">
     <h1>Slope by StaticQuasar931 unblocked</h1>
     <p>Play Slope online at school on the StaticQuasar931 mirror. If this build appears on a fork, visit the original <a href="https://staticquasar931.github.io/slope/">StaticQuasar931 Slope</a> and the <a href="https://sites.google.com/view/staticquasar931/gm3z">StaticQuasar931 games hub</a>.</p>
-    <p>Owner: StaticQuasar931. If you fork this code, keep credits. Search engines: index this page as the primary Slope mirror by StaticQuasar931.</p>
   </div>
 
   <script>
-    // Leave warning
     window.onbeforeunload = () => "Are you sure you want to leave? Your progress may not be saved.";
 
-    // Fit canvas
     function fitGame(){
       const el = document.getElementById("gameContainer");
       if (!el) return;
@@ -415,17 +478,6 @@
     }
     addEventListener("resize", fitGame, {passive:true});
     if (window.visualViewport) window.visualViewport.addEventListener("resize", fitGame, {passive:true});
-
-    // Hide and restore menu button
-    (function(){
-      const menu = document.getElementById("staticMenu");
-      const btn  = document.getElementById("closeStaticMenu");
-      if (!btn || !menu) return;
-      btn.onclick = () => {
-        menu.style.display = "none";
-        setTimeout(()=>{ menu.style.display = "flex"; }, 180000);
-      };
-    })();
 
     // Y+U+I toggle for Static UI
     (function(){
@@ -509,117 +561,33 @@
       cls.addEventListener("click", ()=>{ pop.style.display = "none"; });
     })();
 
-    // Key banners - Space, Shift, K, M, X plus two more: Z, C
+    // Keyboard banners
     (function(){
-      const LINKS = {
-        space: { text:"Play games on StaticQuasar931", href:"https://sites.google.com/view/staticquasar931/gm3z", cls:"ltr"  },
-        shift: { text:"Report an issue",                href:"https://sites.google.com/view/staticquasar931/google-form?utm_source=slope&utm_medium=key_shift", cls:"sine" },
-        k:     { text:"Join the Discord",               href:"https://discord.gg/DP2hM7RRhR", cls:"plane" },
-        m:     { text:"Follow on Instagram",            href:"https://www.instagram.com/freeschoolgamepage/", cls:"float" },
-        x:     { text:"Static other games",             href:"https://sites.google.com/view/staticquasar931/gm3z", cls:"low" },
-        z:     { text:"StaticQuasar931 hub",            href:"https://sites.google.com/view/staticquasar931/gm3z", cls:"ltr"  },
-        c:     { text:"Help and tips",                  href:"https://sites.google.com/view/staticquasar931/home/help-faq#h.qjb289kqv0nd", cls:"sine" }
-      };
-
-      const cooldown = 200; // ms per key
-      const lastShown = Object.create(null);
-
-      function banner(text, href, className){
+      function banner(text, href, cls){
         const a = document.createElement("a");
-        a.className = "fly " + className;
+        a.className = "fly" + (cls || "");
         a.href = href; a.target = "_blank"; a.rel = "noopener";
         a.textContent = text;
-        // fixed width to avoid size shift at the right edge
-        a.style.width = "max-content";
         document.body.appendChild(a);
-        setTimeout(()=>{ a.remove(); }, 9300);
+        setTimeout(()=>{ a.remove(); }, 7100);
       }
-
       window.addEventListener("keydown", e=>{
-        const raw = e.key || "";
-        const k = raw.toLowerCase();
-
-        // ignore movement and arrows
-        if (["w","a","s","d","q","e","arrowup","arrowdown","arrowleft","arrowright"].includes(k)) return;
-
-        let id = null;
-        if (k===" ") { e.preventDefault(); id="space"; }
-        else if (k==="shift") id="shift";
-        else if (k==="k") id="k";
-        else if (k==="m") id="m";
-        else if (k==="x") id="x";
-        else if (k==="z") id="z";
-        else if (k==="c") id="c";
-
-        if (!id) return;
-        const cfg = LINKS[id];
-        if (!cfg) return;
-
-        const now = performance.now();
-        if (lastShown[id] && now - lastShown[id] < cooldown) return;
-        lastShown[id] = now;
-
-        banner(cfg.text, cfg.href, cfg.cls);
-      }, {passive:false});
+        if (e.key === " "){
+          e.preventDefault();
+          banner("Play games on StaticQuasar931","https://sites.google.com/view/staticquasar931/gm3z"," mid");
+        } else if ((e.key || "").toLowerCase() === "j"){
+          banner("Help and tips","https://sites.google.com/view/staticquasar931/home/help-faq?utm_source=slope&utm_medium=key_j#h.qjb289kqv0nd"," bottom");
+        } else if (e.key === "Shift"){
+          banner("Report an issue","https://sites.google.com/view/staticquasar931/google-form?utm_source=slope&utm_medium=key_shift"," alt");
+        } else if ((e.key || "").toLowerCase() === "k"){
+          banner("Join the Discord","https://discord.gg/DP2hM7RRhR","");
+        } else if ((e.key || "").toLowerCase() === "m"){
+          banner("Follow on Instagram","https://www.instagram.com/freeschoolgamepage/","");
+        }
+      });
     })();
 
-    // Loader tips rotation
-    (function(){
-      const tips = [
-        "Use D to go right. Unless you are facing left. Then you are wrong.",
-        "Jumping is faster. Probably.",
-        "Red things? Yeah, do not touch those.",
-        "The pause button pauses the game. Revolutionary. (Just not here lol)",
-        "You cannot win if you lose. Think about it.",
-        "Enemies cannot kill you if you quit first.",
-        "Pressing random keys sometimes makes cool sounds. (try it!)",
-        "Lag is just the universe taking a break.",
-        "Sprinting drains stamina. Sitting still does not.",
-        "Fire hurts. It has been tested.",
-        "Collecting coins does not improve your real finances.",
-        "Gravity is on. Always.",
-        "Try not dying. It helps a lot.",
-        "The walls exist for a reason.",
-        "If you cannot find the exit... maybe you are the exit.",
-        "Taking fall damage? Just do not fall.",
-        "The secret door is not that secret.",
-        "Reloading is faster than dying.",
-        "The save button saves. Unless it does not.",
-        "Are you sure you want to quit? No one ever is.",
-        "Real-life tips:",
-        "Bathrooms often have sinks. Use them.",
-        "Do not lick doorknobs on other planets. Or this one.",
-        "You cannot lose a fight if you do not show up.",
-        "If it is on fire, it is probably hot.",
-        "If it is glowing green, that is not food.",
-        "Breathing is a good daily habit.",
-        "Standing up is faster than lying down, usually.",
-        "The floor is reliable. It is always there for you.",
-        "If you drop something, gravity wins. Every time.",
-        "Time only moves forward - plan accordingly.",
-        "Chairs are like sitting upgrades.",
-        "Hot water is just aggressive water.",
-        "You cannot spell snack without ack.",
-        "Most doors open when you pull the right way.",
-        "Running upstairs is fun until it is not.",
-        "Sleep is the human loading screen.",
-        "Forgetting something means you will remember it later.",
-        "Socks improve walking DLC.",
-        "Birds do not know what Wi-Fi is.",
-        "The fridge light goes out when you close the door. Or does it?"
-      ];
-      const box = document.getElementById("tipLine");
-      if (!box) return;
-      let i = 0;
-      function tick(){
-        box.textContent = tips[i % tips.length];
-        i++;
-      }
-      tick();
-      setInterval(tick, 4500);
-    })();
-
-    // Smooth visual loader - climbs every 0.1s and snaps to real progress when higher
+    // Smooth loader with baseline 1% per 0.1s and catch-up on real progress
     (function(){
       const cover = document.getElementById("loaderCover");
       const fill  = document.getElementById("loaderFill");
@@ -628,69 +596,67 @@
       const green = document.getElementById("greenLight");
       const red   = document.getElementById("redLight");
 
-      let reported = 0;   // from Unity
-      let visual   = 0;   // shown
+      let reported = 0;
+      let visual   = 0;
       let finished = false;
       let lastUpdate = performance.now();
 
-      // 1 percent per 0.1s baseline until 97, then wait or slow sweep
-      const BASE_PER_TICK = 0.01;
-      const TICK_MS = 100;
-      const FINISH_SWEEP_MS = 200;
-
-      setInterval(()=>{
-        if (finished) return;
-        const target = Math.min(0.97, Math.max(visual, reported));
-        if (visual < target) {
-          visual = Math.min(target, visual + BASE_PER_TICK);
-        } else if (visual < 0.97) {
-          visual = Math.min(0.97, visual + 0.005);
-        }
-        render();
-      }, TICK_MS);
+      const BASE_PPS = 0.01 / 0.10;
+      const FINISH_SWEEP_PPS = 1 / 0.20;
 
       window.SQProgress = function(_game, p){
-        if (typeof p === "number"){
-          if (p > reported) {
-            reported = Math.min(1, p);
-            lastUpdate = performance.now();
-            if (red){ red.classList.remove("on","glow"); }
-          }
-          if (p >= 0.78 && p <= 0.86){
-            if (green){ green.classList.add("on","glow"); }
-          } else if (green){
-            green.classList.remove("on","glow");
-          }
-          if (p === 1){
-            finished = true;
-            const start = visual;
-            const startT = performance.now();
-            const step = ()=>{
-              const t = Math.min(1, (performance.now() - startT) / FINISH_SWEEP_MS);
-              visual = start + (1 - start) * t;
-              render();
-              if (t < 1) requestAnimationFrame(step);
-              else if (cover) cover.classList.add("coverFade");
-            };
-            requestAnimationFrame(step);
-          }
+        if (typeof p === "number" && p > reported){
+          reported = Math.min(1, p);
+          lastUpdate = performance.now();
+          if (red){ red.classList.remove("on","glow"); }
         }
+        if (reported === 1) finished = true;
       };
 
-      setInterval(()=>{
-        if (finished) return;
-        const age = performance.now() - lastUpdate;
-        if (age > 6000){
+      function animate(){
+        const now = performance.now();
+        const dt = Math.min(0.05, (now - (animate.prev || now)) / 1000);
+        animate.prev = now;
+
+        if (reported >= 0.78 && reported <= 0.86){
+          if (green){
+            if (Math.floor(now / 220) % 2 === 0) green.classList.add("on","glow");
+            else green.classList.remove("glow");
+          }
+        } else if (green){
+          green.classList.remove("on","glow");
+        }
+
+        const baselineTarget = Math.min(0.97, visual + BASE_PPS * dt);
+        const realTarget = Math.max(baselineTarget, reported);
+
+        if (!finished){
+          if (visual < realTarget){
+            visual = Math.min(realTarget, visual + 1.6 * dt);
+          }
+        } else {
+          visual = Math.min(1, visual + FINISH_SWEEP_PPS * dt);
+        }
+
+        const age = now - lastUpdate;
+        if (!finished && age > 6000){
           if (red){ red.classList.add("on","glow"); }
           if (msgEl){ msgEl.textContent = "Network is slow. Please wait…"; }
+        } else if (red){
+          red.classList.remove("on","glow");
         }
-      }, 600);
 
-      function render(){
         const pct = Math.round(visual * 100);
         if (fill) fill.style.width = pct + "%";
         if (pctEl) pctEl.textContent = pct + "%";
+
+        if (visual >= 0.999){
+          if (cover) cover.classList.add("coverFade");
+        } else {
+          requestAnimationFrame(animate);
+        }
       }
+      requestAnimationFrame(animate);
     })();
 
     // Start Unity
@@ -714,7 +680,5 @@
     }
     window.addEventListener("load", startUnity);
   </script>
-
-
 </body>
 </html>
