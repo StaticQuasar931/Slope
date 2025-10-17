@@ -27,7 +27,7 @@
   <meta property="og:url" content="https://staticquasar931.github.io/slope/" />
   <meta name="twitter:card" content="summary_large_image" />
 
-  <!-- Google Analytics (as requested) -->
+  <!-- Google Analytics -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-27S3Y4TS0Y"></script>
   <script>
     window.dataLayer = window.dataLayer || [];
@@ -84,7 +84,7 @@
     .announce{
       position:absolute; top:5%; left:50%; transform:translateX(-50%);
       max-width:92vw; padding:6px 12px;
-      font-size:40px; font-weight:1000; letter-spacing:.2px; line-height:1.1;
+      font-size:44px; font-weight:1000; letter-spacing:.2px; line-height:1.1;
       color:#eafbff; text-shadow:0 3px 12px rgba(0,0,0,.55);
       animation:annFloat 4.5s ease-in-out infinite;
     }
@@ -196,8 +196,8 @@
       padding:12px 16px; border-radius:12px;
       background:rgba(20,24,36,.92); border:1px solid rgba(94,225,255,.35);
       color:#bfe7ff; font-weight:900; text-decoration:none; white-space:nowrap;
-      box-shadow:var(--glow), var(--shadow);
-      will-change: transform, opacity;
+      box-shadow:var(--glow), var(--shadow); will-change: transform, opacity;
+      max-width:60vw;
     }
     /* straight L→R */
     .fx-straight{ top:12%; left:-40%; animation:fxStraight 6s ease-in-out forwards; }
@@ -241,7 +241,7 @@
     }
 
     .coverFade{ animation:coverFade .25s ease forwards; }
-    @keyframes coverFade{ to{ opacity:0; visibility:hidden } }
+    @keyframes coverFade{ to{ opacity:0; visibility:hidden; pointer-events:none } }
 
     /* Hidden SEO */
     .seo-hidden{ position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(1px,1px,1px,1px); white-space:nowrap; }
@@ -420,9 +420,6 @@
         a.className = "fly " + fxClass;
         a.href = href; a.target = "_blank"; a.rel = "noopener";
         a.textContent = text;
-        // fixed width to avoid size change near edges
-        a.style.width = "auto";
-        a.style.maxWidth = "60vw";
         document.body.appendChild(a);
         setTimeout(()=>{ a.remove(); }, 7200);
       }
@@ -583,7 +580,7 @@
       }, 4000);
     })();
 
-    // Smooth loader: always climbs every 0.1s but catches real progress and finishes fast when done
+    // Smooth loader: climbs every 0.1s, catches real progress, finishes quickly when done
     (function(){
       const cover = document.getElementById("loaderCover");
       const fill  = document.getElementById("loaderFill");
@@ -599,13 +596,11 @@
       let lastUpdate = performance.now();
       let failLock   = false;
 
-      // baseline climb at 1% per 0.1s
-      const BASE_PER_TICK = 0.01;
+      const BASE_PER_TICK = 0.01;   // 1% per 0.1s baseline
       const TICK_MS = 100;
-      // sweep to 100 when finished
-      const FINISH_SWEEP_PER_TICK = 0.05;
+      const FINISH_SWEEP_PER_TICK = 0.05; // quick finish sweep
 
-      // Unity progress hook
+      // UnityProgress shim, updated by Unity
       window.UnityProgress = function(game, p){
         if (typeof p === "number" && p > reported){
           reported = Math.min(1, p);
@@ -615,7 +610,6 @@
         }
       };
 
-      // Visual loop
       function tick(){
         const now = performance.now();
         const age = now - lastUpdate;
@@ -632,18 +626,18 @@
           gold.classList.remove("on","glow");
         }
 
-        // network slow detection
+        // slow network signal
         if (!finished && age > 6000){
           red.classList.add("on","glow");
           if (msgEl) msgEl.textContent = "Network is slow. Please wait";
         }
 
-        // climb visual
+        // climb visual baseline + catch real
         const baselineTarget = Math.min(0.97, visual + BASE_PER_TICK);
         const target = Math.max(baselineTarget, reported);
 
         if (!finished){
-          visual = Math.min(target, visual + 0.02); // smooth easing
+          visual = Math.min(target, visual + 0.02); // smooth easing toward target
         } else {
           visual = Math.min(1, visual + FINISH_SWEEP_PER_TICK);
         }
@@ -653,19 +647,16 @@
         fill.style.width = pct + "%";
         pctEl.textContent = pct + "%";
 
-        // if engine threw an error and nothing loads for long, stop faking
+        // if engine never moves for too long, stop faking
         if (!finished && age > 20000 && reported < 0.02){
           failLock = true;
           if (msgEl) msgEl.textContent = "Could not load. Check network and try again.";
         }
 
-        if (failLock){
-          // do not advance further if we truly failed to start
-          return;
-        }
+        if (failLock) return;
 
         if (visual >= 0.999){
-          cover.classList.add("coverFade");
+          // Hide in startUnity when engine is ready, but ensure we do not block if already done
           return;
         }
         setTimeout(tick, TICK_MS);
@@ -673,23 +664,72 @@
       setTimeout(tick, TICK_MS);
     })();
 
-    // Start Unity with our onProgress
+    // Hide loader
+    function hideLoaderNow() {
+      const cover = document.getElementById("loaderCover");
+      if (!cover) return;
+      if (cover.style.display === "none") return;
+      cover.classList.add("coverFade");
+      setTimeout(()=>{ cover.style.display = "none"; }, 280);
+    }
+
+    // Start Unity with strong readiness hooks
     function startUnity(){
       fitGame();
       try{
         if (window.UnityLoader && typeof UnityLoader.instantiate === "function"){
+          // Canvas watchdog: hide when we see a valid GL drawing buffer
+          const container = document.getElementById("gameContainer");
+          let drewOnce = false;
+          function canvasWatchdog(){
+            const c = container && container.querySelector("canvas");
+            if (c && c.width > 0 && c.height > 0) {
+              try {
+                const gl = c.getContext("webgl2") || c.getContext("webgl") || c.getContext("experimental-webgl");
+                if (gl && gl.drawingBufferWidth > 0 && gl.drawingBufferHeight > 0) {
+                  drewOnce = true;
+                  hideLoaderNow();
+                  return;
+                }
+              } catch(_) {}
+            }
+            if (!drewOnce) requestAnimationFrame(canvasWatchdog);
+          }
+          requestAnimationFrame(canvasWatchdog);
+
+          let afterHundredTimer = null;
+          const origUP = window.UnityProgress;
+
           window.gameInstance = UnityLoader.instantiate("gameContainer", "slope_new.json", {
-            onProgress: UnityProgress
+            onProgress: function(game, p){
+              try { if (origUP) origUP(game, p); } catch(_){}
+              if (p >= 1) setTimeout(hideLoaderNow, 150);
+            },
+            Module: {
+              onRuntimeInitialized: function(){
+                setTimeout(hideLoaderNow, 120);
+              },
+              postRun: function(){
+                hideLoaderNow();
+              }
+            }
           });
+
+          // If we reached 100 but never got module callbacks, force hide after a settle
+          window.UnityProgress = function(game, p){
+            try { if (origUP) origUP(game, p); } catch(_){}
+            if (p >= 1 && !afterHundredTimer) {
+              afterHundredTimer = setTimeout(hideLoaderNow, 7000);
+            }
+          };
+
         } else {
           console.error("UnityLoader.js missing or invalid");
-          const cover = document.getElementById("loaderCover");
-          if (cover) cover.classList.add("coverFade");
+          hideLoaderNow();
         }
       } catch (e){
-        const cover = document.getElementById("loaderCover");
-        if (cover) cover.classList.add("coverFade");
         console.error("Unity failed to start:", e);
+        hideLoaderNow();
       }
     }
     window.addEventListener("load", startUnity);
