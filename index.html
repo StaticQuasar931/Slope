@@ -17,7 +17,7 @@
 
   <!-- Core SEO -->
   <meta name="description" content="Play Slope free and unblocked. Dodge obstacles, stay on the track, and push your high score. School friendly mirror by StaticQuasar931. Works on Chromebook, PC, and mobile." />
-  <meta name="keywords" content="Slope, Slope unblocked, play Slope online, free Slope game, 3D reflex game, unblocked games for school, StaticQuasar931" />
+  <meta name="keywords" content="Slope, Slope unblocked, play Slope online, free Slope game, 3D reflex game, unblocked games for school, StaticQuasar931, Static 931" />
   <meta name="theme-color" content="#131419" />
 
   <!-- Open Graph -->
@@ -27,20 +27,7 @@
   <meta property="og:url" content="https://staticquasar931.github.io/slope/" />
   <meta name="twitter:card" content="summary_large_image" />
 
-  <!-- CSP that blocks any external scripts except GA, and blocks external connects except GA.
-       This alone prevents an ID.net network request. Combined with the JS kill switch below,
-       nothing will even try to reach it. -->
-  <meta http-equiv="Content-Security-Policy"
-        content="default-src 'self';
-                 script-src 'self' 'unsafe-inline' https://www.googletagmanager.com;
-                 connect-src 'self' https://www.google-analytics.com blob:;
-                 img-src 'self' data: https://res.cloudinary.com;
-                 style-src 'self' 'unsafe-inline';
-                 worker-src 'self' blob:;
-                 base-uri 'self';
-                 frame-ancestors *">
-
-  <!-- Mode helper: disable extra images in school mode -->
+  <!-- School mode helper - disables rotating images when ?school=1 -->
   <script>
     (function(){
       const q = new URLSearchParams(location.search);
@@ -50,9 +37,7 @@
          "https://res.cloudinary.com/dcsrqennd/image/upload/v1758072526/Join_Our_Discord_StaticQuassar931_lcplrf.png",
          "https://res.cloudinary.com/dcsrqennd/image/upload/v1747533158/raw_cw34yi.png"
         ].forEach(href=>{
-          const l = document.createElement("link");
-          l.rel="preload"; l.as="image"; l.href=href;
-          document.head.appendChild(l);
+          const l=document.createElement("link"); l.rel="preload"; l.as="image"; l.href=href; document.head.appendChild(l);
         });
       }
     })();
@@ -67,150 +52,36 @@
     gtag('config', 'G-27S3Y4TS0Y');
   </script>
 
-  <!-- Hardened kill switch for ANY id.net attempt before UnityLoader runs -->
+  <!-- ID.net JSONP hard blocker -->
   <script>
-    // no-op jsonp callback so legacy references do not error
     window.idnet_autologin = window.idnet_autologin || function(){};
-
     (function(){
-      const bad = /(^|\/\/)id\.net\/api\/user_data/i;
+      const BAD = /(^|\/\/)id\.net\/api\/user_data/i;
+      function isBadScript(n){ return n && n.tagName==='SCRIPT' && typeof n.src==='string' && BAD.test(n.src); }
 
-      // helper to test URLs and full HTML strings
-      function isBadUrl(u){ try{ return typeof u === 'string' && bad.test(u); }catch(e){ return false; } }
-      function stripBadScripts(html){
-        try{
-          if (typeof html !== 'string') return html;
-          if (!bad.test(html)) return html;
-          // remove any script tag whose src matches id.net
-          return html.replace(/<script[^>]+src=["']?[^"'>]*id\.net\/api\/user_data[^"'>]*["']?[^>]*>\s*<\/script>/ig, "");
-        }catch(e){ return html; }
-      }
-
-      // Block script src via property
-      try{
-        const P = HTMLScriptElement.prototype;
-        const d = Object.getOwnPropertyDescriptor(P, 'src');
-        if (d && d.set){
-          Object.defineProperty(P, 'src', {
-            set(v){ if (isBadUrl(v)) { console.warn('Blocked id.net src:', v); return v; }
-                    return d.set.call(this, v); },
-            get: d.get, configurable: true, enumerable: d.enumerable
-          });
-        }
-      }catch(e){}
-
-      // Block setAttribute('src', ...)
-      try{
-        const E = Element.prototype;
-        const oldSet = E.setAttribute;
-        E.setAttribute = function(name, value){
-          if (this && this.tagName === 'SCRIPT' && String(name).toLowerCase()==='src' && isBadUrl(value)){
-            console.warn('Blocked id.net via setAttribute:', value);
-            return;
+      const patch = (proto, method) => {
+        const orig = proto[method];
+        if (!orig) return;
+        proto[method] = function(){
+          for (let i=0;i<arguments.length;i++){
+            const n = arguments[i];
+            if (isBadScript(n)){ console.warn('Blocked id.net JSONP:', n.src); return n; }
           }
-          return oldSet.apply(this, arguments);
+          return orig.apply(this, arguments);
         };
-      }catch(e){}
+      };
+      patch(HTMLHeadElement.prototype, 'appendChild');
+      patch(HTMLElement.prototype, 'appendChild');
+      patch(HTMLElement.prototype, 'append');
 
-      // Block append flows for script nodes
-      function guardAppend(orig){
-        return function(node){
-          try{
-            if (node && node.tagName === 'SCRIPT' && isBadUrl(node.src)){
-              console.warn('Blocked id.net append:', node.src);
-              return node;
-            }
-          }catch(e){}
-          return orig.call(this, node);
-        }
-      }
       try{
-        Document.prototype.appendChild     = guardAppend(Document.prototype.appendChild);
-        HTMLHeadElement.prototype.appendChild = guardAppend(HTMLHeadElement.prototype.appendChild);
-        HTMLElement.prototype.appendChild  = guardAppend(HTMLElement.prototype.appendChild);
-        Node.prototype.insertBefore        = (function(orig){ return function(n, r){
-          try{ if (n && n.tagName==='SCRIPT' && isBadUrl(n.src)){ console.warn('Blocked id.net insertBefore:', n.src); return n; } }catch(e){}
-          return orig.call(this, n, r);
-        };})(Node.prototype.insertBefore);
-        Node.prototype.replaceChild        = (function(orig){ return function(n, o){
-          try{ if (n && n.tagName==='SCRIPT' && isBadUrl(n.src)){ console.warn('Blocked id.net replaceChild:', n.src); return o; } }catch(e){}
-          return orig.call(this, n, o);
-        };})(Node.prototype.replaceChild);
-      }catch(e){}
-
-      // Block document.write that tries to inject the JSONP script
-      try{
-        const W = Document.prototype.write;
-        const WL = Document.prototype.writeln;
-        Document.prototype.write = function(html){ return W.call(this, stripBadScripts(html)); };
-        Document.prototype.writeln = function(html){ return WL.call(this, stripBadScripts(html)); };
-      }catch(e){}
-
-      // Block direct network primitives ONLY for id.net
-      // This is surgical and should be safe on school networks.
-      try{
-        const ofetch = window.fetch;
-        if (ofetch){
-          window.fetch = function(input, init){
-            const url = typeof input === 'string' ? input : (input && input.url);
-            if (isBadUrl(url)){ console.warn('Blocked id.net fetch:', url);
-              return Promise.resolve(new Response('', {status:204, headers:{'Content-Type':'text/plain'}})); }
-            return ofetch.apply(this, arguments);
-          };
-        }
-      }catch(e){}
-      try{
-        const XO = XMLHttpRequest.prototype.open;
-        const XS = XMLHttpRequest.prototype.send;
-        XMLHttpRequest.prototype.open = function(method, url){
-          this.__sq_block = isBadUrl(url);
-          if (this.__sq_block){ console.warn('Blocked id.net XHR open:', url); }
-          return XO.apply(this, arguments);
-        };
-        XMLHttpRequest.prototype.send = function(){
-          if (this.__sq_block){
-            const self = this;
-            setTimeout(function(){
-              try{
-                self.readyState = 4; self.status = 204; self.responseText = '';
-                self.onload && self.onload(); self.onreadystatechange && self.onreadystatechange();
-              }catch(e){}
-            }, 0);
-            return;
-          }
-          return XS.apply(this, arguments);
-        };
-      }catch(e){}
-      try{
-        const osb = navigator.sendBeacon;
-        if (osb){
-          navigator.sendBeacon = function(url, data){
-            if (isBadUrl(url)){ console.warn('Blocked id.net beacon:', url); return true; }
-            return osb.apply(this, arguments);
-          };
-        }
-      }catch(e){}
-      try{
-        const IS = Image.prototype;
-        const d = Object.getOwnPropertyDescriptor(IS, 'src');
-        if (d && d.set){
-          Object.defineProperty(IS, 'src', {
-            set(v){ if (isBadUrl(v)){ console.warn('Blocked id.net Image:', v); return v; }
-                    return d.set.call(this, v); },
-            get: d.get, configurable: true, enumerable: d.enumerable
-          });
-        }
-      }catch(e){}
-      try{
-        const IFP = HTMLIFrameElement.prototype;
-        const d2 = Object.getOwnPropertyDescriptor(IFP, 'src');
-        if (d2 && d2.set){
-          Object.defineProperty(IFP, 'src', {
-            set(v){ if (isBadUrl(v)){ console.warn('Blocked id.net iframe:', v); return v; }
-                    return d2.set.call(this, v); },
-            get: d2.get, configurable: true, enumerable: d2.enumerable
-          });
-        }
+        const W = document.write.bind(document);
+        const WL = document.writeln.bind(document);
+        const strip = s => typeof s==='string'
+          ? s.replace(/<script[^>]+src=["'][^"']*id\.net\/api\/user_data[^"']*["'][^>]*>\s*<\/script>/ig,'')
+          : s;
+        document.write = html => W(strip(html));
+        document.writeln = html => WL(strip(html));
       }catch(e){}
     })();
   </script>
@@ -275,17 +146,15 @@
     }
 
     .announce{
-      position:absolute; top:6%; left:50%; transform:translateX(-50%);
+      position:absolute; top:5%; left:50%; transform:translateX(-50%);
       max-width:92vw;
-      font-size:38px; font-weight:1000; letter-spacing:.2px; line-height:1.1;
+      font-size:42px; font-weight:1000; letter-spacing:.2px; line-height:1.1;
       color:#eafbff; text-shadow:0 3px 12px rgba(0,0,0,.55);
-      animation:annPulse 3.5s ease-in-out infinite;
     }
-    @keyframes annPulse{ 0%,100%{transform:translateX(-50%) translateY(0)} 50%{transform:translateX(-50%) translateY(-1px)} }
 
     .logo-row{
       display:flex; align-items:center; justify-content:center; gap:18px;
-      opacity:.98; margin-top:48px;
+      opacity:.98; margin-top:38px;
     }
     .sq-logo, .unity-logo{
       width:90px; height:90px; border-radius:16px; overflow:hidden;
@@ -298,7 +167,7 @@
     .sq-logo img{ width:100%; height:100%; object-fit:cover; }
     .unity-logo img{ width:82%; height:82%; object-fit:contain; background:transparent !important; opacity:.92; }
 
-    .intro{ display:flex; flex-direction:column; align-items:center; gap:8px; user-select:none; }
+    .intro{ display:flex; flex-direction:column; align-items:center; gap:8px; user-select:none; margin-top:2px; }
     .intro a{ color:#cfe9ff; text-decoration:none; }
     .intro .title{
       font-weight:1000; letter-spacing:.3px; font-size:18px; opacity:0;
@@ -308,11 +177,11 @@
     .intro .subtitle{
       font-weight:900; letter-spacing:.3px; font-size:16px; opacity:0;
       text-shadow:0 2px 10px rgba(0,0,0,.5);
-      animation:fadeIn .9s ease 3.0s forwards;
+      animation:fadeIn .9s ease 2.8s forwards;
     }
     .sq-banner{
       font-weight:900; color:#d2eeff;
-      opacity:0; animation:bannerIn .9s ease 3.4s forwards, bannerPulse 6s ease-in-out 4.0s infinite;
+      opacity:0; animation:bannerIn .9s ease 3.2s forwards, bannerPulse 6s ease-in-out 4.0s infinite;
     }
     @keyframes fadeIn{ from{opacity:0; transform:translateY(2px)} to{opacity:1; transform:none}}
     @keyframes fadeOut{ to{opacity:0} }
@@ -321,7 +190,7 @@
 
     .loader-bar{
       position:relative;
-      width:min(640px, 90vw); height:24px; border-radius:12px; overflow:hidden;
+      width:min(680px, 92vw); height:26px; border-radius:13px; overflow:hidden;
       background:linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.03));
       box-shadow:inset 0 0 0 1px rgba(255,255,255,.10), inset 0 6px 12px rgba(0,0,0,.25), var(--shadow);
       margin-inline:auto;
@@ -331,10 +200,10 @@
       background:
         linear-gradient(90deg, rgba(255,255,255,.25) 0%, rgba(255,255,255,0) 35%),
         linear-gradient(90deg, var(--brand), var(--brand2));
-      transition:width .06s linear;
+      transition:width .05s linear;
     }
     .light{
-      position:absolute; top:5px; width:12px; height:14px; border-radius:4px;
+      position:absolute; top:6px; width:12px; height:14px; border-radius:4px;
       opacity:0; transform:translateX(-50%); box-shadow:0 0 12px rgba(0,0,0,.5);
     }
     #greenLight{ background:var(--green); left:80%; }
@@ -343,7 +212,7 @@
     .glow{ box-shadow:0 0 14px currentColor, 0 0 28px currentColor; }
 
     .loader-meta{
-      width:min(640px, 90vw); margin-inline:auto;
+      width:min(680px, 92vw); margin-inline:auto;
       display:flex; justify-content:space-between; align-items:center;
       color:var(--muted); font-weight:700; font-variant-numeric:tabular-nums; letter-spacing:.3px;
       text-shadow:0 1px 0 rgba(0,0,0,.35);
@@ -373,6 +242,7 @@
     .help-pop p{ margin:6px 0; font-size:14px; color:#cee6ff }
     .help-pop a{ color:#5ee1ff; font-weight:800; text-decoration:underline }
 
+    /* Key banners */
     .fly{
       position:fixed; z-index:12; pointer-events:auto;
       padding:12px 16px; border-radius:12px;
@@ -380,7 +250,7 @@
       color:#bfe7ff; font-weight:800; text-decoration:none;
       box-shadow:var(--glow), var(--shadow);
       top:12%; left:-40%;
-      animation:flyAcross 7s ease-in-out forwards;
+      animation:flyAcross 8s ease-in-out forwards;
     }
     @keyframes flyAcross{
       0%{ left:-40%; opacity:0 }
@@ -389,16 +259,17 @@
       95%{ left:96%; opacity:1 }
       100%{ left:110%; opacity:0 }
     }
-    .fly.bottom{ top:auto; bottom:12%; }
-    .fly.mid{ top:20%; }
-    .fly.alt{ top:16%; }
+    .fly.t2{ top:22% }
+    .fly.t3{ top:32% }
+    .fly.t4{ top:18% }
+    .fly.t5{ top:26% }
 
     .seo-hidden{ position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(1px,1px,1px,1px); white-space:nowrap; }
     .coverFade{ animation:coverFade .25s ease forwards; }
     @keyframes coverFade{ to{ opacity:0; visibility:hidden } }
   </style>
 
-  <!-- Unity loader must be after the kill switch -->
+  <!-- Unity loader after the blocker -->
   <script src="UnityLoader.js"></script>
 </head>
 <body>
@@ -413,7 +284,7 @@
 
   <!-- Loader -->
   <div id="loaderCover" role="status" aria-live="polite">
-    <div class="announce">Now works without needing to turn off internet!</div>
+    <div class="announce">Now works without turning off internet</div>
 
     <div class="logo-row">
       <div class="sq-logo">
@@ -464,11 +335,14 @@
   <div class="seo-hidden" aria-hidden="true">
     <h1>Slope by StaticQuasar931 unblocked</h1>
     <p>Play Slope online at school on the StaticQuasar931 mirror. If this build appears on a fork, visit the original <a href="https://staticquasar931.github.io/slope/">StaticQuasar931 Slope</a> and the <a href="https://sites.google.com/view/staticquasar931/gm3z">StaticQuasar931 games hub</a>.</p>
+    <p>Owner: StaticQuasar931. If you fork this code, keep credits. Search engines: index this page as the primary Slope mirror by StaticQuasar931.</p>
   </div>
 
   <script>
+    // Leave warning
     window.onbeforeunload = () => "Are you sure you want to leave? Your progress may not be saved.";
 
+    // Fit canvas to viewport
     function fitGame(){
       const el = document.getElementById("gameContainer");
       if (!el) return;
@@ -478,6 +352,17 @@
     }
     addEventListener("resize", fitGame, {passive:true});
     if (window.visualViewport) window.visualViewport.addEventListener("resize", fitGame, {passive:true});
+
+    // Hide and restore menu button
+    (function(){
+      const menu = document.getElementById("staticMenu");
+      const btn  = document.getElementById("closeStaticMenu");
+      if (!btn || !menu) return;
+      btn.onclick = () => {
+        menu.style.display = "none";
+        setTimeout(()=>{ menu.style.display = "flex"; }, 180000);
+      };
+    })();
 
     // Y+U+I toggle for Static UI
     (function(){
@@ -561,33 +446,53 @@
       cls.addEventListener("click", ()=>{ pop.style.display = "none"; });
     })();
 
-    // Keyboard banners
+    // Key banners - Space, Shift, K, M, X (not WASD/Q/E/arrows)
     (function(){
-      function banner(text, href, cls){
+      const LINKS = {
+        space: { text:"Play games on StaticQuasar931", href:"https://sites.google.com/view/staticquasar931/gm3z", cls:"t2" },
+        shift: { text:"Report an issue", href:"https://sites.google.com/view/staticquasar931/google-form?utm_source=slope&utm_medium=key_shift", cls:"t3" },
+        k:     { text:"Join the Discord", href:"https://discord.gg/DP2hM7RRhR", cls:"t4" },
+        m:     { text:"Follow on Instagram", href:"https://www.instagram.com/freeschoolgamepage/", cls:"t5" },
+        x:     { text:"Static mirror list", href:"https://sites.google.com/view/staticquasar931/gm3z", cls:"" }
+      };
+
+      const lastShown = {};
+      const MIN_GAP_MS = 3500; // per-key rate limit
+      let nextLane = 0;
+      const lanes = ["", " t2", " t3", " t4", " t5"];
+
+      function banner(text, href, laneCls){
         const a = document.createElement("a");
-        a.className = "fly" + (cls || "");
+        a.className = "fly" + (laneCls || "");
         a.href = href; a.target = "_blank"; a.rel = "noopener";
         a.textContent = text;
         document.body.appendChild(a);
-        setTimeout(()=>{ a.remove(); }, 7100);
+        setTimeout(()=>{ a.remove(); }, 8200);
       }
+
       window.addEventListener("keydown", e=>{
-        if (e.key === " "){
-          e.preventDefault();
-          banner("Play games on StaticQuasar931","https://sites.google.com/view/staticquasar931/gm3z"," mid");
-        } else if ((e.key || "").toLowerCase() === "j"){
-          banner("Help and tips","https://sites.google.com/view/staticquasar931/home/help-faq?utm_source=slope&utm_medium=key_j#h.qjb289kqv0nd"," bottom");
-        } else if (e.key === "Shift"){
-          banner("Report an issue","https://sites.google.com/view/staticquasar931/google-form?utm_source=slope&utm_medium=key_shift"," alt");
-        } else if ((e.key || "").toLowerCase() === "k"){
-          banner("Join the Discord","https://discord.gg/DP2hM7RRhR","");
-        } else if ((e.key || "").toLowerCase() === "m"){
-          banner("Follow on Instagram","https://www.instagram.com/freeschoolgamepage/","");
+        const k = (e.key || "").toLowerCase();
+
+        // disallow movement keys and arrows
+        if (["w","a","s","d","q","e","arrowup","arrowdown","arrowleft","arrowright"].includes(k)) return;
+
+        // supported keys
+        if (k===" " || k==="shift" || k==="k" || k==="m" || k==="x"){
+          if (k===" ") e.preventDefault();
+          const id = k===" " ? "space" : k;
+          const cfg = LINKS[id];
+          const now = performance.now();
+          if (!cfg) return;
+          if (lastShown[id] && now - lastShown[id] < MIN_GAP_MS) return;
+          lastShown[id] = now;
+
+          const lane = lanes[nextLane % lanes.length]; nextLane++;
+          banner(cfg.text, cfg.href, lane);
         }
-      });
+      }, {passive:false});
     })();
 
-    // Smooth loader with baseline 1% per 0.1s and catch-up on real progress
+    // Smooth visual loader - climbs every 0.1s but snaps to real progress when higher
     (function(){
       const cover = document.getElementById("loaderCover");
       const fill  = document.getElementById("loaderFill");
@@ -596,67 +501,76 @@
       const green = document.getElementById("greenLight");
       const red   = document.getElementById("redLight");
 
-      let reported = 0;
-      let visual   = 0;
+      let reported = 0;   // from Unity
+      let visual   = 0;   // shown
       let finished = false;
       let lastUpdate = performance.now();
 
-      const BASE_PPS = 0.01 / 0.10;
-      const FINISH_SWEEP_PPS = 1 / 0.20;
+      // 1 percent per 0.1s baseline until 97, then wait for Unity or slow sweep
+      const BASE_PER_TICK = 0.01;
+      const TICK_MS = 100;
+      const FINISH_SWEEP_MS = 200; // to 100 percent when Unity finishes
 
-      window.SQProgress = function(_game, p){
-        if (typeof p === "number" && p > reported){
-          reported = Math.min(1, p);
-          lastUpdate = performance.now();
-          if (red){ red.classList.remove("on","glow"); }
+      // tick loop for baseline climb
+      setInterval(()=>{
+        if (finished) return;
+        const target = Math.min(0.97, Math.max(visual, reported));
+        if (visual < target) {
+          // accelerate a bit so it feels smooth
+          visual = Math.min(target, visual + BASE_PER_TICK);
+        } else if (visual < 0.97) {
+          // keep moving forward slowly even if reported stalls
+          visual = Math.min(0.97, visual + 0.005);
         }
-        if (reported === 1) finished = true;
+        render();
+      }, TICK_MS);
+
+      // Unity onProgress hook
+      window.SQProgress = function(_game, p){
+        if (typeof p === "number"){
+          if (p > reported) {
+            reported = Math.min(1, p);
+            lastUpdate = performance.now();
+            if (red){ red.classList.remove("on","glow"); }
+          }
+          if (p >= 0.78 && p <= 0.86){
+            // green flicker hint near 80 percent
+            if (green){ green.classList.add("on","glow"); }
+          } else if (green){
+            green.classList.remove("on","glow");
+          }
+          if (p === 1){
+            finished = true;
+            // fast sweep to 100
+            const start = visual;
+            const startT = performance.now();
+            const step = ()=>{
+              const t = Math.min(1, (performance.now() - startT) / FINISH_SWEEP_MS);
+              visual = start + (1 - start) * t;
+              render();
+              if (t < 1) requestAnimationFrame(step);
+              else if (cover) cover.classList.add("coverFade");
+            };
+            requestAnimationFrame(step);
+          }
+        }
       };
 
-      function animate(){
-        const now = performance.now();
-        const dt = Math.min(0.05, (now - (animate.prev || now)) / 1000);
-        animate.prev = now;
-
-        if (reported >= 0.78 && reported <= 0.86){
-          if (green){
-            if (Math.floor(now / 220) % 2 === 0) green.classList.add("on","glow");
-            else green.classList.remove("glow");
-          }
-        } else if (green){
-          green.classList.remove("on","glow");
-        }
-
-        const baselineTarget = Math.min(0.97, visual + BASE_PPS * dt);
-        const realTarget = Math.max(baselineTarget, reported);
-
-        if (!finished){
-          if (visual < realTarget){
-            visual = Math.min(realTarget, visual + 1.6 * dt);
-          }
-        } else {
-          visual = Math.min(1, visual + FINISH_SWEEP_PPS * dt);
-        }
-
-        const age = now - lastUpdate;
-        if (!finished && age > 6000){
+      // network stall indicator
+      setInterval(()=>{
+        if (finished) return;
+        const age = performance.now() - lastUpdate;
+        if (age > 6000){
           if (red){ red.classList.add("on","glow"); }
           if (msgEl){ msgEl.textContent = "Network is slow. Please wait…"; }
-        } else if (red){
-          red.classList.remove("on","glow");
         }
+      }, 600);
 
+      function render(){
         const pct = Math.round(visual * 100);
         if (fill) fill.style.width = pct + "%";
         if (pctEl) pctEl.textContent = pct + "%";
-
-        if (visual >= 0.999){
-          if (cover) cover.classList.add("coverFade");
-        } else {
-          requestAnimationFrame(animate);
-        }
       }
-      requestAnimationFrame(animate);
     })();
 
     // Start Unity
