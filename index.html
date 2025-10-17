@@ -17,8 +17,8 @@
 
   <!-- Core SEO -->
   <meta name="description" content="Play Slope free and unblocked. Dodge obstacles, stay on the track, and push your high score. School friendly mirror by StaticQuasar931. Works on Chromebook, PC, and mobile." />
-  <meta name="keywords" content="Slope, Slope unblocked, play Slope online, free Slope game, 3D reflex game, unblocked games for school, StaticQuasar931" />
-  <meta name="theme-color" content="#101218" />
+  <meta name="keywords" content="Slope, Slope unblocked, play Slope online, free Slope game, 3D reflex game, unblocked games for school, StaticQuasar931, Static 931" />
+  <meta name="theme-color" content="#131419" />
 
   <!-- Open Graph -->
   <meta property="og:title" content="Play Slope - Free Unblocked on StaticQuasar931" />
@@ -27,7 +27,24 @@
   <meta property="og:url" content="https://staticquasar931.github.io/slope/" />
   <meta name="twitter:card" content="summary_large_image" />
 
-  <!-- Google Analytics (as requested) -->
+  <!-- Disable heavy extra assets if ?school=1 -->
+  <script>
+    (function(){
+      const q = new URLSearchParams(location.search);
+      window.__SQ_SCHOOL__ = q.get("school")==="1";
+      if (!window.__SQ_SCHOOL__) {
+        [
+          "https://res.cloudinary.com/dcsrqennd/image/upload/v1747533056/raw_um4pvq.png",
+          "https://res.cloudinary.com/dcsrqennd/image/upload/v1758072526/Join_Our_Discord_StaticQuassar931_lcplrf.png",
+          "https://res.cloudinary.com/dcsrqennd/image/upload/v1747533158/raw_cw34yi.png"
+        ].forEach(href=>{
+          const l=document.createElement("link"); l.rel="preload"; l.as="image"; l.href=href; document.head.appendChild(l);
+        });
+      }
+    })();
+  </script>
+
+  <!-- Google Analytics -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-27S3Y4TS0Y"></script>
   <script>
     window.dataLayer = window.dataLayer || [];
@@ -36,22 +53,59 @@
     gtag('config', 'G-27S3Y4TS0Y');
   </script>
 
+  <!-- Hard block id.net JSONP injections -->
+  <script>
+    window.idnet_autologin = window.idnet_autologin || function(){};
+    (function(){
+      const BAD = /(^|\/\/)id\.net\/api\/user_data/i;
+      function isBadScript(n){ return n && n.tagName==='SCRIPT' && typeof n.src==='string' && BAD.test(n.src); }
+      const patch = (proto, method) => {
+        const orig = proto[method];
+        if (!orig) return;
+        proto[method] = function(){
+          for (let i=0;i<arguments.length;i++){
+            const n = arguments[i];
+            if (isBadScript(n)){ console.warn('Blocked id.net JSONP:', n.src); return n; }
+          }
+          return orig.apply(this, arguments);
+        };
+      };
+      patch(HTMLHeadElement.prototype, 'appendChild');
+      patch(HTMLElement.prototype, 'appendChild');
+      patch(HTMLElement.prototype, 'append');
+      try{
+        const W = document.write.bind(document);
+        const WL = document.writeln.bind(document);
+        const strip = s => typeof s==='string'
+          ? s.replace(/<script[^>]+src=["'][^"']*id\.net\/api\/user_data[^"']*["'][^>]*>\s*<\/script>/ig,'')
+          : s;
+        document.write = html => W(strip(html));
+        document.writeln = html => WL(strip(html));
+      }catch(e){}
+      const OBS = new MutationObserver(muts=>{
+        muts.forEach(m=>{
+          m.addedNodes && m.addedNodes.forEach(n=>{
+            if (isBadScript(n)){ n.remove(); console.warn('Removed id.net script node'); }
+          });
+        });
+      });
+      OBS.observe(document.documentElement,{childList:true,subtree:true});
+    })();
+  </script>
+
   <style>
     :root{
       --brand:#5ee1ff; --brand2:#9bffb7;
-      --bg:#101218; --bg2:#0b0d12;
+      --bg:#131419; --bg2:#0d0f14;
       --text:#e8f3ff; --muted:#b9d7ff;
-      --green:#76ff7a; --red:#ff6b6b; --gold:#ffe27a;
-      --shadow:0 10px 28px rgba(0,0,0,.5);
+      --shadow:0 8px 28px rgba(0,0,0,.45);
       --glow:0 0 12px rgba(94,225,255,.65), 0 0 24px rgba(155,255,183,.35);
+      --green:#76ff7a; --red:#ff6b6b;
     }
-    html,body{
-      margin:0; padding:0; height:100%; overflow:hidden;
-      background:radial-gradient(1200px 800px at 50% 40%, #131724 0%, var(--bg) 60%, var(--bg2) 100%);
-      color:var(--text); font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
-    }
+    html,body{ margin:0; padding:0; height:100%; overflow:hidden;
+      background:linear-gradient(180deg,var(--bg),var(--bg2)); color:var(--text);
+      font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif; }
 
-    /* Game mount */
     .webgl-content{ position:fixed; inset:0; display:flex; align-items:center; justify-content:center; }
     #gameContainer{ width:100vw; height:100vh; background:transparent; }
 
@@ -70,75 +124,90 @@
     #staticMenu a{ color:var(--brand); text-decoration:none; font-weight:800; }
     #closeStaticMenu{
       color:#f55; cursor:pointer; padding:2px 6px; border-radius:6px;
-      border:1px solid rgba(255,255,255,.18); background:rgba(255,255,255,.06);
+      border:1px solid rgba(255,255,255,.15); background:rgba(255,255,255,.06);
       user-select:none;
     }
 
-    /* Loader Cover */
+    /* Rotating Icon */
+    #staticSlideMenu{
+      position:fixed; bottom:24px; right:24px; z-index:9;
+      width:100px; height:100px; pointer-events:none; opacity:0;
+      transform:translateX(140px);
+      filter: drop-shadow(0 6px 18px rgba(0,0,0,.45));
+    }
+    #staticSlideMenu a{ display:block; width:100%; height:100%; }
+    #staticSlideMenu img{ width:100%; height:100%; object-fit:cover; border-radius:50%; }
+    .slide-in{ animation:slideIn 0.9s ease forwards; }
+    .slide-out{ animation:slideOut 0.8s ease forwards; }
+    @keyframes slideIn{ from{opacity:0; transform:translateX(140px)} to{opacity:1; transform:translateX(0)} }
+    @keyframes slideOut{ from{opacity:1; transform:translateX(0)} to{opacity:0; transform:translateX(140px)} }
+    @media (max-width:768px){ #staticSlideMenu{ width:84px; height:84px; } }
+
+    /* Loader */
     #loaderCover{
-      position:fixed; inset:0; z-index:10; display:flex;
-      flex-direction:column; align-items:center; justify-content:center; gap:18px;
-      text-align:center; pointer-events:auto;
+      position:fixed; inset:0; z-index:10;
+      background:radial-gradient(1200px 800px at 50% 40%, #1a2130 0%, #0d0f14 60%, #090b10 100%);
+      display:flex; flex-direction:column; align-items:center; justify-content:center; gap:18px;
+      text-align:center;
     }
 
     .announce{
-      position:absolute; top:5%; left:50%; transform:translateX(-50%);
-      max-width:92vw; padding:6px 12px;
-      font-size:40px; font-weight:1000; letter-spacing:.2px; line-height:1.1;
+      position:absolute; top:4.5%; left:50%; transform:translateX(-50%);
+      max-width:92vw;
+      font-size:50px; font-weight:1000; letter-spacing:.2px; line-height:1.1;
       color:#eafbff; text-shadow:0 3px 12px rgba(0,0,0,.55);
-      animation:annFloat 4.5s ease-in-out infinite;
     }
-    @keyframes annFloat{ 0%,100%{transform:translateX(-50%) translateY(0)} 50%{transform:translateX(-50%) translateY(-1px)} }
 
-    /* Logos row */
     .logo-row{
-      display:flex; align-items:center; justify-content:center; gap:16px;
-      margin-top:46px;
+      display:flex; align-items:center; justify-content:center; gap:18px;
+      opacity:.98; margin-top:36px;
     }
     .sq-logo, .unity-logo{
-      width:90px; height:90px; border-radius:16px; overflow:hidden;
-      display:flex; align-items:center; justify-content:center; background:#0b0d12;
-      box-shadow:0 10px 34px rgba(94,225,255,.25); animation:logoFade 4s ease-in-out infinite;
+      width:92px; height:92px; border-radius:16px; overflow:hidden;
+      box-shadow:0 10px 34px rgba(94,225,255,.25);
+      background:#0b0d12;
+      display:flex; align-items:center; justify-content:center;
+      animation:logoFade 4s ease-in-out infinite;
     }
-    @keyframes logoFade{ 0%,100%{opacity:.78} 50%{opacity:1} }
+    @keyframes logoFade{ 0%,100%{opacity:.8} 50%{opacity:1} }
     .sq-logo img{ width:100%; height:100%; object-fit:cover; }
-    .unity-logo img{ width:82%; height:82%; object-fit:contain; opacity:.92; background:transparent !important; }
+    .unity-logo img{ width:84%; height:84%; object-fit:contain; background:transparent !important; opacity:.92; }
 
-    /* Intro */
-    .intro{ display:flex; flex-direction:column; align-items:center; gap:8px; user-select:none; }
+    .intro{ display:flex; flex-direction:column; align-items:center; gap:8px; user-select:none; margin-top:2px; }
     .intro a{ color:#cfe9ff; text-decoration:none; }
     .intro .title{
       font-weight:1000; letter-spacing:.3px; font-size:18px; opacity:0;
       text-shadow:0 2px 10px rgba(0,0,0,.5);
-      animation:fadeIn .8s ease .2s forwards, fadeOut .6s ease 2.6s forwards;
+      animation:fadeIn .6s ease .1s forwards, fadeOut .5s ease 2.0s forwards;
     }
     .intro .subtitle{
       font-weight:900; letter-spacing:.3px; font-size:16px; opacity:0;
       text-shadow:0 2px 10px rgba(0,0,0,.5);
-      animation:fadeIn .9s ease 3.2s forwards;
+      animation:fadeIn .7s ease 2.4s forwards;
     }
     .sq-banner{
       font-weight:900; color:#d2eeff;
-      opacity:0; animation:bannerIn .9s ease 3.6s forwards, bannerPulse 6s ease-in-out 4.0s infinite;
+      opacity:0; animation:bannerIn .7s ease 2.8s forwards, bannerPulse 5s ease-in-out 3.2s infinite;
     }
     @keyframes fadeIn{ from{opacity:0; transform:translateY(2px)} to{opacity:1; transform:none}}
     @keyframes fadeOut{ to{opacity:0} }
     @keyframes bannerIn{ to{opacity:1} }
     @keyframes bannerPulse{ 0%,100%{filter:brightness(1)} 50%{filter:brightness(1.08)} }
 
-    /* Loader bar */
-    .loader-wrap{ width:100%; display:flex; flex-direction:column; align-items:center; gap:8px; }
     .loader-bar{
-      position:relative; width:min(720px, 92vw); height:26px; border-radius:13px; overflow:hidden;
-      background:linear-gradient(180deg, rgba(255,255,255,.10), rgba(255,255,255,.03));
+      position:relative;
+      width:min(700px, 92vw); height:26px; border-radius:13px; overflow:hidden;
+      background:linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.03));
       box-shadow:inset 0 0 0 1px rgba(255,255,255,.10), inset 0 6px 12px rgba(0,0,0,.25), var(--shadow);
+      margin-inline:auto;
     }
     .loader-fill{
       height:100%; width:0%;
       background:
-        linear-gradient(90deg, rgba(255,255,255,.22) 0%, rgba(255,255,255,0) 35%),
+        linear-gradient(90deg, rgba(255,255,255,.25) 0%, rgba(255,255,255,0) 35%),
         linear-gradient(90deg, var(--brand), var(--brand2));
-      transition:width .06s linear;
+      transition:width .05s linear;
+      will-change: width;
     }
     .light{
       position:absolute; top:6px; width:12px; height:14px; border-radius:4px;
@@ -146,23 +215,22 @@
     }
     #greenLight{ background:var(--green); left:80%; }
     #redLight{ background:var(--red); left:50%; }
-    #goldLight{ background:var(--gold); left:96%; }
     .light.on{ opacity:1; }
     .glow{ box-shadow:0 0 14px currentColor, 0 0 28px currentColor; }
 
     .loader-meta{
-      width:min(720px, 92vw);
+      width:min(700px, 92vw); margin-inline:auto;
       display:flex; justify-content:space-between; align-items:center;
-      color:var(--muted); font-weight:800; font-variant-numeric:tabular-nums; letter-spacing:.3px;
+      color:var(--muted); font-weight:700; font-variant-numeric:tabular-nums; letter-spacing:.3px;
       text-shadow:0 1px 0 rgba(0,0,0,.35);
     }
 
-    /* Help and buttons */
     .btn{
       appearance:none; border:1px solid rgba(255,255,255,.18); background:rgba(255,255,255,.06);
-      color:#eaf6ff; border-radius:10px; padding:8px 12px; font-weight:800; cursor:pointer;
+      color:#eaf6ff; border-radius:10px; padding:8px 12px; font-weight:700; cursor:pointer;
     }
     .btn:hover{ filter:brightness(1.08); }
+
     #needHelpBtn{
       position:fixed; right:28px; bottom:50%; transform:translateY(160px);
       z-index:11;
@@ -175,79 +243,102 @@
       position:fixed; inset:auto 16px 16px auto; z-index:11; width:min(560px, 92vw);
       background:linear-gradient(135deg, rgba(20,24,36,.96), rgba(14,16,24,.9));
       border:1px solid rgba(94,225,255,.35); box-shadow:var(--glow), var(--shadow);
-      border-radius:14px; padding:14px; display:none; text-align:left;
+      border-radius:14px; padding:14px; display:none;
     }
     .help-pop h3{ margin:0 0 6px; font-size:16px }
     .help-pop p{ margin:6px 0; font-size:14px; color:#cee6ff }
     .help-pop a{ color:#5ee1ff; font-weight:800; text-decoration:underline }
 
-    /* Tip area */
-    #tipArea{
-      position:absolute; left:16px; bottom:16px; max-width: min(720px, 86vw);
-      color: var(--muted); font-weight: 800; font-size: 13.5px; line-height: 1.25;
-      letter-spacing:.2px; text-shadow:0 1px 0 rgba(0,0,0,.35);
-      display:flex; gap:8px; align-items:baseline; opacity:.96;
-    }
-    #tipLabel{ color:#cfe9ff; font-weight:1000; opacity:.95; }
-
-    /* Key banners */
+    /* Key banners - instant entry with on-screen start. Fixed size. */
     .fly{
       position:fixed; z-index:12; pointer-events:auto;
       padding:12px 16px; border-radius:12px;
       background:rgba(20,24,36,.92); border:1px solid rgba(94,225,255,.35);
-      color:#bfe7ff; font-weight:900; text-decoration:none; white-space:nowrap;
+      color:#bfe7ff; font-weight:800; text-decoration:none;
       box-shadow:var(--glow), var(--shadow);
       will-change: transform, opacity;
-    }
-    /* straight L→R */
-    .fx-straight{ top:12%; left:-40%; animation:fxStraight 6s ease-in-out forwards; }
-    @keyframes fxStraight{
-      0%{ transform:translateX(0); opacity:0 }
-      10%{ transform:translateX(42vw); opacity:1 }
-      50%{ transform:translateX(86vw); opacity:1 }
-      95%{ transform:translateX(100vw); opacity:1 }
-      100%{ transform:translateX(112vw); opacity:0 }
-    }
-    /* arc like a plane */
-    .fx-arc{ top:18%; left:-40%; animation:fxArc 7s ease-in-out forwards; }
-    @keyframes fxArc{
-      0%{ transform:translate(0,0); opacity:0 }
-      15%{ transform:translate(16vw,-2vh); opacity:1 }
-      40%{ transform:translate(42vw,-4vh); opacity:1 }
-      75%{ transform:translate(82vw,-1vh); opacity:1 }
-      100%{ transform:translate(112vw,0); opacity:0 }
-    }
-    /* plane look */
-    .fx-plane{ top:22%; left:-40%; padding:10px 14px 10px 38px; animation:fxPlane 7s ease-in-out forwards; }
-    .fx-plane::before{
-      content:"✈"; position:absolute; left:10px; top:50%; transform:translateY(-52%); opacity:.9;
-      filter:drop-shadow(0 2px 2px rgba(0,0,0,.4));
-    }
-    @keyframes fxPlane{
-      0%{ transform:translate(0,0) rotate(-1deg); opacity:0 }
-      10%{ transform:translate(10vw,-1vh) rotate(0deg); opacity:1 }
-      55%{ transform:translate(56vw,-2vh) rotate(1deg); opacity:1 }
-      90%{ transform:translate(98vw,-1vh) rotate(0deg); opacity:1 }
-      100%{ transform:translate(112vw,0) rotate(0deg); opacity:0 }
-    }
-    /* vertical weave */
-    .fx-weave{ left:-40%; animation:fxWeave 7s ease-in-out forwards; }
-    @keyframes fxWeave{
-      0%{ top:28%; transform:translateX(0); opacity:0 }
-      10%{ top:26%; transform:translateX(16vw); opacity:1 }
-      35%{ top:30%; transform:translateX(42vw); opacity:1 }
-      70%{ top:24%; transform:translateX(82vw); opacity:1 }
-      100%{ top:28%; transform:translateX(112vw); opacity:0 }
+      white-space:nowrap;
+      width:max-content; /* prevent width shift at edge */
     }
 
+    /* 1) Straight L->R, starts on-screen immediately */
+    .fly.ltr{ top:14%; left:2%; animation:fly_ltr 7.2s cubic-bezier(.25,.1,.25,1) forwards; }
+    @keyframes fly_ltr{
+      0%{ transform:translateX(0); opacity:1 }
+      90%{ transform:translateX(86vw); opacity:1 }
+      100%{ transform:translateX(102vw); opacity:0 }
+    }
+
+    /* 2) Sine wave across screen */
+    .fly.sine{ top:24%; left:2%; animation:fly_sine 8.0s linear forwards; }
+    @keyframes fly_sine{
+      0%{ transform:translate(0, 0); opacity:1 }
+      20%{ transform:translate(20vw, -10px) }
+      40%{ transform:translate(40vw, 10px) }
+      60%{ transform:translate(60vw, -8px) }
+      80%{ transform:translate(80vw, 6px) }
+      100%{ transform:translate(102vw, 0); opacity:0 }
+    }
+
+    /* 3) Plane icon glide */
+    .fly.plane{ top:34%; left:2%; padding:12px 18px 12px 32px; background:rgba(0,0,0,.55); border:1px solid rgba(255,255,255,.25); animation:fly_plane 8.0s ease-in-out forwards; }
+    .fly.plane::before{
+      content:"✈"; position:absolute; left:10px; top:50%; transform:translateY(-50%) rotate(-6deg); opacity:.9;
+    }
+    @keyframes fly_plane{
+      0%{ transform:translate(0, -4px) rotate(-1deg); opacity:1 }
+      70%{ transform:translate(74vw, -3px) rotate(-1deg); opacity:1 }
+      100%{ transform:translate(102vw, 0) rotate(-1deg); opacity:0 }
+    }
+
+    /* 4) Float up-down while moving right */
+    .fly.float{ top:18%; left:2%; animation:fly_float 8.2s ease-in-out forwards; }
+    @keyframes fly_float{
+      0%{ transform:translate(0, 0); opacity:1 }
+      25%{ transform:translate(20vw, -6px) }
+      50%{ transform:translate(42vw, 6px) }
+      75%{ transform:translate(66vw, -6px) }
+      100%{ transform:translate(102vw, 0); opacity:0 }
+    }
+
+    /* 5) Low glide near bottom */
+    .fly.low{ top:82%; left:2%; animation:fly_low 7.5s ease-in-out forwards; }
+    @keyframes fly_low{
+      0%{ transform:translate(0, 0); opacity:1 }
+      90%{ transform:translate(88vw, 0); opacity:1 }
+      100%{ transform:translate(102vw, 0); opacity:0 }
+    }
+
+    /* 6) Bounce-y up-down */
+    .fly.bounce{ top:58%; left:2%; animation:fly_bounce 7.8s ease-in-out forwards; }
+    @keyframes fly_bounce{
+      0%{ transform:translate(0,0); opacity:1 }
+      20%{ transform:translate(18vw,-14px) }
+      40%{ transform:translate(36vw,10px) }
+      60%{ transform:translate(54vw,-10px) }
+      80%{ transform:translate(72vw,6px) }
+      100%{ transform:translate(102vw,0); opacity:0 }
+    }
+
+    /* Loader tips bottom-left */
+    #tipsBox{
+      position:fixed; bottom:14px; left:14px; z-index:11;
+      width:min(480px, 92vw);
+      background:rgba(12,14,20,.62);
+      border:1px solid rgba(255,255,255,.12);
+      border-radius:10px; padding:10px 12px;
+      color:#d8ecff; font-size:13px; font-weight:700;
+      box-shadow:var(--shadow);
+      text-align:left;
+    }
+    #tipsBox .label{ display:block; font-size:12px; color:#8fbef8; margin-bottom:4px; font-weight:900 }
+
+    .seo-hidden{ position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(1px,1px,1px,1px); white-space:nowrap; }
     .coverFade{ animation:coverFade .25s ease forwards; }
     @keyframes coverFade{ to{ opacity:0; visibility:hidden } }
-
-    /* Hidden SEO */
-    .seo-hidden{ position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(1px,1px,1px,1px); white-space:nowrap; }
   </style>
 
-  <!-- Real Unity loader (local copy in repo root) -->
+  <!-- Unity loader after the blocker -->
   <script src="UnityLoader.js"></script>
 </head>
 <body>
@@ -257,15 +348,18 @@
     <span id="closeStaticMenu" title="Hide temporarily">✕</span>
   </div>
 
+  <!-- Rotating Icon -->
+  <div id="staticSlideMenu" aria-live="polite" style="display:none"></div>
+
   <!-- Loader -->
   <div id="loaderCover" role="status" aria-live="polite">
-    <div class="announce">Now works without needing to turn off internet</div>
+    <div class="announce">Now works without turning off internet</div>
 
     <div class="logo-row">
-      <a class="sq-logo" href="https://sites.google.com/view/staticquasar931/gm3z" target="_blank" rel="noopener" title="StaticQuasar931 hub">
+      <div class="sq-logo">
         <img src="https://res.cloudinary.com/dcsrqennd/image/upload/v1760208794/My%20Brand/Static_pfp_2_nqzjkd.jpg" alt="StaticQuasar931 logo">
-      </a>
-      <div class="unity-logo" title="Unity">
+      </div>
+      <div class="unity-logo">
         <img src="https://res.cloudinary.com/dlq5fztla/image/upload/v1760307222/unity_i4qjdf.png" alt="Unity logo">
       </div>
     </div>
@@ -273,38 +367,35 @@
     <div class="intro" id="intro">
       <a href="https://sites.google.com/view/staticquasar931/gm3z" target="_blank" rel="noopener" id="introLink">
         <div class="title">StaticQuasar931 Unblocked Games Presents</div>
-        <div class="subtitle">Slope stable unblocked high quality version</div>
+        <div class="subtitle">Slope Stable Unblocked High Quality version</div>
         <div class="sq-banner">Visit the hub for more games</div>
       </a>
     </div>
 
-    <div class="loader-wrap">
-      <div class="loader-bar">
-        <div class="loader-fill" id="loaderFill"></div>
-        <div id="greenLight" class="light"></div>
-        <div id="redLight" class="light"></div>
-        <div id="goldLight" class="light"></div>
-      </div>
-      <div class="loader-meta">
-        <small id="loaderMsg">Initializing WebGL</small>
-        <div id="loaderPct">0%</div>
-      </div>
+    <div class="loader-bar">
+      <div class="loader-fill" id="loaderFill"></div>
+      <div id="greenLight" class="light"></div>
+      <div id="redLight" class="light"></div>
+    </div>
+
+    <div class="loader-meta">
+      <small id="loaderMsg">Initializing WebGL</small>
+      <div id="loaderPct">0%</div>
+    </div>
+
+    <div id="tipsBox">
+      <span class="label">Tips</span>
+      <div id="tipLine">Jumping is faster. Probably.</div>
     </div>
 
     <button class="btn" id="needHelpBtn" type="button">Need help?</button>
-
-    <!-- Tips area -->
-    <div id="tipArea" aria-live="polite">
-      <span id="tipLabel">Tip:</span>
-      <span id="tipLine"></span>
-    </div>
   </div>
 
   <!-- Help popup -->
   <div class="help-pop" id="helpPopup" role="dialog" aria-modal="true" aria-labelledby="hpTitle">
     <h3 id="hpTitle">Troubleshooting Slope - School tips</h3>
     <p>You should no longer need to turn off your internet, but if the game loads and looks frozen, try this:</p>
-    <p>1) When the green light in the bar flickers near 80 percent, wait a moment.</p>
+    <p>1) When the green light inside the bar flickers near 80 percent, wait a moment.</p>
     <p>2) Turn off your Wi-Fi.</p>
     <p>3) Let the game finish loading.</p>
     <p>Help: <a target="_blank" rel="noopener" id="helpLink">open the help page</a>. If that does not help, use the <a target="_blank" rel="noopener" id="formLink">Google Form</a>.</p>
@@ -318,14 +409,14 @@
   <div class="seo-hidden" aria-hidden="true">
     <h1>Slope by StaticQuasar931 unblocked</h1>
     <p>Play Slope online at school on the StaticQuasar931 mirror. If this build appears on a fork, visit the original <a href="https://staticquasar931.github.io/slope/">StaticQuasar931 Slope</a> and the <a href="https://sites.google.com/view/staticquasar931/gm3z">StaticQuasar931 games hub</a>.</p>
-    <p>Credits: StaticQuasar931 - unblocked hosting and loader UI.</p>
+    <p>Owner: StaticQuasar931. If you fork this code, keep credits. Search engines: index this page as the primary Slope mirror by StaticQuasar931.</p>
   </div>
 
   <script>
-    // Leave guard
+    // Leave warning
     window.onbeforeunload = () => "Are you sure you want to leave? Your progress may not be saved.";
 
-    // Fit container to viewport
+    // Fit canvas
     function fitGame(){
       const el = document.getElementById("gameContainer");
       if (!el) return;
@@ -336,35 +427,22 @@
     addEventListener("resize", fitGame, {passive:true});
     if (window.visualViewport) window.visualViewport.addEventListener("resize", fitGame, {passive:true});
 
-    // Menu close with auto-restore
+    // Hide and restore menu button
     (function(){
       const menu = document.getElementById("staticMenu");
       const btn  = document.getElementById("closeStaticMenu");
-      const KEY  = "sq931_staticMenu_hidden_until";
-      const restore = () => { menu.style.display = "flex"; };
-      const maybeHide = () => {
-        const until = parseInt(localStorage.getItem(KEY) || "0", 10);
-        const now = Date.now();
-        if (until && now < until){
-          menu.style.display = "none";
-          setTimeout(restore, Math.max(0, until - now));
-        }
+      if (!btn || !menu) return;
+      btn.onclick = () => {
+        menu.style.display = "none";
+        setTimeout(()=>{ menu.style.display = "flex"; }, 180000);
       };
-      if (btn){
-        btn.onclick = () => {
-          menu.style.display = "none";
-          const until = Date.now() + 180000;
-          localStorage.setItem(KEY, String(until));
-          setTimeout(restore, 180000);
-        };
-      }
-      maybeHide();
     })();
 
-    // Y+U+I toggle for UI elements (menu only, not loader)
+    // Y+U+I toggle for Static UI
     (function(){
       const menu  = document.getElementById("staticMenu");
-      const targets = [menu];
+      const slide = document.getElementById("staticSlideMenu");
+      const targets = [menu, slide];
       const original = new Map(targets.map(el => [el, el ? getComputedStyle(el).display || "" : ""]));
       let hidden = false;
       const down = new Set();
@@ -390,7 +468,44 @@
       }, {passive:true});
     })();
 
-    // Help popup wiring
+    // Rotator only if not in school mode
+    (function(){
+      if (window.__SQ_SCHOOL__) return;
+      const wrap = document.getElementById("staticSlideMenu");
+      if (!wrap) return;
+      wrap.style.display = "block";
+      wrap.innerHTML = '<a id="staticSlideLink" href="#" target="_blank" rel="noopener" aria-label="Open link"><img id="staticSlideImg" alt=""></a>';
+      const a   = document.getElementById("staticSlideLink");
+      const img = document.getElementById("staticSlideImg");
+      if (!a || !img) return;
+
+      const FORM = { src:"https://res.cloudinary.com/dcsrqennd/image/upload/v1747533056/raw_um4pvq.png", alt:"Feedback and requests", link:"https://sites.google.com/view/staticquasar931/google-form", cls:"" };
+      const DISCORD = { src:"https://res.cloudinary.com/dcsrqennd/image/upload/v1758072526/Join_Our_Discord_StaticQuassar931_lcplrf.png", alt:"Join the Discord", link:"https://discord.gg/DP2hM7RRhR", cls:"" };
+      const INSTA = { src:"https://res.cloudinary.com/dcsrqennd/image/upload/v1747533158/raw_cw34yi.png", alt:"Instagram", link:"https://www.instagram.com/freeschoolgamepage/", cls:"" };
+      const ROT = [FORM, DISCORD, INSTA];
+
+      const T_IN = 900, T_SHOW = 3600, T_OUT = 800, T_GAP = 11000;
+      let i = 0;
+      function apply(o){ img.src=o.src; img.alt=o.alt; a.href=o.link; wrap.className=o.cls; }
+      async function loop(){
+        for(;;){
+          apply(ROT[i]);
+          wrap.style.pointerEvents = "auto";
+          wrap.classList.remove("slide-out");
+          wrap.classList.add("slide-in");
+          await new Promise(r => setTimeout(r, T_IN + T_SHOW));
+          wrap.classList.remove("slide-in");
+          wrap.classList.add("slide-out");
+          await new Promise(r => setTimeout(r, T_OUT));
+          wrap.style.pointerEvents = "none";
+          await new Promise(r => setTimeout(r, T_GAP));
+          i = (i + 1) % ROT.length;
+        }
+      }
+      apply(ROT[i]); loop();
+    })();
+
+    // Help popup
     (function(){
       const btn = document.getElementById("needHelpBtn");
       const pop = document.getElementById("helpPopup");
@@ -405,185 +520,158 @@
       cls.addEventListener("click", ()=>{ pop.style.display = "none"; });
     })();
 
-    // Key banners with 0.2s per-key cooldown
+    // Key banners - visible instantly with unique animations
     (function(){
-      const cooldown = new Map();
-      function canFire(key){
-        const now = performance.now();
-        const next = cooldown.get(key) || 0;
-        if (now < next) return false;
-        cooldown.set(key, now + 200);
-        return true;
-      }
-      function spawn(text, href, fxClass){
+      const LINKS = {
+        space: { text:"Play games on StaticQuasar931", href:"https://sites.google.com/view/staticquasar931/gm3z", cls:"ltr"  },
+        shift: { text:"Report an issue",                href:"https://sites.google.com/view/staticquasar931/google-form?utm_source=slope&utm_medium=key_shift", cls:"sine" },
+        k:     { text:"Join the Discord",               href:"https://discord.gg/DP2hM7RRhR", cls:"plane" },
+        m:     { text:"Follow on Instagram",            href:"https://www.instagram.com/freeschoolgamepage/", cls:"float" },
+        x:     { text:"Static other games",             href:"https://sites.google.com/view/staticquasar931/gm3z", cls:"low" },
+        z:     { text:"StaticQuasar931 hub",            href:"https://sites.google.com/view/staticquasar931/gm3z", cls:"ltr"  },
+        c:     { text:"Help and tips",                  href:"https://sites.google.com/view/staticquasar931/home/help-faq#h.qjb289kqv0nd", cls:"bounce" }
+      };
+
+      const cooldown = 200; // ms per key
+      const lastShown = Object.create(null);
+
+      function banner(text, href, className){
         const a = document.createElement("a");
-        a.className = "fly " + fxClass;
+        a.className = "fly " + className;
         a.href = href; a.target = "_blank"; a.rel = "noopener";
         a.textContent = text;
-        // fixed width to avoid size change near edges
-        a.style.width = "auto";
-        a.style.maxWidth = "60vw";
         document.body.appendChild(a);
-        setTimeout(()=>{ a.remove(); }, 7200);
+        setTimeout(()=>{ a.remove(); }, 9000);
       }
+
       window.addEventListener("keydown", e=>{
-        const key = (e.key || "").toLowerCase();
-        if (key === " "){ // space
-          e.preventDefault();
-          if (!canFire("space")) return;
-          spawn("Play games on StaticQuasar931","https://sites.google.com/view/staticquasar931/gm3z","fx-straight");
-        } else if (key === "shift"){
-          if (!canFire("shift")) return;
-          spawn("Report an issue","https://sites.google.com/view/staticquasar931/google-form?utm_source=slope&utm_medium=key_shift","fx-arc");
-        } else if (key === "k"){
-          if (!canFire("k")) return;
-          spawn("Join the Discord","https://discord.gg/DP2hM7RRhR","fx-plane");
-        } else if (key === "m"){
-          if (!canFire("m")) return;
-          spawn("Follow on Instagram","https://www.instagram.com/freeschoolgamepage/","fx-weave");
-        } else if (key === "x"){
-          if (!canFire("x")) return;
-          spawn("Static other games","https://sites.google.com/view/staticquasar931/gm3z","fx-straight");
-        } else if (key === "j"){
-          if (!canFire("j")) return;
-          spawn("Help and tips","https://sites.google.com/view/staticquasar931/home/help-faq#h.qjb289kqv0nd","fx-arc");
-        }
-      });
+        const raw = e.key || "";
+        const k = raw.toLowerCase();
+
+        // ignore movement and arrows
+        if (["w","a","s","d","q","e","arrowup","arrowdown","arrowleft","arrowright"].includes(k)) return;
+
+        let id = null;
+        if (k===" ") { e.preventDefault(); id="space"; }
+        else if (k==="shift") id="shift";
+        else if (k==="k") id="k";
+        else if (k==="m") id="m";
+        else if (k==="x") id="x";
+        else if (k==="z") id="z";
+        else if (k==="c") id="c";
+
+        if (!id) return;
+        const cfg = LINKS[id];
+        if (!cfg) return;
+
+        const now = performance.now();
+        if (lastShown[id] && now - lastShown[id] < cooldown) return;
+        lastShown[id] = now;
+
+        banner(cfg.text, cfg.href, cfg.cls);
+      }, {passive:false});
     })();
 
-    // Tips: randomized order per session, advance on refresh, rotate every 4s
+    // Loader tips rotation - robust and inclusive of your new lists
     (function(){
-      const line = document.getElementById("tipLine");
-      const label = document.getElementById("tipLabel");
-      if (!line || !label) return;
-
       const tips = [
-        // Game tips
+        // Your originals
         "Use D to go right. Unless you are facing left. Then you are wrong.",
         "Jumping is faster. Probably.",
         "Red things? Yeah, do not touch those.",
-        "The pause button pauses the game. Not here though.",
+        "The pause button pauses the game. Revolutionary. (Just not here lol)",
         "You cannot win if you lose. Think about it.",
         "Enemies cannot kill you if you quit first.",
-        "Press random keys to discover secrets.",
+        "Pressing random keys sometimes makes cool sounds. (try it!)",
         "Lag is just the universe taking a break.",
         "Sprinting drains stamina. Sitting still does not.",
         "Fire hurts. It has been tested.",
-        "Coins will not improve your real finances.",
+        "Collecting coins does not improve your real finances.",
         "Gravity is on. Always.",
         "Try not dying. It helps a lot.",
         "The walls exist for a reason.",
-        "If you cannot find the exit, maybe you are the exit.",
+        "If you cannot find the exit... maybe you are the exit.",
         "Taking fall damage? Just do not fall.",
         "The secret door is not that secret.",
         "Reloading is faster than dying.",
         "The save button saves. Unless it does not.",
         "Are you sure you want to quit? No one ever is.",
-        // Obvious facts
+        // Obvious Facts You Did not Need
         "If you punch a wall hard enough, the wall wins.",
-        "Most houses have a floor. Nice tech.",
+        "Did you know most houses have a floor? Incredible technology.",
         "Standing in rain makes you wet.",
         "Falling hurts more the higher you go.",
-        "The sun is very bright. Do not stare.",
+        "The sun is really bright. Do not stare at it.",
         "Eating food stops hunger for a bit.",
         "Water is often found in wet places.",
-        "Walk long enough and you will be somewhere else.",
-        "Hitting your head always hurts.",
-        "If it is hot, it is not cold.",
-        "Running into trees is not productive.",
+        "If you walk long enough, you will be somewhere else.",
+        "Hitting your head hurts, no matter how confident you are.",
+        "If something is hot, it is not cold.",
+        "Running into trees is rarely productive.",
         "If your phone battery dies, it turns off.",
-        "Jumping off cliffs is not reusable.",
+        "Jumping off cliffs is not a reusable strategy.",
         "Keys open locks. Unless they do not.",
         "Clouds are not solid. Do not test.",
-        "Breathing underwater works once.",
-        "Fire is not a toy. Unless you are chaos.",
-        "Standing up increases height slightly.",
+        "Breathing underwater only works once.",
+        "Fire is not a toy. Unless you are chaos itself.",
+        "Standing up increases your height slightly.",
         "You cannot drown in sand, but you can regret it.",
         "Sleeping at night is the default setting.",
-        // Gamer logic
-        "Press W to advance destiny and your character.",
-        "If it glows, click it. If it explodes, remember it.",
-        "Loot everything. Especially what you do not need.",
+        // Game Logic & Dumb Gamer Wisdom
+        "Pressing W advances your destiny and your character.",
+        "If it glows, click it. If it explodes, remember that.",
+        "Loot everything. Even if you do not need it. Especially if you do not need it.",
         "The tutorial is optional until it is not.",
-        "Friendly fire is funny once.",
-        "Do not jump off the map. It is not faster.",
-        "Saving prevents tragedy. Usually.",
-        "Boss fights are normal fights with louder music.",
-        "Collectibles try to fill the void.",
-        "Harder level equals louder keyboard.",
-        "Double jump is not guaranteed.",
-        "Explosions solve some problems.",
-        "Crouching in real life does not add stealth.",
+        "Friendly fire is only funny once.",
+        "Do not jump off the map. You will not win faster.",
+        "Saving the game prevents tragedy. Usually.",
+        "Boss fights are just normal fights with louder music.",
+        "Collectibles do not fill the void, but they try.",
+        "The harder the level, the louder the keyboard.",
+        "Pressing jump twice is not always double jump. Sometimes it is goodbye.",
+        "Explosions solve problems. Sometimes they create them too.",
+        "Crouching in real life does not increase stealth.",
         "The final boss does not care about your feelings.",
-        "The game is not cheating. You are losing correctly.",
-        // Life and chaos
-        "Most doors open. Try it.",
+        "The game is not cheating. You are just losing correctly.",
+        // Life & Chaos
+        "Most doors can be opened. Try it sometime.",
         "The fridge light turns off. Probably.",
         "You cannot lose an argument if you stop responding.",
-        "Yelling at the microwave will not help.",
+        "Yelling at the microwave will not make it faster.",
         "Traffic lights do not care about your schedule.",
-        "Gravity is undefeated.",
+        "Gravity is undefeated since day one.",
         "Socks come in pairs until they do not.",
         "Toothpaste tastes worse than it looks.",
-        "Sleep debt is not paid with exposure.",
+        "Sleep debt cannot be paid with exposure.",
         "Money can be exchanged for goods and services.",
         "The faster you run, the sooner you are tired.",
         "Most mirrors reflect you. The scary ones do not.",
-        "Coffee is legal energy theft.",
-        "You cannot press escape on real life.",
+        "Coffee is basically legal energy theft.",
+        "You cannot delete real life by pressing escape.",
         "Stairs are vertical regrets.",
-        "The universe has no patch notes.",
+        "The universe does not have patch notes.",
         "Birds do not pay rent.",
         "Music makes silence jealous.",
         "Friends are NPCs with better dialogue.",
-        "Touch grass. It touches back.",
-        "Air is free while supplies last.",
-        "Time flies and never lands.",
-        "No one wins against Wi-Fi.",
+        "If you touch grass, the grass touches back.",
+        "Air is free, but only while supplies last.",
+        "Time flies but it refuses to land.",
+        "Gravity pulls us together mostly toward the floor.",
+        "No one has ever won an argument with Wi-Fi.",
         "Life is the longest unskippable cutscene."
       ];
-
-      const ORDER_KEY = "sq_tips_order_v3";
-      const INDEX_KEY = "sq_tips_index_v3";
-
-      function shuffle(n){
-        const arr = Array.from({length:n}, (_,i)=>i);
-        const buf = new Uint32Array(n);
-        if (window.crypto && crypto.getRandomValues) crypto.getRandomValues(buf);
-        for (let i=n-1; i>0; i--){
-          const r = buf[i] || Math.floor(Math.random()*0xFFFFFFFF);
-          const j = r % (i+1);
-          const t = arr[i]; arr[i] = arr[j]; arr[j] = t;
-        }
-        return arr;
+      const line = document.getElementById("tipLine");
+      if (!line) return;
+      let i = 0;
+      function tick(){
+        line.textContent = tips[i % tips.length];
+        i++;
       }
-      function loadOrder(){
-        try{
-          const saved = JSON.parse(sessionStorage.getItem(ORDER_KEY) || "[]");
-          if (Array.isArray(saved) && saved.length === tips.length) return saved;
-        }catch(e){}
-        const fresh = shuffle(tips.length);
-        sessionStorage.setItem(ORDER_KEY, JSON.stringify(fresh));
-        sessionStorage.setItem(INDEX_KEY, "-1");
-        return fresh;
-      }
-      const order = loadOrder();
-      function advanceIndex(){
-        let i = parseInt(sessionStorage.getItem(INDEX_KEY) || "-1", 10);
-        i = (i + 1) % tips.length; // new tip every refresh
-        sessionStorage.setItem(INDEX_KEY, String(i));
-        return i;
-      }
-      let idx = advanceIndex();
-      line.textContent = tips[order[idx]];
-      setInterval(()=>{
-        idx = (idx + 1) % tips.length;
-        sessionStorage.setItem(INDEX_KEY, String(idx));
-        line.textContent = tips[order[idx]];
-      }, 4000);
+      tick();
+      setInterval(tick, 4000); // steady 4s rotation
     })();
 
-    // Smooth loader: always climbs every 0.1s but catches real progress and finishes fast when done
+    // Smooth visual loader - climbs every 0.1s and snaps to real progress when higher
     (function(){
       const cover = document.getElementById("loaderCover");
       const fill  = document.getElementById("loaderFill");
@@ -591,98 +679,81 @@
       const msgEl = document.getElementById("loaderMsg");
       const green = document.getElementById("greenLight");
       const red   = document.getElementById("redLight");
-      const gold  = document.getElementById("goldLight");
 
-      let reported = 0;   // unity progress
+      let reported = 0;   // from Unity
       let visual   = 0;   // shown
       let finished = false;
       let lastUpdate = performance.now();
-      let failLock   = false;
 
-      // baseline climb at 1% per 0.1s
-      const BASE_PER_TICK = 0.01;
+      const BASE_PER_TICK = 0.01; // 1 percent per 0.1s baseline until 97
       const TICK_MS = 100;
-      // sweep to 100 when finished
-      const FINISH_SWEEP_PER_TICK = 0.05;
+      const FINISH_SWEEP_MS = 200;
 
-      // Unity progress hook
-      window.UnityProgress = function(game, p){
-        if (typeof p === "number" && p > reported){
-          reported = Math.min(1, p);
-          lastUpdate = performance.now();
-          red.classList.remove("on","glow");
-          if (reported === 1) finished = true;
+      function render(){
+        const pct = Math.round(visual * 100);
+        if (fill) fill.style.width = pct + "%";
+        if (pctEl) pctEl.textContent = pct + "%";
+      }
+
+      setInterval(()=>{
+        if (finished) return;
+        const target = Math.min(0.97, Math.max(visual, reported));
+        if (visual < target) {
+          visual = Math.min(target, visual + BASE_PER_TICK);
+        } else if (visual < 0.97) {
+          visual = Math.min(0.97, visual + 0.005);
+        }
+        render();
+      }, TICK_MS);
+
+      window.SQProgress = function(_game, p){
+        if (typeof p === "number"){
+          if (p > reported) {
+            reported = Math.min(1, p);
+            lastUpdate = performance.now();
+            if (red){ red.classList.remove("on","glow"); }
+          }
+          if (p >= 0.78 && p <= 0.86){
+            if (green){ green.classList.add("on","glow"); }
+          } else if (green){
+            green.classList.remove("on","glow");
+          }
+          if (p === 1){
+            finished = true;
+            const start = visual;
+            const startT = performance.now();
+            const step = ()=>{
+              const t = Math.min(1, (performance.now() - startT) / FINISH_SWEEP_MS);
+              visual = start + (1 - start) * t;
+              render();
+              if (t < 1) requestAnimationFrame(step);
+              else if (cover) cover.classList.add("coverFade");
+            };
+            requestAnimationFrame(step);
+          }
         }
       };
 
-      // Visual loop
-      function tick(){
-        const now = performance.now();
-        const age = now - lastUpdate;
-
-        // lights
-        if (reported >= 0.78 && reported <= 0.86){
-          green.classList.add("on","glow");
-        } else {
-          green.classList.remove("on","glow");
+      setInterval(()=>{
+        if (finished) return;
+        const age = performance.now() - lastUpdate;
+        if (age > 6000){
+          if (red){ red.classList.add("on","glow"); }
+          if (msgEl){ msgEl.textContent = "Network is slow. Please wait…"; }
         }
-        if (reported >= 0.96 || visual >= 0.96){
-          gold.classList.add("on","glow");
-        } else {
-          gold.classList.remove("on","glow");
-        }
-
-        // network slow detection
-        if (!finished && age > 6000){
-          red.classList.add("on","glow");
-          if (msgEl) msgEl.textContent = "Network is slow. Please wait";
-        }
-
-        // climb visual
-        const baselineTarget = Math.min(0.97, visual + BASE_PER_TICK);
-        const target = Math.max(baselineTarget, reported);
-
-        if (!finished){
-          visual = Math.min(target, visual + 0.02); // smooth easing
-        } else {
-          visual = Math.min(1, visual + FINISH_SWEEP_PER_TICK);
-        }
-
-        // apply
-        const pct = Math.round(visual * 100);
-        fill.style.width = pct + "%";
-        pctEl.textContent = pct + "%";
-
-        // if engine threw an error and nothing loads for long, stop faking
-        if (!finished && age > 20000 && reported < 0.02){
-          failLock = true;
-          if (msgEl) msgEl.textContent = "Could not load. Check network and try again.";
-        }
-
-        if (failLock){
-          // do not advance further if we truly failed to start
-          return;
-        }
-
-        if (visual >= 0.999){
-          cover.classList.add("coverFade");
-          return;
-        }
-        setTimeout(tick, TICK_MS);
-      }
-      setTimeout(tick, TICK_MS);
+      }, 600);
     })();
 
-    // Start Unity with our onProgress
+    // Start Unity
     function startUnity(){
       fitGame();
       try{
         if (window.UnityLoader && typeof UnityLoader.instantiate === "function"){
           window.gameInstance = UnityLoader.instantiate("gameContainer", "slope_new.json", {
-            onProgress: UnityProgress
+            onProgress: window.SQProgress
           });
         } else {
-          console.error("UnityLoader.js missing or invalid");
+          console.error("UnityLoader.js not found or invalid");
           const cover = document.getElementById("loaderCover");
           if (cover) cover.classList.add("coverFade");
         }
@@ -694,5 +765,6 @@
     }
     window.addEventListener("load", startUnity);
   </script>
+
 </body>
 </html>
