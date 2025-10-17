@@ -1,76 +1,698 @@
-<script>
-  function hideLoaderNow() {
-    const cover = document.getElementById("loaderCover");
-    if (!cover) return;
-    // if already hidden, skip
-    if (cover.style.display === "none") return;
-    cover.classList.add("coverFade");
-    // remove from flow after fade
-    setTimeout(()=>{ cover.style.display = "none"; }, 280);
-  }
+<!DOCTYPE html>
+<html lang="en-us">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-  function startUnity(){
-    fitGame();
-    try{
-      if (window.UnityLoader && typeof UnityLoader.instantiate === "function"){
-        // Watchdog: when a canvas appears and starts drawing, hide loader
-        const container = document.getElementById("gameContainer");
-        let drewOnce = false;
-        function canvasWatchdog(){
-          const c = container && container.querySelector("canvas");
-          if (c && c.width > 0 && c.height > 0) {
-            try {
-              const gl = c.getContext("webgl2") || c.getContext("webgl") || c.getContext("experimental-webgl");
-              // if we got a context and a frame likely drew, hide
-              if (gl && gl.drawingBufferWidth > 0 && gl.drawingBufferHeight > 0) {
-                drewOnce = true;
-                hideLoaderNow();
-                return;
-              }
-            } catch(_) {}
-          }
-          if (!drewOnce) requestAnimationFrame(canvasWatchdog);
-        }
-        requestAnimationFrame(canvasWatchdog);
+  <!-- Canonical and robots -->
+  <link rel="canonical" href="https://staticquasar931.github.io/slope/" />
+  <meta name="robots" content="index, follow, max-image-preview:large" />
 
-        // Unity instantiate with progress + Module hooks
-        window.gameInstance = UnityLoader.instantiate("gameContainer", "slope_new.json", {
-          onProgress: function(game, p){
-            // keep your existing progress integration
-            if (typeof window.UnityProgress === "function") window.UnityProgress(game, p);
-            // if Unity reports 100 percent, give it a short settle then hide
-            if (p >= 1) setTimeout(hideLoaderNow, 150);
-          },
-          Module: {
-            onRuntimeInitialized: function(){
-              // engine core is ready
-              setTimeout(hideLoaderNow, 120);
-            },
-            postRun: function(){
-              // player finished loading scene
-              hideLoaderNow();
-            }
-          }
-        });
+  <title>Slope - Free Unblocked Game | StaticQuasar931</title>
 
-        // Fallback: if everything else fails but 7 seconds have passed after 100 percent, hide
-        let afterHundredTimer = null;
-        const origUP = window.UnityProgress;
-        window.UnityProgress = function(game, p){
-          try { if (origUP) origUP(game, p); } catch(_){}
-          if (p >= 1 && !afterHundredTimer) {
-            afterHundredTimer = setTimeout(hideLoaderNow, 7000);
-          }
-        };
+  <!-- Icons and social -->
+  <link rel="icon" href="https://res.cloudinary.com/dlq5fztla/image/upload/v1760301648/slope_Staticquasar931_stable_agqxto.png" />
+  <meta property="og:image" content="https://res.cloudinary.com/dlq5fztla/image/upload/v1760301648/slope_Staticquasar931_stable_agqxto.png" />
+  <meta name="twitter:image" content="https://res.cloudinary.com/dlq5fztla/image/upload/v1760301648/slope_Staticquasar931_stable_agqxto.png" />
 
-      } else {
-        console.error("UnityLoader.js missing or invalid");
-        hideLoaderNow();
-      }
-    } catch (e){
-      console.error("Unity failed to start:", e);
-      hideLoaderNow();
+  <!-- Core SEO -->
+  <meta name="description" content="Play Slope free and unblocked. Dodge obstacles, stay on the track, and push your high score. School friendly mirror by StaticQuasar931. Works on Chromebook, PC, and mobile." />
+  <meta name="keywords" content="Slope, Slope unblocked, play Slope online, free Slope game, 3D reflex game, unblocked games for school, StaticQuasar931" />
+  <meta name="theme-color" content="#101218" />
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="Play Slope - Free Unblocked on StaticQuasar931" />
+  <meta property="og:description" content="Fast 3D ball runner. Stay on the slopes, dodge red blocks, and set a new record. Chromebook and mobile friendly." />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://staticquasar931.github.io/slope/" />
+  <meta name="twitter:card" content="summary_large_image" />
+
+  <!-- Google Analytics (as requested) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-27S3Y4TS0Y"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){ dataLayer.push(arguments); }
+    gtag('js', new Date());
+    gtag('config', 'G-27S3Y4TS0Y');
+  </script>
+
+  <style>
+    :root{
+      --brand:#5ee1ff; --brand2:#9bffb7;
+      --bg:#101218; --bg2:#0b0d12;
+      --text:#e8f3ff; --muted:#b9d7ff;
+      --green:#76ff7a; --red:#ff6b6b; --gold:#ffe27a;
+      --shadow:0 10px 28px rgba(0,0,0,.5);
+      --glow:0 0 12px rgba(94,225,255,.65), 0 0 24px rgba(155,255,183,.35);
     }
-  }
-  window.addEventListener("load", startUnity);
-</script>
+    html,body{
+      margin:0; padding:0; height:100%; overflow:hidden;
+      background:radial-gradient(1200px 800px at 50% 40%, #131724 0%, var(--bg) 60%, var(--bg2) 100%);
+      color:var(--text); font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+    }
+
+    /* Game mount */
+    .webgl-content{ position:fixed; inset:0; display:flex; align-items:center; justify-content:center; }
+    #gameContainer{ width:100vw; height:100vh; background:transparent; }
+
+    /* Static Menu */
+    #staticMenu{
+      position:fixed; top:12px; left:12px; z-index:9;
+      display:flex; gap:10px; align-items:center;
+      padding:10px 14px; border-radius:12px;
+      background:linear-gradient(135deg, rgba(20,20,28,.92), rgba(20,20,28,.6));
+      border:1px solid rgba(94,225,255,.35);
+      box-shadow:var(--glow), var(--shadow);
+      font-size:14px; backdrop-filter: blur(8px);
+      animation:menuIn .5s ease .15s both;
+    }
+    @keyframes menuIn{ from{opacity:0; transform:translateY(-6px)} to{opacity:1; transform:none} }
+    #staticMenu a{ color:var(--brand); text-decoration:none; font-weight:800; }
+    #closeStaticMenu{
+      color:#f55; cursor:pointer; padding:2px 6px; border-radius:6px;
+      border:1px solid rgba(255,255,255,.18); background:rgba(255,255,255,.06);
+      user-select:none;
+    }
+
+    /* Loader Cover */
+    #loaderCover{
+      position:fixed; inset:0; z-index:10; display:flex;
+      flex-direction:column; align-items:center; justify-content:center; gap:18px;
+      text-align:center; pointer-events:auto;
+    }
+
+    .announce{
+      position:absolute; top:5%; left:50%; transform:translateX(-50%);
+      max-width:92vw; padding:6px 12px;
+      font-size:40px; font-weight:1000; letter-spacing:.2px; line-height:1.1;
+      color:#eafbff; text-shadow:0 3px 12px rgba(0,0,0,.55);
+      animation:annFloat 4.5s ease-in-out infinite;
+    }
+    @keyframes annFloat{ 0%,100%{transform:translateX(-50%) translateY(0)} 50%{transform:translateX(-50%) translateY(-1px)} }
+
+    /* Logos row */
+    .logo-row{
+      display:flex; align-items:center; justify-content:center; gap:16px;
+      margin-top:46px;
+    }
+    .sq-logo, .unity-logo{
+      width:90px; height:90px; border-radius:16px; overflow:hidden;
+      display:flex; align-items:center; justify-content:center; background:#0b0d12;
+      box-shadow:0 10px 34px rgba(94,225,255,.25); animation:logoFade 4s ease-in-out infinite;
+    }
+    @keyframes logoFade{ 0%,100%{opacity:.78} 50%{opacity:1} }
+    .sq-logo img{ width:100%; height:100%; object-fit:cover; }
+    .unity-logo img{ width:82%; height:82%; object-fit:contain; opacity:.92; background:transparent !important; }
+
+    /* Intro */
+    .intro{ display:flex; flex-direction:column; align-items:center; gap:8px; user-select:none; }
+    .intro a{ color:#cfe9ff; text-decoration:none; }
+    .intro .title{
+      font-weight:1000; letter-spacing:.3px; font-size:18px; opacity:0;
+      text-shadow:0 2px 10px rgba(0,0,0,.5);
+      animation:fadeIn .8s ease .2s forwards, fadeOut .6s ease 2.6s forwards;
+    }
+    .intro .subtitle{
+      font-weight:900; letter-spacing:.3px; font-size:16px; opacity:0;
+      text-shadow:0 2px 10px rgba(0,0,0,.5);
+      animation:fadeIn .9s ease 3.2s forwards;
+    }
+    .sq-banner{
+      font-weight:900; color:#d2eeff;
+      opacity:0; animation:bannerIn .9s ease 3.6s forwards, bannerPulse 6s ease-in-out 4.0s infinite;
+    }
+    @keyframes fadeIn{ from{opacity:0; transform:translateY(2px)} to{opacity:1; transform:none}}
+    @keyframes fadeOut{ to{opacity:0} }
+    @keyframes bannerIn{ to{opacity:1} }
+    @keyframes bannerPulse{ 0%,100%{filter:brightness(1)} 50%{filter:brightness(1.08)} }
+
+    /* Loader bar */
+    .loader-wrap{ width:100%; display:flex; flex-direction:column; align-items:center; gap:8px; }
+    .loader-bar{
+      position:relative; width:min(720px, 92vw); height:26px; border-radius:13px; overflow:hidden;
+      background:linear-gradient(180deg, rgba(255,255,255,.10), rgba(255,255,255,.03));
+      box-shadow:inset 0 0 0 1px rgba(255,255,255,.10), inset 0 6px 12px rgba(0,0,0,.25), var(--shadow);
+    }
+    .loader-fill{
+      height:100%; width:0%;
+      background:
+        linear-gradient(90deg, rgba(255,255,255,.22) 0%, rgba(255,255,255,0) 35%),
+        linear-gradient(90deg, var(--brand), var(--brand2));
+      transition:width .06s linear;
+    }
+    .light{
+      position:absolute; top:6px; width:12px; height:14px; border-radius:4px;
+      opacity:0; transform:translateX(-50%); box-shadow:0 0 12px rgba(0,0,0,.5);
+    }
+    #greenLight{ background:var(--green); left:80%; }
+    #redLight{ background:var(--red); left:50%; }
+    #goldLight{ background:var(--gold); left:96%; }
+    .light.on{ opacity:1; }
+    .glow{ box-shadow:0 0 14px currentColor, 0 0 28px currentColor; }
+
+    .loader-meta{
+      width:min(720px, 92vw);
+      display:flex; justify-content:space-between; align-items:center;
+      color:var(--muted); font-weight:800; font-variant-numeric:tabular-nums; letter-spacing:.3px;
+      text-shadow:0 1px 0 rgba(0,0,0,.35);
+    }
+
+    /* Help and buttons */
+    .btn{
+      appearance:none; border:1px solid rgba(255,255,255,.18); background:rgba(255,255,255,.06);
+      color:#eaf6ff; border-radius:10px; padding:8px 12px; font-weight:800; cursor:pointer;
+    }
+    .btn:hover{ filter:brightness(1.08); }
+    #needHelpBtn{
+      position:fixed; right:28px; bottom:50%; transform:translateY(160px);
+      z-index:11;
+    }
+    #needHelpBtn::after{
+      content:""; position:absolute; left:-8px; top:50%; transform:translateY(-50%);
+      width:0; height:0; border-top:8px solid transparent; border-bottom:8px solid transparent; border-right:8px solid rgba(255,255,255,.18);
+    }
+    .help-pop{
+      position:fixed; inset:auto 16px 16px auto; z-index:11; width:min(560px, 92vw);
+      background:linear-gradient(135deg, rgba(20,24,36,.96), rgba(14,16,24,.9));
+      border:1px solid rgba(94,225,255,.35); box-shadow:var(--glow), var(--shadow);
+      border-radius:14px; padding:14px; display:none; text-align:left;
+    }
+    .help-pop h3{ margin:0 0 6px; font-size:16px }
+    .help-pop p{ margin:6px 0; font-size:14px; color:#cee6ff }
+    .help-pop a{ color:#5ee1ff; font-weight:800; text-decoration:underline }
+
+    /* Tip area */
+    #tipArea{
+      position:absolute; left:16px; bottom:16px; max-width: min(720px, 86vw);
+      color: var(--muted); font-weight: 800; font-size: 13.5px; line-height: 1.25;
+      letter-spacing:.2px; text-shadow:0 1px 0 rgba(0,0,0,.35);
+      display:flex; gap:8px; align-items:baseline; opacity:.96;
+    }
+    #tipLabel{ color:#cfe9ff; font-weight:1000; opacity:.95; }
+
+    /* Key banners */
+    .fly{
+      position:fixed; z-index:12; pointer-events:auto;
+      padding:12px 16px; border-radius:12px;
+      background:rgba(20,24,36,.92); border:1px solid rgba(94,225,255,.35);
+      color:#bfe7ff; font-weight:900; text-decoration:none; white-space:nowrap;
+      box-shadow:var(--glow), var(--shadow);
+      will-change: transform, opacity;
+    }
+    /* straight L→R */
+    .fx-straight{ top:12%; left:-40%; animation:fxStraight 6s ease-in-out forwards; }
+    @keyframes fxStraight{
+      0%{ transform:translateX(0); opacity:0 }
+      10%{ transform:translateX(42vw); opacity:1 }
+      50%{ transform:translateX(86vw); opacity:1 }
+      95%{ transform:translateX(100vw); opacity:1 }
+      100%{ transform:translateX(112vw); opacity:0 }
+    }
+    /* arc like a plane */
+    .fx-arc{ top:18%; left:-40%; animation:fxArc 7s ease-in-out forwards; }
+    @keyframes fxArc{
+      0%{ transform:translate(0,0); opacity:0 }
+      15%{ transform:translate(16vw,-2vh); opacity:1 }
+      40%{ transform:translate(42vw,-4vh); opacity:1 }
+      75%{ transform:translate(82vw,-1vh); opacity:1 }
+      100%{ transform:translate(112vw,0); opacity:0 }
+    }
+    /* plane look */
+    .fx-plane{ top:22%; left:-40%; padding:10px 14px 10px 38px; animation:fxPlane 7s ease-in-out forwards; }
+    .fx-plane::before{
+      content:"✈"; position:absolute; left:10px; top:50%; transform:translateY(-52%); opacity:.9;
+      filter:drop-shadow(0 2px 2px rgba(0,0,0,.4));
+    }
+    @keyframes fxPlane{
+      0%{ transform:translate(0,0) rotate(-1deg); opacity:0 }
+      10%{ transform:translate(10vw,-1vh) rotate(0deg); opacity:1 }
+      55%{ transform:translate(56vw,-2vh) rotate(1deg); opacity:1 }
+      90%{ transform:translate(98vw,-1vh) rotate(0deg); opacity:1 }
+      100%{ transform:translate(112vw,0) rotate(0deg); opacity:0 }
+    }
+    /* vertical weave */
+    .fx-weave{ left:-40%; animation:fxWeave 7s ease-in-out forwards; }
+    @keyframes fxWeave{
+      0%{ top:28%; transform:translateX(0); opacity:0 }
+      10%{ top:26%; transform:translateX(16vw); opacity:1 }
+      35%{ top:30%; transform:translateX(42vw); opacity:1 }
+      70%{ top:24%; transform:translateX(82vw); opacity:1 }
+      100%{ top:28%; transform:translateX(112vw); opacity:0 }
+    }
+
+    .coverFade{ animation:coverFade .25s ease forwards; }
+    @keyframes coverFade{ to{ opacity:0; visibility:hidden } }
+
+    /* Hidden SEO */
+    .seo-hidden{ position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(1px,1px,1px,1px); white-space:nowrap; }
+  </style>
+
+  <!-- Real Unity loader (local copy in repo root) -->
+  <script src="UnityLoader.js"></script>
+</head>
+<body>
+  <!-- Static Menu -->
+  <div id="staticMenu" role="region" aria-label="StaticQuasar menu">
+    <a href="https://sites.google.com/view/staticquasar931/gm3z" target="_blank" rel="noopener">More Unblocked Games by Static</a>
+    <span id="closeStaticMenu" title="Hide temporarily">✕</span>
+  </div>
+
+  <!-- Loader -->
+  <div id="loaderCover" role="status" aria-live="polite">
+    <div class="announce">Now works without needing to turn off internet</div>
+
+    <div class="logo-row">
+      <a class="sq-logo" href="https://sites.google.com/view/staticquasar931/gm3z" target="_blank" rel="noopener" title="StaticQuasar931 hub">
+        <img src="https://res.cloudinary.com/dcsrqennd/image/upload/v1760208794/My%20Brand/Static_pfp_2_nqzjkd.jpg" alt="StaticQuasar931 logo">
+      </a>
+      <div class="unity-logo" title="Unity">
+        <img src="https://res.cloudinary.com/dlq5fztla/image/upload/v1760307222/unity_i4qjdf.png" alt="Unity logo">
+      </div>
+    </div>
+
+    <div class="intro" id="intro">
+      <a href="https://sites.google.com/view/staticquasar931/gm3z" target="_blank" rel="noopener" id="introLink">
+        <div class="title">StaticQuasar931 Unblocked Games Presents</div>
+        <div class="subtitle">Slope stable unblocked high quality version</div>
+        <div class="sq-banner">Visit the hub for more games</div>
+      </a>
+    </div>
+
+    <div class="loader-wrap">
+      <div class="loader-bar">
+        <div class="loader-fill" id="loaderFill"></div>
+        <div id="greenLight" class="light"></div>
+        <div id="redLight" class="light"></div>
+        <div id="goldLight" class="light"></div>
+      </div>
+      <div class="loader-meta">
+        <small id="loaderMsg">Initializing WebGL</small>
+        <div id="loaderPct">0%</div>
+      </div>
+    </div>
+
+    <button class="btn" id="needHelpBtn" type="button">Need help?</button>
+
+    <!-- Tips area -->
+    <div id="tipArea" aria-live="polite">
+      <span id="tipLabel">Tip:</span>
+      <span id="tipLine"></span>
+    </div>
+  </div>
+
+  <!-- Help popup -->
+  <div class="help-pop" id="helpPopup" role="dialog" aria-modal="true" aria-labelledby="hpTitle">
+    <h3 id="hpTitle">Troubleshooting Slope - School tips</h3>
+    <p>You should no longer need to turn off your internet, but if the game loads and looks frozen, try this:</p>
+    <p>1) When the green light in the bar flickers near 80 percent, wait a moment.</p>
+    <p>2) Turn off your Wi-Fi.</p>
+    <p>3) Let the game finish loading.</p>
+    <p>Help: <a target="_blank" rel="noopener" id="helpLink">open the help page</a>. If that does not help, use the <a target="_blank" rel="noopener" id="formLink">Google Form</a>.</p>
+    <div style="margin-top:8px"><button class="btn" id="helpClose">Close</button></div>
+  </div>
+
+  <!-- Unity Game -->
+  <div class="webgl-content"><div id="gameContainer"></div></div>
+
+  <!-- Hidden SEO -->
+  <div class="seo-hidden" aria-hidden="true">
+    <h1>Slope by StaticQuasar931 unblocked</h1>
+    <p>Play Slope online at school on the StaticQuasar931 mirror. If this build appears on a fork, visit the original <a href="https://staticquasar931.github.io/slope/">StaticQuasar931 Slope</a> and the <a href="https://sites.google.com/view/staticquasar931/gm3z">StaticQuasar931 games hub</a>.</p>
+    <p>Credits: StaticQuasar931 - unblocked hosting and loader UI.</p>
+  </div>
+
+  <script>
+    // Leave guard
+    window.onbeforeunload = () => "Are you sure you want to leave? Your progress may not be saved.";
+
+    // Fit container to viewport
+    function fitGame(){
+      const el = document.getElementById("gameContainer");
+      if (!el) return;
+      const h = window.visualViewport ? window.visualViewport.height : window.innerHeight;
+      el.style.width  = window.innerWidth + "px";
+      el.style.height = h + "px";
+    }
+    addEventListener("resize", fitGame, {passive:true});
+    if (window.visualViewport) window.visualViewport.addEventListener("resize", fitGame, {passive:true});
+
+    // Menu close with auto-restore
+    (function(){
+      const menu = document.getElementById("staticMenu");
+      const btn  = document.getElementById("closeStaticMenu");
+      const KEY  = "sq931_staticMenu_hidden_until";
+      const restore = () => { menu.style.display = "flex"; };
+      const maybeHide = () => {
+        const until = parseInt(localStorage.getItem(KEY) || "0", 10);
+        const now = Date.now();
+        if (until && now < until){
+          menu.style.display = "none";
+          setTimeout(restore, Math.max(0, until - now));
+        }
+      };
+      if (btn){
+        btn.onclick = () => {
+          menu.style.display = "none";
+          const until = Date.now() + 180000;
+          localStorage.setItem(KEY, String(until));
+          setTimeout(restore, 180000);
+        };
+      }
+      maybeHide();
+    })();
+
+    // Y+U+I toggle for UI elements (menu only, not loader)
+    (function(){
+      const menu  = document.getElementById("staticMenu");
+      const targets = [menu];
+      const original = new Map(targets.map(el => [el, el ? getComputedStyle(el).display || "" : ""]));
+      let hidden = false;
+      const down = new Set();
+      function setHidden(h){
+        hidden = h;
+        targets.forEach(el=>{
+          if (!el) return;
+          el.style.display = hidden ? "none" : (original.get(el) || "");
+        });
+      }
+      function checkCombo(){
+        if (down.has("y") && down.has("u") && down.has("i")){
+          setHidden(!hidden);
+        }
+      }
+      window.addEventListener("keydown", (e)=>{
+        const k = e.key && e.key.toLowerCase();
+        if (k === "y" || k === "u" || k === "i"){ down.add(k); checkCombo(); }
+      }, {passive:true});
+      window.addEventListener("keyup", (e)=>{
+        const k = e.key && e.key.toLowerCase();
+        if (k === "y" || k === "u" || k === "i"){ down.delete(k); }
+      }, {passive:true});
+    })();
+
+    // Help popup wiring
+    (function(){
+      const btn = document.getElementById("needHelpBtn");
+      const pop = document.getElementById("helpPopup");
+      const cls = document.getElementById("helpClose");
+      const helpA = document.getElementById("helpLink");
+      const formA = document.getElementById("formLink");
+      if (!btn || !pop || !cls || !helpA || !formA) return;
+      const helpURL = "https://sites.google.com/view/staticquasar931/home/help-faq?source_utmwhateverslopewhatnot=&utm_source=slope&utm_medium=loader_help#h.qjb289kqv0nd";
+      const formURL = "https://sites.google.com/view/staticquasar931/google-form?utm_source=slope&utm_medium=loader_help";
+      helpA.href = helpURL; formA.href = formURL;
+      btn.addEventListener("click", ()=>{ pop.style.display = "block"; });
+      cls.addEventListener("click", ()=>{ pop.style.display = "none"; });
+    })();
+
+    // Key banners with 0.2s per-key cooldown
+    (function(){
+      const cooldown = new Map();
+      function canFire(key){
+        const now = performance.now();
+        const next = cooldown.get(key) || 0;
+        if (now < next) return false;
+        cooldown.set(key, now + 200);
+        return true;
+      }
+      function spawn(text, href, fxClass){
+        const a = document.createElement("a");
+        a.className = "fly " + fxClass;
+        a.href = href; a.target = "_blank"; a.rel = "noopener";
+        a.textContent = text;
+        // fixed width to avoid size change near edges
+        a.style.width = "auto";
+        a.style.maxWidth = "60vw";
+        document.body.appendChild(a);
+        setTimeout(()=>{ a.remove(); }, 7200);
+      }
+      window.addEventListener("keydown", e=>{
+        const key = (e.key || "").toLowerCase();
+        if (key === " "){ // space
+          e.preventDefault();
+          if (!canFire("space")) return;
+          spawn("Play games on StaticQuasar931","https://sites.google.com/view/staticquasar931/gm3z","fx-straight");
+        } else if (key === "shift"){
+          if (!canFire("shift")) return;
+          spawn("Report an issue","https://sites.google.com/view/staticquasar931/google-form?utm_source=slope&utm_medium=key_shift","fx-arc");
+        } else if (key === "k"){
+          if (!canFire("k")) return;
+          spawn("Join the Discord","https://discord.gg/DP2hM7RRhR","fx-plane");
+        } else if (key === "m"){
+          if (!canFire("m")) return;
+          spawn("Follow on Instagram","https://www.instagram.com/freeschoolgamepage/","fx-weave");
+        } else if (key === "x"){
+          if (!canFire("x")) return;
+          spawn("Static other games","https://sites.google.com/view/staticquasar931/gm3z","fx-straight");
+        } else if (key === "j"){
+          if (!canFire("j")) return;
+          spawn("Help and tips","https://sites.google.com/view/staticquasar931/home/help-faq#h.qjb289kqv0nd","fx-arc");
+        }
+      });
+    })();
+
+    // Tips: randomized order per session, advance on refresh, rotate every 4s
+    (function(){
+      const line = document.getElementById("tipLine");
+      const label = document.getElementById("tipLabel");
+      if (!line || !label) return;
+
+      const tips = [
+        // Game tips
+        "Use D to go right. Unless you are facing left. Then you are wrong.",
+        "Jumping is faster. Probably.",
+        "Red things? Yeah, do not touch those.",
+        "The pause button pauses the game. Not here though.",
+        "You cannot win if you lose. Think about it.",
+        "Enemies cannot kill you if you quit first.",
+        "Press random keys to discover secrets.",
+        "Lag is just the universe taking a break.",
+        "Sprinting drains stamina. Sitting still does not.",
+        "Fire hurts. It has been tested.",
+        "Coins will not improve your real finances.",
+        "Gravity is on. Always.",
+        "Try not dying. It helps a lot.",
+        "The walls exist for a reason.",
+        "If you cannot find the exit, maybe you are the exit.",
+        "Taking fall damage? Just do not fall.",
+        "The secret door is not that secret.",
+        "Reloading is faster than dying.",
+        "The save button saves. Unless it does not.",
+        "Are you sure you want to quit? No one ever is.",
+        // Obvious facts
+        "If you punch a wall hard enough, the wall wins.",
+        "Most houses have a floor. Nice tech.",
+        "Standing in rain makes you wet.",
+        "Falling hurts more the higher you go.",
+        "The sun is very bright. Do not stare.",
+        "Eating food stops hunger for a bit.",
+        "Water is often found in wet places.",
+        "Walk long enough and you will be somewhere else.",
+        "Hitting your head always hurts.",
+        "If it is hot, it is not cold.",
+        "Running into trees is not productive.",
+        "If your phone battery dies, it turns off.",
+        "Jumping off cliffs is not reusable.",
+        "Keys open locks. Unless they do not.",
+        "Clouds are not solid. Do not test.",
+        "Breathing underwater works once.",
+        "Fire is not a toy. Unless you are chaos.",
+        "Standing up increases height slightly.",
+        "You cannot drown in sand, but you can regret it.",
+        "Sleeping at night is the default setting.",
+        // Gamer logic
+        "Press W to advance destiny and your character.",
+        "If it glows, click it. If it explodes, remember it.",
+        "Loot everything. Especially what you do not need.",
+        "The tutorial is optional until it is not.",
+        "Friendly fire is funny once.",
+        "Do not jump off the map. It is not faster.",
+        "Saving prevents tragedy. Usually.",
+        "Boss fights are normal fights with louder music.",
+        "Collectibles try to fill the void.",
+        "Harder level equals louder keyboard.",
+        "Double jump is not guaranteed.",
+        "Explosions solve some problems.",
+        "Crouching in real life does not add stealth.",
+        "The final boss does not care about your feelings.",
+        "The game is not cheating. You are losing correctly.",
+        // Life and chaos
+        "Most doors open. Try it.",
+        "The fridge light turns off. Probably.",
+        "You cannot lose an argument if you stop responding.",
+        "Yelling at the microwave will not help.",
+        "Traffic lights do not care about your schedule.",
+        "Gravity is undefeated.",
+        "Socks come in pairs until they do not.",
+        "Toothpaste tastes worse than it looks.",
+        "Sleep debt is not paid with exposure.",
+        "Money can be exchanged for goods and services.",
+        "The faster you run, the sooner you are tired.",
+        "Most mirrors reflect you. The scary ones do not.",
+        "Coffee is legal energy theft.",
+        "You cannot press escape on real life.",
+        "Stairs are vertical regrets.",
+        "The universe has no patch notes.",
+        "Birds do not pay rent.",
+        "Music makes silence jealous.",
+        "Friends are NPCs with better dialogue.",
+        "Touch grass. It touches back.",
+        "Air is free while supplies last.",
+        "Time flies and never lands.",
+        "No one wins against Wi-Fi.",
+        "Life is the longest unskippable cutscene."
+      ];
+
+      const ORDER_KEY = "sq_tips_order_v3";
+      const INDEX_KEY = "sq_tips_index_v3";
+
+      function shuffle(n){
+        const arr = Array.from({length:n}, (_,i)=>i);
+        const buf = new Uint32Array(n);
+        if (window.crypto && crypto.getRandomValues) crypto.getRandomValues(buf);
+        for (let i=n-1; i>0; i--){
+          const r = buf[i] || Math.floor(Math.random()*0xFFFFFFFF);
+          const j = r % (i+1);
+          const t = arr[i]; arr[i] = arr[j]; arr[j] = t;
+        }
+        return arr;
+      }
+      function loadOrder(){
+        try{
+          const saved = JSON.parse(sessionStorage.getItem(ORDER_KEY) || "[]");
+          if (Array.isArray(saved) && saved.length === tips.length) return saved;
+        }catch(e){}
+        const fresh = shuffle(tips.length);
+        sessionStorage.setItem(ORDER_KEY, JSON.stringify(fresh));
+        sessionStorage.setItem(INDEX_KEY, "-1");
+        return fresh;
+      }
+      const order = loadOrder();
+      function advanceIndex(){
+        let i = parseInt(sessionStorage.getItem(INDEX_KEY) || "-1", 10);
+        i = (i + 1) % tips.length; // new tip every refresh
+        sessionStorage.setItem(INDEX_KEY, String(i));
+        return i;
+      }
+      let idx = advanceIndex();
+      line.textContent = tips[order[idx]];
+      setInterval(()=>{
+        idx = (idx + 1) % tips.length;
+        sessionStorage.setItem(INDEX_KEY, String(idx));
+        line.textContent = tips[order[idx]];
+      }, 4000);
+    })();
+
+    // Smooth loader: always climbs every 0.1s but catches real progress and finishes fast when done
+    (function(){
+      const cover = document.getElementById("loaderCover");
+      const fill  = document.getElementById("loaderFill");
+      const pctEl = document.getElementById("loaderPct");
+      const msgEl = document.getElementById("loaderMsg");
+      const green = document.getElementById("greenLight");
+      const red   = document.getElementById("redLight");
+      const gold  = document.getElementById("goldLight");
+
+      let reported = 0;   // unity progress
+      let visual   = 0;   // shown
+      let finished = false;
+      let lastUpdate = performance.now();
+      let failLock   = false;
+
+      // baseline climb at 1% per 0.1s
+      const BASE_PER_TICK = 0.01;
+      const TICK_MS = 100;
+      // sweep to 100 when finished
+      const FINISH_SWEEP_PER_TICK = 0.05;
+
+      // Unity progress hook
+      window.UnityProgress = function(game, p){
+        if (typeof p === "number" && p > reported){
+          reported = Math.min(1, p);
+          lastUpdate = performance.now();
+          red.classList.remove("on","glow");
+          if (reported === 1) finished = true;
+        }
+      };
+
+      // Visual loop
+      function tick(){
+        const now = performance.now();
+        const age = now - lastUpdate;
+
+        // lights
+        if (reported >= 0.78 && reported <= 0.86){
+          green.classList.add("on","glow");
+        } else {
+          green.classList.remove("on","glow");
+        }
+        if (reported >= 0.96 || visual >= 0.96){
+          gold.classList.add("on","glow");
+        } else {
+          gold.classList.remove("on","glow");
+        }
+
+        // network slow detection
+        if (!finished && age > 6000){
+          red.classList.add("on","glow");
+          if (msgEl) msgEl.textContent = "Network is slow. Please wait";
+        }
+
+        // climb visual
+        const baselineTarget = Math.min(0.97, visual + BASE_PER_TICK);
+        const target = Math.max(baselineTarget, reported);
+
+        if (!finished){
+          visual = Math.min(target, visual + 0.02); // smooth easing
+        } else {
+          visual = Math.min(1, visual + FINISH_SWEEP_PER_TICK);
+        }
+
+        // apply
+        const pct = Math.round(visual * 100);
+        fill.style.width = pct + "%";
+        pctEl.textContent = pct + "%";
+
+        // if engine threw an error and nothing loads for long, stop faking
+        if (!finished && age > 20000 && reported < 0.02){
+          failLock = true;
+          if (msgEl) msgEl.textContent = "Could not load. Check network and try again.";
+        }
+
+        if (failLock){
+          // do not advance further if we truly failed to start
+          return;
+        }
+
+        if (visual >= 0.999){
+          cover.classList.add("coverFade");
+          return;
+        }
+        setTimeout(tick, TICK_MS);
+      }
+      setTimeout(tick, TICK_MS);
+    })();
+
+    // Start Unity with our onProgress
+    function startUnity(){
+      fitGame();
+      try{
+        if (window.UnityLoader && typeof UnityLoader.instantiate === "function"){
+          window.gameInstance = UnityLoader.instantiate("gameContainer", "slope_new.json", {
+            onProgress: UnityProgress
+          });
+        } else {
+          console.error("UnityLoader.js missing or invalid");
+          const cover = document.getElementById("loaderCover");
+          if (cover) cover.classList.add("coverFade");
+        }
+      } catch (e){
+        const cover = document.getElementById("loaderCover");
+        if (cover) cover.classList.add("coverFade");
+        console.error("Unity failed to start:", e);
+      }
+    }
+    window.addEventListener("load", startUnity);
+  </script>
+</body>
+</html>
