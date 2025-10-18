@@ -29,7 +29,7 @@
       if (!window.__SQ_SCHOOL__) {
         ["https://res.cloudinary.com/dcsrqennd/image/upload/v1747533056/raw_um4pvq.png",
          "https://res.cloudinary.com/dcsrqennd/image/upload/v1758072526/Join_Our_Discord_StaticQuassar931_lcplrf.png",
-         "https://res.cloudinary.com/dcsrqennd/image_upload/v1747533158/raw_cw34yi.png".replace("_upload","/image/upload")
+         "https://res.cloudinary.com/dcsrqennd/image/upload/v1747533158/raw_cw34yi.png"
         ].forEach(href=>{
           const l = document.createElement("link"); l.rel = "preload"; l.as = "image"; l.href = href; document.head.appendChild(l);
         });
@@ -95,17 +95,20 @@
     })();
   </script>
 
-  <!-- Unity template CSS for default loader. Adjust the href to your export path if needed. -->
-  <link rel="stylesheet" href="style/style.css" />
+  <!-- Unity default template CSS and loader logic.
+       Path commonly is TemplateData/style.css and TemplateData/UnityProgress.js for UnityLoader builds.
+       If your export used a different folder name, update these two href/src values to match. -->
+  <link rel="stylesheet" href="TemplateData/style.css" />
+  <script src="TemplateData/UnityProgress.js"></script>
 
   <style>
     html, body { height:100%; margin:0; background:#0f1218; color:#e8f3ff; font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif; overflow:hidden }
-    /* Game container provides positioning context for Unity default loader */
+    .webgl-content { position:fixed; inset:0; display:flex; align-items:center; justify-content:center }
     #gameContainer { position: relative; width: 100vw; height: 100vh; background: transparent }
 
-    /* Static menu top left */
+    /* Static menu */
     #staticMenu{
-      position:fixed; top:12px; left:12px; z-index:30;
+      position:fixed; top:12px; left:12px; z-index:40;
       display:flex; gap:10px; align-items:center; padding:10px 14px; border-radius:12px;
       background:rgba(16,20,30,.8); border:1px solid rgba(255,255,255,.12); backdrop-filter: blur(8px);
       box-shadow:0 8px 26px rgba(0,0,0,.4);
@@ -113,41 +116,51 @@
     #staticMenu a{ color:#bfe7ff; text-decoration:none; font-weight:800; font-size:14px }
     #closeStaticMenu{ color:#f55; cursor:pointer; padding:2px 6px; border-radius:6px; border:1px solid rgba(255,255,255,.15); background:rgba(255,255,255,.06) }
 
-    /* Brand block that sits near the Unity default loader without overriding it */
+    /* Brand block that complements Unity loader without replacing it */
     .sq-brand {
-      position:absolute; right:16px; top:16px; z-index:25;
-      display:flex; flex-direction:column; align-items:flex-end; gap:10px;
-      max-width:min(380px, 42vw);
+      position:fixed; right:16px; top:16px; z-index:38;
+      display:flex; flex-direction:column; align-items:flex-end; gap:12px;
+      max-width:min(420px, 46vw);
+      pointer-events:none;
     }
     .sq-card{
-      background:rgba(18,22,32,.82);
+      background:rgba(18,22,32,.9);
+      border:1px solid rgba(255,255,255,.12);
+      border-radius:14px;
+      padding:12px 14px;
+      box-shadow:0 8px 26px rgba(0,0,0,.45);
+      backdrop-filter: blur(6px);
+      pointer-events:auto;
+    }
+    .sq-logo{
+      display:flex; align-items:center; gap:12px;
+    }
+    .sq-logo img{ width:64px; height:64px; border-radius:14px; object-fit:cover; box-shadow:0 6px 18px rgba(0,0,0,.45) }
+    .sq-title{ font-weight:1000; letter-spacing:.2px; font-size:18px; color:#eaf6ff }
+    .sq-sub{ font-weight:900; font-size:14px; color:#cfe1ff; opacity:.92; margin-top:2px }
+
+    /* Tip in bottom left */
+    .sq-tip-wrap{
+      position:fixed; left:14px; bottom:16px; z-index:38;
+      max-width:min(560px, 70vw);
+    }
+    .sq-tip{
+      background:rgba(15,18,28,.85);
       border:1px solid rgba(255,255,255,.12);
       border-radius:12px;
       padding:10px 12px;
-      box-shadow:0 8px 26px rgba(0,0,0,.45);
-      backdrop-filter: blur(6px);
+      box-shadow:0 8px 22px rgba(0,0,0,.45);
+      font-size:13px; line-height:1.35; color:#cfe1ff;
     }
-    .sq-logo{
-      display:flex; align-items:center; gap:10px;
-    }
-    .sq-logo img{ width:56px; height:56px; border-radius:12px; object-fit:cover; box-shadow:0 6px 18px rgba(0,0,0,.45) }
-    .sq-logo .t{ font-weight:1000; letter-spacing:.2px; font-size:16px; color:#eaf6ff }
+    .sq-tip b{ color:#9fe4ff }
 
-    /* Tips area */
-    .sq-tip { font-size:13px; color:#cfe1ff; line-height:1.35 }
-    .sq-tip b { color:#9fe4ff }
-
-    /* Rotating icon bubble bottom right, disabled in school mode */
+    /* Rotating promo bubble */
     #staticSlideMenu{
-      position:fixed; right:24px; bottom:24px; z-index:28; width:96px; height:96px; display:none;
+      position:fixed; right:24px; bottom:24px; z-index:36; width:96px; height:96px; display:none;
       filter: drop-shadow(0 6px 18px rgba(0,0,0,.45));
     }
     #staticSlideMenu a{ display:block; width:100%; height:100% }
     #staticSlideMenu img{ width:100%; height:100%; object-fit:cover; border-radius:50% }
-    @media (max-width: 820px){
-      .sq-brand{ right:10px; top:10px; max-width:60vw }
-      #staticSlideMenu{ width:84px; height:84px }
-    }
 
     /* Hidden SEO */
     .seo-hidden{ position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(1px,1px,1px,1px); white-space:nowrap }
@@ -170,24 +183,29 @@
     <span id="closeStaticMenu" title="Hide temporarily">✕</span>
   </div>
 
-  <!-- Rotating promo bubble -->
-  <div id="staticSlideMenu" aria-live="polite"></div>
-
-  <!-- Unity game area. Unity default loader UI renders inside this element. -->
-  <div class="webgl-content"><div id="gameContainer"></div></div>
-
-  <!-- Our small brand panel that complements the default Unity loader -->
+  <!-- Brand panel that sits alongside Unity loader -->
   <div class="sq-brand" id="sqBrand">
     <div class="sq-card">
       <div class="sq-logo">
         <img src="https://res.cloudinary.com/dcsrqennd/image/upload/v1760208794/My%20Brand/Static_pfp_2_nqzjkd.jpg" alt="StaticQuasar931 logo">
-        <div class="t">StaticQuasar931</div>
+        <div>
+          <div class="sq-title">StaticQuasar931 Presents</div>
+          <div class="sq-sub">Slope Stable Unblocked. Works on school Wi-Fi.</div>
+        </div>
       </div>
     </div>
-    <div class="sq-card">
-      <div class="sq-tip" id="sqTip"><b>Tip</b> Loading tips…</div>
-    </div>
   </div>
+
+  <!-- Tip bottom left -->
+  <div class="sq-tip-wrap">
+    <div class="sq-tip" id="sqTip"><b>Tip</b> Loading tips…</div>
+  </div>
+
+  <!-- Rotating promo bubble (disabled in school mode) -->
+  <div id="staticSlideMenu" aria-live="polite"></div>
+
+  <!-- Unity game area. Unity default loader UI renders inside this element. -->
+  <div class="webgl-content"><div id="gameContainer"></div></div>
 
   <!-- Hidden SEO -->
   <div class="seo-hidden" aria-hidden="true">
@@ -197,7 +215,7 @@
   </div>
 
   <script>
-    // Fit canvas to viewport
+    // Canvas fit
     function fitGame(){
       const el = document.getElementById("gameContainer");
       if (!el) return;
@@ -219,9 +237,9 @@
       };
     })();
 
-    // Y U I toggle menus
+    // Y U I toggle our UI parts only
     (function(){
-      const targets = [document.getElementById("staticMenu"), document.getElementById("staticSlideMenu"), document.getElementById("sqBrand")];
+      const targets = [document.getElementById("staticMenu"), document.getElementById("staticSlideMenu"), document.getElementById("sqBrand"), document.querySelector(".sq-tip-wrap")];
       const orig = new Map(targets.map(el => [el, el ? getComputedStyle(el).display || "" : ""]));
       let hidden = false;
       const down = new Set();
@@ -262,7 +280,7 @@
       apply(ROT[i]); loop();
     })();
 
-    // Tips from tips.js in root
+    // Tips from tips.js in root. Rotate every 10s. Advance once when Unity finishes loading.
     (function(){
       const el = document.getElementById("sqTip");
       if (!el) return;
@@ -282,11 +300,9 @@
         const t = tips[idx % tips.length]; idx++;
         el.innerHTML = "<b>Tip</b> " + t;
       }
-      // change every 10s
       next(tips[0]); idx = 1;
       let interval = setInterval(()=>next(), 10000);
 
-      // Update immediately when tips.js signals ready
       addEventListener("SQ_TIPS_READY", ()=>{
         tips = getTips().slice();
         idx = 0;
@@ -295,7 +311,6 @@
         interval = setInterval(()=>next(), 10000);
       });
 
-      // Also advance once when Unity finishes loading
       window.__sq_tip_advance_on_loaded__ = () => next();
     })();
 
@@ -306,24 +321,18 @@
         if (window.UnityLoader && typeof UnityLoader.instantiate === "function"){
           window.gameInstance = UnityLoader.instantiate("gameContainer", "slope_new.json", {
             onProgress: function(_inst, p){
-              // Unity default loader UI handles visuals via style.css and UnityProgress.js
+              // Unity default loader UI handles visuals via TemplateData/style.css and UnityProgress.js
               if (p >= 0.999) {
                 try { window.__sq_tip_advance_on_loaded__ && window.__sq_tip_advance_on_loaded__(); } catch(e){}
-                // Optionally fade our brand panel a little after load to keep focus on the game
-                const brand = document.getElementById("sqBrand");
-                if (brand) { brand.style.transition = "opacity .25s ease"; brand.style.opacity = "0.0"; setTimeout(()=>{ brand.style.display="none"; }, 260); }
+                // Keep brand visible, do not interfere with game input
               }
             }
           });
         } else {
           console.error("UnityLoader.js not found or invalid");
-          const brand = document.getElementById("sqBrand");
-          if (brand) brand.style.display = "none";
         }
       } catch (e){
         console.error("Unity failed to start:", e);
-        const brand = document.getElementById("sqBrand");
-        if (brand) brand.style.display = "none";
       }
     }
     window.addEventListener("load", startUnity);
