@@ -13,7 +13,7 @@
     .webgl-content{position:fixed;inset:0;display:flex;align-items:center;justify-content:center}
     #gameContainer{width:100vw;height:100vh;background:#231f20;position:relative}
 
-    /* Static branding top-right. Hidden after Unity finishes */
+    /* Brand top right. Will hide after load */
     .sq-brand{
       position:fixed; right:16px; top:16px; z-index:30;
       display:flex; flex-direction:column; gap:10px; align-items:flex-end;
@@ -34,12 +34,11 @@
     .sq-title{font-weight:1000;letter-spacing:.2px;font-size:18px;color:#eaf6ff}
     .sq-sub{font-weight:900;font-size:14px;color:#cfe1ff;opacity:.92;margin-top:2px}
 
-    /* Tip bottom-left. Hidden after Unity finishes */
+    /* Tips bottom left. Will hide after load */
     .sq-tip-wrap{position:fixed;left:14px;bottom:16px;z-index:28;max-width:min(560px,72vw)}
     .sq-tip{background:rgba(15,18,28,.9);border:1px solid rgba(255,255,255,.12);border-radius:12px;padding:10px 12px;box-shadow:0 8px 22px rgba(0,0,0,.45);font-size:13px;line-height:1.35;color:#cfe1ff}
     .sq-tip b{color:#9fe4ff}
 
-    /* Small helpers */
     .fade-out{opacity:0;transition:opacity .25s ease}
     @media (max-width:860px){ .sq-brand{right:10px;top:10px;max-width:66vw} }
   </style>
@@ -56,7 +55,7 @@
   <script>
     window.onbeforeunload = () => "Are you sure you want to leave? Your progress may not be saved.";
 
-    /* Tips: rotate every 10s. Advance once after game fully loads. Hide when done. */
+    /* Tips: rotate every 10s, then hide after load */
     (function(){
       function initTips(){
         const wrap = document.getElementById("sqTipWrap");
@@ -82,13 +81,11 @@
         show();
         let timer = setInterval(show, 10000);
 
-        // Replace list when tips.js signals ready
         window.addEventListener("SQ_TIPS_READY", () => {
           tips = getTips().slice(); i = 0; show();
           clearInterval(timer); timer = setInterval(show, 10000);
         });
 
-        // Called by Unity finish to advance once, then hide the whole tips block
         window.__sq_tips_hide_on_loaded__ = () => {
           try { show(); } catch(e){}
           wrap.classList.add("fade-out");
@@ -99,11 +96,12 @@
       else window.addEventListener("load", initTips);
     })();
 
-    /* Unity default loader with robust progress normalization.
-       UnityProgress drives visuals. Branding and tips auto-hide when done. */
+    /* Unity default loader with numeric-only progress to UnityProgress.
+       Complete only after runtime is ready. Also hides branding and tips then. */
     (function(){
       let gameInstance = null;
       let finished = false;
+      let lastP = 0;
 
       function hideBrandingAndTips(){
         const brand = document.getElementById("sqBrand");
@@ -121,24 +119,27 @@
         hideBrandingAndTips();
       }
 
-      // Normalize all known onProgress shapes from UnityLoader
       function onUnityProgress(inst, progress){
         let p = 0;
-        if (progress === "complete") {
-          p = 1;
-        } else if (typeof progress === "number") {
+
+        if (typeof progress === "number") {
           p = progress;
         } else if (progress && typeof progress.progress === "number") {
           p = progress.progress;
         } else if (progress && typeof progress.loaded === "number" && typeof progress.total === "number" && progress.total > 0) {
           p = progress.loaded / progress.total;
+        } else if (progress === "complete") {
+          p = 1;
         }
+
         if (p < 0) p = 0;
         if (p > 1) p = 1;
 
-        try { window.UnityProgress && window.UnityProgress(inst, p < 1 ? p : "complete"); } catch(e){}
+        // Always feed numeric progress so UnityProgress math never breaks
+        try { window.UnityProgress && window.UnityProgress(inst, p); } catch(e){}
 
-        if (p >= 1) finishUnityLoader();
+        lastP = p;
+        // Do not finish here. Wait for runtime init.
       }
 
       function start(){
@@ -147,24 +148,35 @@
         c.style.width  = innerWidth + "px";
         c.style.height = innerHeight + "px";
 
-        // Use your repo manifest directly. Relative assets inside it will resolve correctly.
         gameInstance = UnityLoader.instantiate(
           "gameContainer",
           "https://staticquasar931.github.io/slope/slope_new.json",
           {
             onProgress: onUnityProgress,
             Module: {
-              onRuntimeInitialized: function(){ finishUnityLoader(); }
+              onRuntimeInitialized: function(){
+                // Push bar to 1, then complete
+                try { window.UnityProgress && window.UnityProgress(gameInstance, Math.max(lastP, 1)); } catch(e){}
+                finishUnityLoader();
+              }
             }
           }
         );
 
-        // Watchdog safety in case runtime callback never fires
+        // Watchdog
         let tries = 0;
         const t = setInterval(()=>{
           if (!gameInstance || finished) { clearInterval(t); return; }
           const ran = gameInstance.Module && (gameInstance.Module.calledRun || gameInstance.Module.runtimeInitialized);
-          if (ran || tries > 120) { clearInterval(t); finishUnityLoader(); }
+          if (ran) {
+            try { window.UnityProgress && window.UnityProgress(gameInstance, Math.max(lastP, 1)); } catch(e){}
+            clearInterval(t);
+            finishUnityLoader();
+          } else if (tries > 120) {
+            try { window.UnityProgress && window.UnityProgress(gameInstance, Math.max(lastP, 1)); } catch(e){}
+            clearInterval(t);
+            finishUnityLoader();
+          }
           tries++;
         }, 500);
       }
@@ -172,12 +184,12 @@
       if (document.readyState === "complete") start();
       else window.addEventListener("load", start);
 
-      // Keep canvas fitted
       window.addEventListener("resize", () => {
         const c = document.getElementById("gameContainer");
-        if (!c) return;
-        c.style.width  = innerWidth + "px";
-        c.style.height = innerHeight + "px";
+        if (c){
+          c.style.width  = innerWidth + "px";
+          c.style.height = innerHeight + "px";
+        }
       });
     })();
   </script>
@@ -186,7 +198,7 @@
   <!-- Unity default loader renders inside this container -->
   <div class="webgl-content"><div id="gameContainer"></div></div>
 
-  <!-- Branding card. Auto hides when Unity finishes -->
+  <!-- Branding card. Auto hides after Unity finishes -->
   <div class="sq-brand" id="sqBrand">
     <div class="sq-card">
       <div class="sq-logo">
@@ -199,7 +211,7 @@
     </div>
   </div>
 
-  <!-- Tips bottom-left. Auto hides when Unity finishes -->
+  <!-- Tips bottom-left. Auto hides after Unity finishes -->
   <div class="sq-tip-wrap" id="sqTipWrap">
     <div class="sq-tip" id="sqTip"><b>Tip</b> Loading tips…</div>
   </div>
