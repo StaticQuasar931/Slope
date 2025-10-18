@@ -5,13 +5,15 @@
   <meta name="viewport" content="width=device-width,initial-scale=1"/>
   <title>Slope | StaticQuasar931</title>
 
-  <!-- Base layout -->
+  <!-- Make all relative Unity template paths resolve to YOUR GitHub Pages root -->
+  <base href="https://staticquasar931.github.io/slope/">
+
   <style>
     html,body{margin:0;padding:0;width:100%;height:100%;background:#231f20;overflow:hidden;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif}
     .webgl-content{position:fixed;inset:0;display:flex;align-items:center;justify-content:center}
     #gameContainer{width:100vw;height:100vh;background:#231f20;position:relative}
 
-    /* Static branding - top right - will hide after Unity finishes */
+    /* Static branding top-right - hides after Unity finishes */
     .sq-brand{
       position:fixed; right:16px; top:16px; z-index:30;
       display:flex; flex-direction:column; gap:10px; align-items:flex-end;
@@ -31,32 +33,34 @@
     .sq-logo img{width:64px;height:64px;border-radius:14px;object-fit:cover;box-shadow:0 6px 18px rgba(0,0,0,.45)}
     .sq-title{font-weight:1000;letter-spacing:.2px;font-size:18px;color:#eaf6ff}
     .sq-sub{font-weight:900;font-size:14px;color:#cfe1ff;opacity:.92;margin-top:2px}
+    .fade-out{opacity:0;transition:opacity .25s ease}
 
-    /* Tip bottom left */
+    /* Tip bottom-left */
     .sq-tip-wrap{position:fixed;left:14px;bottom:16px;z-index:28;max-width:min(560px,72vw)}
     .sq-tip{background:rgba(15,18,28,.9);border:1px solid rgba(255,255,255,.12);border-radius:12px;padding:10px 12px;box-shadow:0 8px 22px rgba(0,0,0,.45);font-size:13px;line-height:1.35;color:#cfe1ff}
     .sq-tip b{color:#9fe4ff}
 
-    .fade-out{opacity:0;transition:opacity .25s ease}
-    @media (max-width:860px){ .sq-brand{right:10px;top:10px;max-width:66vw} }
+    @media (max-width:860px){
+      .sq-brand{right:10px;top:10px;max-width:66vw}
+    }
   </style>
 
-  <!-- Unity default template CSS and loader logic (local files) -->
-  <!-- If your export uses a different folder, update these two paths -->
+  <!-- Unity template CSS and loader JS from YOUR repo.
+       Many Unity exports use TemplateData/, some use style/ at root.
+       Include both CSS paths to be safe. Extra CSS is harmless. -->
   <link rel="stylesheet" href="TemplateData/style.css"/>
-  <script src="TemplateData/UnityProgress.js"></script>
+  <link rel="stylesheet" href="style/style.css"/>
 
-  <!-- Unity runtime (local) -->
+  <script src="TemplateData/UnityProgress.js"></script>
   <script src="UnityLoader.js"></script>
 
-  <!-- Tips (root) -->
+  <!-- Tips from repo root -->
   <script src="tips.js" defer></script>
 
   <script>
-    // Leave warning
     window.onbeforeunload = () => "Are you sure you want to leave? Your progress may not be saved.";
 
-    // Tips - rotate every 10s and advance once after load
+    // Tips - rotate every 10s and advance once when Unity is fully ready
     (function(){
       function initTips(){
         const el = document.getElementById("sqTip");
@@ -77,10 +81,10 @@
           i++;
         };
         show();
-        let handle = setInterval(show, 10000);
+        let timer = setInterval(show, 10000);
         window.addEventListener("SQ_TIPS_READY", () => {
           tips = getTips().slice(); i = 0; show();
-          clearInterval(handle); handle = setInterval(show, 10000);
+          clearInterval(timer); timer = setInterval(show, 10000);
         });
         window.__sq_tip_advance_on_loaded__ = () => show();
       }
@@ -88,7 +92,7 @@
       else window.addEventListener("load", initTips);
     })();
 
-    // Unity loader using local files. Use Unity's own loader UI.
+    // Use Unity's default loader UI. Call UnityProgress for visuals and hide SQ branding when runtime is ready.
     (function(){
       let gameInstance = null;
       let downloadDone = false;
@@ -111,9 +115,11 @@
       }
 
       function onUnityProgress(inst, progress){
+        // Unity may send "complete" as a string
         const p = progress === "complete" ? 1 : Number(progress) || 0;
         if (p >= 1){
           downloadDone = true;
+          // keep Unity bar visible until runtime starts to avoid a flash
           try { window.UnityProgress && window.UnityProgress(inst, 0.99); } catch(e){}
         } else {
           try { window.UnityProgress && window.UnityProgress(inst, p); } catch(e){}
@@ -126,8 +132,7 @@
         c.style.width = innerWidth + "px";
         c.style.height = innerHeight + "px";
 
-        // Local manifest
-        gameInstance = UnityLoader.instantiate("gameContainer", "slope_new.json", {
+        gameInstance = UnityLoader.instantiate("gameContainer", "https://staticquasar931.github.io/slope/slope_new.json", {
           onProgress: onUnityProgress,
           Module: {
             onRuntimeInitialized: function(){
@@ -136,7 +141,7 @@
           }
         });
 
-        // Watchdog in case runtime callback never fires
+        // Safety watchdog in case runtime callback never fires
         let tries = 0;
         const watchdog = setInterval(()=>{
           if (!gameInstance || finished){ clearInterval(watchdog); return; }
@@ -163,7 +168,7 @@
   </script>
 </head>
 <body>
-  <!-- Unity will place its default loader inside this container -->
+  <!-- Unity default loader renders inside this container -->
   <div class="webgl-content"><div id="gameContainer"></div></div>
 
   <!-- Static branding - hides after Unity finishes -->
@@ -179,7 +184,7 @@
     </div>
   </div>
 
-  <!-- Tip bottom left -->
+  <!-- Tip bottom-left -->
   <div class="sq-tip-wrap">
     <div class="sq-tip" id="sqTip"><b>Tip</b> Loading tips…</div>
   </div>
