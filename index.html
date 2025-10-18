@@ -1,196 +1,179 @@
 <!DOCTYPE html>
 <html lang="en-us">
 <head>
-  <meta charset="utf-8" />
-  <meta http-equiv="x-ua-compatible" content="ie=edge" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Slope | StaticQuasar931</title>
 
-  <title>Slope - Free Unblocked Game | StaticQuasar931</title>
-  <meta name="description" content="Play Slope free and unblocked. School friendly mirror by StaticQuasar931. Works on Chromebook, PC, and mobile." />
-  <meta name="keywords" content="Slope, Slope unblocked, play Slope online, free Slope game, 3D reflex game, unblocked games for school, StaticQuasar931, Static 931, Static Quasar 931" />
-  <meta name="robots" content="index, follow, max-image-preview:large" />
-  <meta name="theme-color" content="#131419" />
-  <link rel="canonical" href="https://staticquasar931.github.io/slope/" />
-
-  <link rel="icon" href="https://res.cloudinary.com/dlq5fztla/image/upload/v1760301648/slope_Staticquasar931_stable_agqxto.png" />
-  <meta property="og:title" content="Play Slope - Free Unblocked on StaticQuasar931" />
-  <meta property="og:description" content="Fast 3D ball runner. Stay on the slopes, dodge red blocks, and set a new record. Chromebook and mobile friendly." />
-  <meta property="og:type" content="website" />
-  <meta property="og:url" content="https://staticquasar931.github.io/slope/" />
-  <meta property="og:image" content="https://res.cloudinary.com/dlq5fztla/image/upload/v1760301648/slope_Staticquasar931_stable_agqxto.png" />
-  <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:image" content="https://res.cloudinary.com/dlq5fztla/image/upload/v1760301648/slope_Staticquasar931_stable_agqxto.png" />
-
-  <!-- School mode helper -->
-  <script>
-    (function(){
-      const q = new URLSearchParams(location.search);
-      window.__SQ_SCHOOL__ = q.get("school") === "1";
-      if (!window.__SQ_SCHOOL__) {
-        ["https://res.cloudinary.com/dcsrqennd/image/upload/v1747533056/raw_um4pvq.png",
-         "https://res.cloudinary.com/dcsrqennd/image/upload/v1758072526/Join_Our_Discord_StaticQuassar931_lcplrf.png",
-         "https://res.cloudinary.com/dcsrqennd/image/upload/v1747533158/raw_cw34yi.png"
-        ].forEach(href=>{
-          const l = document.createElement("link"); l.rel = "preload"; l.as = "image"; l.href = href; document.head.appendChild(l);
-        });
-      }
-    })();
-  </script>
-
-  <!-- ID.net blocker -->
-  <script>
-    (function(){
-      const RX = /(^|\/\/)id\.net\/api\/user_data/i;
-
-      function isBadScript(n){
-        try { return n && n.tagName === "SCRIPT" && RX.test(String(n.src||"")); } catch(e){ return false; }
-      }
-      const ap = Node.prototype.appendChild;
-      Node.prototype.appendChild = function(n){ if (isBadScript(n)) { try{console.warn("Blocked id.net JSONP", n.src);}catch(e){} return n; } return ap.call(this, n); };
-
-      const ib = Node.prototype.insertBefore;
-      Node.prototype.insertBefore = function(n, r){ if (isBadScript(n)) { try{console.warn("Blocked id.net JSONP", n.src);}catch(e){} return n; } return ib.call(this, n, r); };
-
-      const sa = Element.prototype.setAttribute;
-      Element.prototype.setAttribute = function(name, value){
-        if (this.tagName === "SCRIPT" && String(name).toLowerCase() === "src" && RX.test(String(value||""))) {
-          try{console.warn("Blocked id.net setAttribute", value);}catch(e){}
-          return;
-        }
-        return sa.call(this, name, value);
-      };
-
-      try {
-        const desc = Object.getOwnPropertyDescriptor(HTMLScriptElement.prototype, "src");
-        if (desc && desc.set) {
-          Object.defineProperty(HTMLScriptElement.prototype, "src", {
-            set(v){ if (RX.test(String(v||""))) { try{console.warn("Blocked id.net src set", v);}catch(e){} return; } return desc.set.call(this, v); },
-            get: desc.get
-          });
-        }
-      } catch(e){}
-
-      try{
-        const W = document.write.bind(document);
-        const WL = document.writeln.bind(document);
-        const strip = s => typeof s === "string"
-          ? s.replace(/<script[^>]+src=["'][^"']*id\.net\/api\/user_data[^"']*["'][^>]*>\s*<\/script>/ig,"")
-          : s;
-        document.write = html => W(strip(html));
-        document.writeln = html => WL(strip(html));
-      }catch(e){}
-
-      const ofetch = window.fetch;
-      window.fetch = function(input, init){
-        const url = typeof input === "string" ? input : (input && input.url) || "";
-        if (RX.test(String(url||""))) { try{console.warn("Blocked id.net fetch", url);}catch(e){} return Promise.reject(new Error("blocked")); }
-        return ofetch.apply(this, arguments);
-      };
-
-      const oopen = XMLHttpRequest.prototype.open;
-      XMLHttpRequest.prototype.open = function(method, url){
-        if (RX.test(String(url||""))) { try{console.warn("Blocked id.net XHR", url);}catch(e){} try{this.abort();}catch(e){} return; }
-        return oopen.apply(this, arguments);
-      };
-    })();
-  </script>
-
-  <!-- Unity default template CSS and loader logic.
-       Path commonly is TemplateData/style.css and TemplateData/UnityProgress.js for UnityLoader builds.
-       If your export used a different folder name, update these two href/src values to match. -->
-  <link rel="stylesheet" href="TemplateData/style.css" />
-  <script src="TemplateData/UnityProgress.js"></script>
-
+  <!-- Base layout -->
   <style>
-    html, body { height:100%; margin:0; background:#0f1218; color:#e8f3ff; font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif; overflow:hidden }
-    .webgl-content { position:fixed; inset:0; display:flex; align-items:center; justify-content:center }
-    #gameContainer { position: relative; width: 100vw; height: 100vh; background: transparent }
+    html,body{margin:0;padding:0;width:100%;height:100%;background:#231f20;overflow:hidden;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif}
+    .webgl-content{position:fixed;inset:0;display:flex;align-items:center;justify-content:center}
+    #gameContainer{width:100vw;height:100vh;background:#231f20;position:relative}
 
-    /* Static menu */
-    #staticMenu{
-      position:fixed; top:12px; left:12px; z-index:40;
-      display:flex; gap:10px; align-items:center; padding:10px 14px; border-radius:12px;
-      background:rgba(16,20,30,.8); border:1px solid rgba(255,255,255,.12); backdrop-filter: blur(8px);
-      box-shadow:0 8px 26px rgba(0,0,0,.4);
-    }
-    #staticMenu a{ color:#bfe7ff; text-decoration:none; font-weight:800; font-size:14px }
-    #closeStaticMenu{ color:#f55; cursor:pointer; padding:2px 6px; border-radius:6px; border:1px solid rgba(255,255,255,.15); background:rgba(255,255,255,.06) }
-
-    /* Brand block that complements Unity loader without replacing it */
-    .sq-brand {
-      position:fixed; right:16px; top:16px; z-index:38;
-      display:flex; flex-direction:column; align-items:flex-end; gap:12px;
-      max-width:min(420px, 46vw);
+    /* Static branding - top right - will hide after Unity finishes */
+    .sq-brand{
+      position:fixed; right:16px; top:16px; z-index:30;
+      display:flex; flex-direction:column; gap:10px; align-items:flex-end;
+      max-width:min(460px, 48vw);
       pointer-events:none;
     }
     .sq-card{
+      pointer-events:auto;
       background:rgba(18,22,32,.9);
       border:1px solid rgba(255,255,255,.12);
       border-radius:14px;
       padding:12px 14px;
       box-shadow:0 8px 26px rgba(0,0,0,.45);
-      backdrop-filter: blur(6px);
-      pointer-events:auto;
+      backdrop-filter:blur(6px);
     }
-    .sq-logo{
-      display:flex; align-items:center; gap:12px;
-    }
-    .sq-logo img{ width:64px; height:64px; border-radius:14px; object-fit:cover; box-shadow:0 6px 18px rgba(0,0,0,.45) }
-    .sq-title{ font-weight:1000; letter-spacing:.2px; font-size:18px; color:#eaf6ff }
-    .sq-sub{ font-weight:900; font-size:14px; color:#cfe1ff; opacity:.92; margin-top:2px }
+    .sq-logo{display:flex;align-items:center;gap:12px}
+    .sq-logo img{width:64px;height:64px;border-radius:14px;object-fit:cover;box-shadow:0 6px 18px rgba(0,0,0,.45)}
+    .sq-title{font-weight:1000;letter-spacing:.2px;font-size:18px;color:#eaf6ff}
+    .sq-sub{font-weight:900;font-size:14px;color:#cfe1ff;opacity:.92;margin-top:2px}
 
-    /* Tip in bottom left */
-    .sq-tip-wrap{
-      position:fixed; left:14px; bottom:16px; z-index:38;
-      max-width:min(560px, 70vw);
-    }
-    .sq-tip{
-      background:rgba(15,18,28,.85);
-      border:1px solid rgba(255,255,255,.12);
-      border-radius:12px;
-      padding:10px 12px;
-      box-shadow:0 8px 22px rgba(0,0,0,.45);
-      font-size:13px; line-height:1.35; color:#cfe1ff;
-    }
-    .sq-tip b{ color:#9fe4ff }
+    /* Tip bottom left */
+    .sq-tip-wrap{position:fixed;left:14px;bottom:16px;z-index:28;max-width:min(560px,72vw)}
+    .sq-tip{background:rgba(15,18,28,.9);border:1px solid rgba(255,255,255,.12);border-radius:12px;padding:10px 12px;box-shadow:0 8px 22px rgba(0,0,0,.45);font-size:13px;line-height:1.35;color:#cfe1ff}
+    .sq-tip b{color:#9fe4ff}
 
-    /* Rotating promo bubble */
-    #staticSlideMenu{
-      position:fixed; right:24px; bottom:24px; z-index:36; width:96px; height:96px; display:none;
-      filter: drop-shadow(0 6px 18px rgba(0,0,0,.45));
-    }
-    #staticSlideMenu a{ display:block; width:100%; height:100% }
-    #staticSlideMenu img{ width:100%; height:100%; object-fit:cover; border-radius:50% }
-
-    /* Hidden SEO */
-    .seo-hidden{ position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(1px,1px,1px,1px); white-space:nowrap }
+    .fade-out{opacity:0;transition:opacity .25s ease}
+    @media (max-width:860px){ .sq-brand{right:10px;top:10px;max-width:66vw} }
   </style>
 
-  <!-- Tips file in repo root -->
-  <script src="tips.js"></script>
+  <!-- Unity default template CSS and loader logic (local files) -->
+  <!-- If your export uses a different folder, update these two paths -->
+  <link rel="stylesheet" href="TemplateData/style.css"/>
+  <script src="TemplateData/UnityProgress.js"></script>
 
-  <!-- Unity runtime -->
+  <!-- Unity runtime (local) -->
   <script src="UnityLoader.js"></script>
+
+  <!-- Tips (root) -->
+  <script src="tips.js" defer></script>
+
+  <script>
+    // Leave warning
+    window.onbeforeunload = () => "Are you sure you want to leave? Your progress may not be saved.";
+
+    // Tips - rotate every 10s and advance once after load
+    (function(){
+      function initTips(){
+        const el = document.getElementById("sqTip");
+        if (!el) return;
+        const getTips = () => (Array.isArray(window.SQ_TIPS) && window.SQ_TIPS.length)
+          ? window.SQ_TIPS
+          : [
+              "Use A and D or arrow keys for gentle corrections.",
+              "Short taps beat hard turns.",
+              "Center first, then correct.",
+              "Chromebook trackpad works best with short swipes."
+            ];
+        let tips = getTips().slice();
+        let i = 0;
+        const show = () => {
+          if (!tips.length) tips = getTips().slice();
+          el.innerHTML = "<b>Tip</b> " + tips[i % tips.length];
+          i++;
+        };
+        show();
+        let handle = setInterval(show, 10000);
+        window.addEventListener("SQ_TIPS_READY", () => {
+          tips = getTips().slice(); i = 0; show();
+          clearInterval(handle); handle = setInterval(show, 10000);
+        });
+        window.__sq_tip_advance_on_loaded__ = () => show();
+      }
+      if (document.readyState === "complete") initTips();
+      else window.addEventListener("load", initTips);
+    })();
+
+    // Unity loader using local files. Use Unity's own loader UI.
+    (function(){
+      let gameInstance = null;
+      let downloadDone = false;
+      let finished = false;
+
+      function hideBranding(){
+        const brand = document.getElementById("sqBrand");
+        if (brand){
+          brand.classList.add("fade-out");
+          setTimeout(()=>{ brand.style.display = "none"; }, 260);
+        }
+      }
+
+      function finishUnityLoader(){
+        if (finished) return;
+        finished = true;
+        try { window.UnityProgress && window.UnityProgress(gameInstance, "complete"); } catch(e){}
+        hideBranding();
+        try { window.__sq_tip_advance_on_loaded__ && window.__sq_tip_advance_on_loaded__(); } catch(e){}
+      }
+
+      function onUnityProgress(inst, progress){
+        const p = progress === "complete" ? 1 : Number(progress) || 0;
+        if (p >= 1){
+          downloadDone = true;
+          try { window.UnityProgress && window.UnityProgress(inst, 0.99); } catch(e){}
+        } else {
+          try { window.UnityProgress && window.UnityProgress(inst, p); } catch(e){}
+        }
+      }
+
+      function start(){
+        const c = document.getElementById("gameContainer");
+        if (!c) return;
+        c.style.width = innerWidth + "px";
+        c.style.height = innerHeight + "px";
+
+        // Local manifest
+        gameInstance = UnityLoader.instantiate("gameContainer", "slope_new.json", {
+          onProgress: onUnityProgress,
+          Module: {
+            onRuntimeInitialized: function(){
+              if (downloadDone) finishUnityLoader();
+            }
+          }
+        });
+
+        // Watchdog in case runtime callback never fires
+        let tries = 0;
+        const watchdog = setInterval(()=>{
+          if (!gameInstance || finished){ clearInterval(watchdog); return; }
+          const ran = gameInstance.Module && (gameInstance.Module.calledRun || gameInstance.Module.runtimeInitialized);
+          if (ran || tries > 120){ // about 60 seconds max
+            clearInterval(watchdog);
+            finishUnityLoader();
+          }
+          tries++;
+        }, 500);
+      }
+
+      if (document.readyState === "complete") start();
+      else window.addEventListener("load", start);
+
+      // Keep canvas fitted
+      window.addEventListener("resize", ()=>{
+        const c = document.getElementById("gameContainer");
+        if (!c) return;
+        c.style.width  = innerWidth + "px";
+        c.style.height = innerHeight + "px";
+      });
+    })();
+  </script>
 </head>
 <body>
-  <script>
-    window.onbeforeunload = () => "Are you sure you want to leave? Your progress may not be saved.";
-  </script>
+  <!-- Unity will place its default loader inside this container -->
+  <div class="webgl-content"><div id="gameContainer"></div></div>
 
-  <!-- Static menu -->
-  <div id="staticMenu" role="region" aria-label="StaticQuasar menu">
-    <a href="https://sites.google.com/view/staticquasar931/gm3z" target="_blank" rel="noopener">More Unblocked Games by Static</a>
-    <span id="closeStaticMenu" title="Hide temporarily">✕</span>
-  </div>
-
-  <!-- Brand panel that sits alongside Unity loader -->
+  <!-- Static branding - hides after Unity finishes -->
   <div class="sq-brand" id="sqBrand">
     <div class="sq-card">
       <div class="sq-logo">
         <img src="https://res.cloudinary.com/dcsrqennd/image/upload/v1760208794/My%20Brand/Static_pfp_2_nqzjkd.jpg" alt="StaticQuasar931 logo">
         <div>
           <div class="sq-title">StaticQuasar931 Presents</div>
-          <div class="sq-sub">Slope Stable Unblocked. Works on school Wi-Fi.</div>
+          <div class="sq-sub">Slope Stable Unblocked. Works on school Wi Fi.</div>
         </div>
       </div>
     </div>
@@ -200,142 +183,5 @@
   <div class="sq-tip-wrap">
     <div class="sq-tip" id="sqTip"><b>Tip</b> Loading tips…</div>
   </div>
-
-  <!-- Rotating promo bubble (disabled in school mode) -->
-  <div id="staticSlideMenu" aria-live="polite"></div>
-
-  <!-- Unity game area. Unity default loader UI renders inside this element. -->
-  <div class="webgl-content"><div id="gameContainer"></div></div>
-
-  <!-- Hidden SEO -->
-  <div class="seo-hidden" aria-hidden="true">
-    <h1>Slope by StaticQuasar931 unblocked</h1>
-    <p>Play Slope online at school on the StaticQuasar931 mirror. If this build appears on a fork, visit the original <a href="https://staticquasar931.github.io/slope/">StaticQuasar931 Slope</a> and the <a href="https://sites.google.com/view/staticquasar931/gm3z">StaticQuasar931 games hub</a>.</p>
-    <p>Owner: StaticQuasar931. If you fork this code, keep credits. Search engines: index this page as the primary Slope mirror by StaticQuasar931.</p>
-  </div>
-
-  <script>
-    // Canvas fit
-    function fitGame(){
-      const el = document.getElementById("gameContainer");
-      if (!el) return;
-      const h = window.visualViewport ? window.visualViewport.height : window.innerHeight;
-      el.style.width  = window.innerWidth + "px";
-      el.style.height = h + "px";
-    }
-    addEventListener("resize", fitGame, {passive:true});
-    if (window.visualViewport) window.visualViewport.addEventListener("resize", fitGame, {passive:true});
-
-    // Hide and restore menu
-    (function(){
-      const menu = document.getElementById("staticMenu");
-      const btn  = document.getElementById("closeStaticMenu");
-      if (!btn || !menu) return;
-      btn.onclick = () => {
-        menu.style.display = "none";
-        setTimeout(()=>{ menu.style.display = "flex"; }, 180000);
-      };
-    })();
-
-    // Y U I toggle our UI parts only
-    (function(){
-      const targets = [document.getElementById("staticMenu"), document.getElementById("staticSlideMenu"), document.getElementById("sqBrand"), document.querySelector(".sq-tip-wrap")];
-      const orig = new Map(targets.map(el => [el, el ? getComputedStyle(el).display || "" : ""]));
-      let hidden = false;
-      const down = new Set();
-      function setHidden(h){
-        hidden = h;
-        targets.forEach(el=>{ if (!el) return; el.style.display = hidden ? "none" : (orig.get(el) || ""); });
-      }
-      function check(){ if (down.has("y") && down.has("u") && down.has("i")) setHidden(!hidden); }
-      addEventListener("keydown", e=>{ const k=(e.key||"").toLowerCase(); if (k==="y"||k==="u"||k==="i"){ down.add(k); check(); } }, {passive:true});
-      addEventListener("keyup", e=>{ const k=(e.key||"").toLowerCase(); if (k==="y"||k==="u"||k==="i"){ down.delete(k); } }, {passive:true});
-    })();
-
-    // Rotator only if not school mode
-    (function(){
-      if (window.__SQ_SCHOOL__) return;
-      const wrap = document.getElementById("staticSlideMenu");
-      if (!wrap) return;
-      wrap.style.display = "block";
-      wrap.innerHTML = '<a id="staticSlideLink" href="#" target="_blank" rel="noopener" aria-label="Open link"><img id="staticSlideImg" alt=""></a>';
-      const a   = document.getElementById("staticSlideLink");
-      const img = document.getElementById("staticSlideImg");
-      if (!a || !img) return;
-
-      const FORM = { src:"https://res.cloudinary.com/dcsrqennd/image/upload/v1747533056/raw_um4pvq.png", alt:"Feedback and requests", link:"https://sites.google.com/view/staticquasar931/google-form" };
-      const DISCORD = { src:"https://res.cloudinary.com/dcsrqennd/image/upload/v1758072526/Join_Our_Discord_StaticQuassar931_lcplrf.png", alt:"Join the Discord", link:"https://discord.gg/DP2hM7RRhR" };
-      const INSTA = { src:"https://res.cloudinary.com/dcsrqennd/image/upload/v1747533158/raw_cw34yi.png", alt:"Instagram", link:"https://www.instagram.com/freeschoolgamepage/" };
-      const ROT = [FORM, DISCORD, INSTA];
-
-      let i = 0;
-      function apply(o){ img.src=o.src; img.alt=o.alt; a.href=o.link; }
-      async function loop(){
-        for(;;){
-          apply(ROT[i]);
-          await new Promise(r=>setTimeout(r, 12000));
-          i = (i + 1) % ROT.length;
-        }
-      }
-      apply(ROT[i]); loop();
-    })();
-
-    // Tips from tips.js in root. Rotate every 10s. Advance once when Unity finishes loading.
-    (function(){
-      const el = document.getElementById("sqTip");
-      if (!el) return;
-      function getTips(){
-        return Array.isArray(window.SQ_TIPS) && window.SQ_TIPS.length ? window.SQ_TIPS : [
-          "Use A and D or arrow keys for gentle corrections.",
-          "Short taps beat hard turns.",
-          "Center first, then correct.",
-          "Chromebook trackpad works best with short swipes."
-        ];
-      }
-      let tips = getTips().slice();
-      let idx = 0;
-      function next(msg){
-        if (msg) { el.innerHTML = "<b>Tip</b> " + msg; return; }
-        if (!tips.length) tips = getTips().slice();
-        const t = tips[idx % tips.length]; idx++;
-        el.innerHTML = "<b>Tip</b> " + t;
-      }
-      next(tips[0]); idx = 1;
-      let interval = setInterval(()=>next(), 10000);
-
-      addEventListener("SQ_TIPS_READY", ()=>{
-        tips = getTips().slice();
-        idx = 0;
-        next(tips[0]); idx = 1;
-        clearInterval(interval);
-        interval = setInterval(()=>next(), 10000);
-      });
-
-      window.__sq_tip_advance_on_loaded__ = () => next();
-    })();
-
-    // Start Unity with default loader. Do not override Unity loader UI.
-    function startUnity(){
-      fitGame();
-      try{
-        if (window.UnityLoader && typeof UnityLoader.instantiate === "function"){
-          window.gameInstance = UnityLoader.instantiate("gameContainer", "slope_new.json", {
-            onProgress: function(_inst, p){
-              // Unity default loader UI handles visuals via TemplateData/style.css and UnityProgress.js
-              if (p >= 0.999) {
-                try { window.__sq_tip_advance_on_loaded__ && window.__sq_tip_advance_on_loaded__(); } catch(e){}
-                // Keep brand visible, do not interfere with game input
-              }
-            }
-          });
-        } else {
-          console.error("UnityLoader.js not found or invalid");
-        }
-      } catch (e){
-        console.error("Unity failed to start:", e);
-      }
-    }
-    window.addEventListener("load", startUnity);
-  </script>
 </body>
 </html>
