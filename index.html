@@ -1,534 +1,332 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en-us">
 <head>
   <meta charset="utf-8" />
-  <meta http-equiv="x-ua-compatible" content="IE=edge" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+  <meta http-equiv="x-ua-compatible" content="ie=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-  <title>Slope - Unblocked - Works at school - StaticQuasar931</title>
-  <meta name="description" content="Play Slope unblocked and working at school on StaticQuasar931. Fast loader, no blockers required, Chromebook safe, full screen WebGL version." />
-  <meta name="keywords" content="Slope, Slope unblocked, Slope game, Slope g@me, play Slope at school, unblocked games, unbl0cked, StaticQuasar931, Static 931, StaticQ931, static, staticq, staticq931" />
-
+  <title>Slope - Free Unblocked Game | StaticQuasar931</title>
+  <meta name="description" content="Play Slope free and unblocked. School friendly mirror by StaticQuasar931. Works on Chromebook, PC, and mobile." />
+  <meta name="keywords" content="Slope, Slope unblocked, play Slope online, free Slope game, 3D reflex game, unblocked games for school, StaticQuasar931, Static 931, Static Quasar 931" />
+  <meta name="robots" content="index, follow, max-image-preview:large" />
+  <meta name="theme-color" content="#131419" />
   <link rel="canonical" href="https://staticquasar931.github.io/slope/" />
-  <meta property="og:title" content="Slope - Unblocked - StaticQuasar931" />
-  <meta property="og:description" content="Fully working Slope for school - instant loader, no extra blockers needed." />
+
+  <link rel="icon" href="https://res.cloudinary.com/dlq5fztla/image/upload/v1760301648/slope_Staticquasar931_stable_agqxto.png" />
+  <meta property="og:title" content="Play Slope - Free Unblocked on StaticQuasar931" />
+  <meta property="og:description" content="Fast 3D ball runner. Stay on the slopes, dodge red blocks, and set a new record. Chromebook and mobile friendly." />
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://staticquasar931.github.io/slope/" />
-  <meta property="og:image" content="https://res.cloudinary.com/dcsrqennd/image/upload/v1700000000/slope_og_static931.png" />
+  <meta property="og:image" content="https://res.cloudinary.com/dlq5fztla/image/upload/v1760301648/slope_Staticquasar931_stable_agqxto.png" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:image" content="https://res.cloudinary.com/dlq5fztla/image/upload/v1760301648/slope_Staticquasar931_stable_agqxto.png" />
 
-  <link rel="icon" href="https://res.cloudinary.com/dcsrqennd/image/upload/v1700000000/static931_favicon.ico" />
-
-  <style>
-    :root {
-      --bg: #0b0f14;
-      --fg: #e8f1ff;
-      --muted: #8ea3b0;
-      --accent: #00ffa3;
-      --accent2: #38bdf8;
-      --warn: #ff4d4d;
-    }
-    html, body {
-      margin: 0;
-      padding: 0;
-      height: 100%;
-      background: var(--bg);
-      color: var(--fg);
-      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
-      overflow: hidden;
-    }
-    /* Fullscreen game container */
-    #gameContainer {
-      position: fixed;
-      inset: 0;
-      width: 100vw;
-      height: 100vh;
-      background: #000;
-    }
-
-    /* Loader overlay */
-    #loaderCover {
-      position: fixed;
-      inset: 0;
-      background: radial-gradient(1000px 500px at 50% 40%, #0e1420, #06080f 60%, #020309 100%);
-      display: grid;
-      grid-template-rows: 1fr auto auto auto 1fr;
-      align-items: center;
-      justify-items: center;
-      z-index: 20;
-      opacity: 1;
-      transition: opacity 550ms ease;
-    }
-    #loaderInner {
-      width: min(880px, 92vw);
-      margin-top: -4vh;
-      text-align: center;
-    }
-    .announce {
-      font-size: clamp(18px, 2.2vw, 28px);
-      color: var(--accent);
-      letter-spacing: 0.6px;
-      margin-bottom: 18px;
-      text-shadow: 0 0 20px rgba(0,255,163,0.35);
-    }
-    .logo-row {
-      display: flex;
-      gap: 18px;
-      justify-content: center;
-      align-items: center;
-      margin-bottom: 22px;
-      opacity: 0.95;
-    }
-    .logo {
-      height: clamp(42px, 6vw, 72px);
-      filter: drop-shadow(0 4px 18px rgba(0,0,0,0.6));
-    }
-    .presented {
-      font-size: clamp(16px, 2vw, 22px);
-      color: var(--muted);
-      margin-bottom: 18px;
-      letter-spacing: 0.3px;
-    }
-    .loader-bar {
-      position: relative;
-      height: 18px;
-      width: 100%;
-      border-radius: 10px;
-      background: linear-gradient(180deg, #0a1320, #0a0f18);
-      box-shadow: inset 0 0 0 1px rgba(255,255,255,0.07), 0 20px 40px rgba(0,0,0,0.35);
-      overflow: hidden;
-    }
-    .loader-fill {
-      position: absolute;
-      left: 0; top: 0; bottom: 0;
-      width: 1%;
-      border-radius: 10px;
-      background: linear-gradient(90deg, var(--accent), #93ffdf 50%, var(--accent2));
-      box-shadow: 0 0 24px rgba(0,255,163,0.4), 0 0 12px rgba(56,189,248,0.25) inset;
-      transition: width 120ms linear;
-    }
-    .lights {
-      position: absolute;
-      right: 8px; top: 50%;
-      transform: translateY(-50%);
-      display: flex; gap: 6px;
-    }
-    .light {
-      width: 8px; height: 8px; border-radius: 50%;
-      background: #182028;
-      box-shadow: inset 0 0 0 1px rgba(255,255,255,0.05);
-    }
-    .light.ok { background: #1be67a; box-shadow: 0 0 8px rgba(27,230,122,0.7); }
-    .light.busy { background: #ffd166; box-shadow: 0 0 8px rgba(255,209,102,0.6); }
-    .light.err { background: #ff4d4d; box-shadow: 0 0 8px rgba(255,77,77,0.6); }
-
-    .loader-meta {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      color: var(--muted);
-      font-size: 14px;
-      margin-top: 10px;
-    }
-    .meta-left, .meta-right { opacity: 0.9 }
-    .percent { color: var(--fg); font-weight: 700; padding-left: 4px; }
-
-    .tipArea {
-      margin-top: 16px;
-      color: #b8c7d6;
-      font-size: 14px;
-      opacity: 0.95;
-    }
-
-    /* Static Menu - top left */
-    #staticMenu {
-      position: fixed;
-      top: 14px; left: 14px;
-      z-index: 18;
-      background: rgba(6, 10, 18, 0.8);
-      border: 1px solid rgba(255,255,255,0.08);
-      border-radius: 12px;
-      padding: 10px 12px;
-      backdrop-filter: blur(6px);
-      box-shadow: 0 10px 26px rgba(0,0,0,0.35);
-      animation: glow 2.6s ease-in-out infinite alternate;
-    }
-    #staticMenu a {
-      color: #e6f4ff;
-      text-decoration: none;
-      font-weight: 700;
-      font-size: 14px;
-    }
-    #staticMenu .label {
-      margin-top: 4px;
-      font-size: 12px;
-      color: #9fb2c2;
-    }
-    #staticMenu button {
-      all: unset;
-      cursor: pointer;
-      margin-left: 10px;
-      font-size: 12px;
-      color: #9fb2c2;
-      opacity: 0.85;
-    }
-    @keyframes glow {
-      from { box-shadow: 0 0 0 rgba(0,0,0,0.35), 0 0 10px rgba(0,255,163,0.25)}
-      to   { box-shadow: 0 10px 26px rgba(0,0,0,0.45), 0 0 18px rgba(56,189,248,0.35)}
-    }
-
-    /* Rotating icons - bottom right */
-    #rotatingIcons {
-      position: fixed;
-      right: 16px; bottom: 16px;
-      z-index: 18;
-      display: flex; gap: 10px;
-    }
-    .rotIcon {
-      width: 46px; height: 46px; border-radius: 50%;
-      background: #121a23;
-      border: 1px solid rgba(255,255,255,0.08);
-      display: grid; place-items: center;
-      overflow: hidden;
-      cursor: pointer;
-      transition: transform 160ms ease, box-shadow 160ms ease;
-    }
-    .rotIcon:hover { transform: translateY(-2px) scale(1.03); box-shadow: 0 10px 24px rgba(0,0,0,0.35) }
-    .rotIcon img { width: 70%; height: 70%; object-fit: contain }
-
-    /* Banners for keyboard shortcuts */
-    .flyBanner {
-      position: fixed;
-      left: -40vw;
-      top: 14vh;
-      z-index: 19;
-      background: linear-gradient(90deg, rgba(0,255,163,0.16), rgba(56,189,248,0.16));
-      border: 1px solid rgba(255,255,255,0.12);
-      color: #e9f4ff;
-      padding: 10px 16px;
-      border-radius: 999px;
-      font-weight: 700;
-      letter-spacing: 0.3px;
-      backdrop-filter: blur(6px);
-      transform: translateZ(0);
-      will-change: transform, opacity;
-      opacity: 0;
-      pointer-events: none;
-    }
-
-    .seo-hidden {
-      position: absolute;
-      inset: -9999px auto auto -9999px;
-      width: 1px; height: 1px; overflow: hidden;
-    }
-
-    /* Hide helpers */
-    .hidden { display: none !important; }
-    .fadeOut { opacity: 0 !important; pointer-events: none; }
-  </style>
-
-  <!-- ID.net autologin blocker - do not remove -->
+  <!-- School mode helper -->
   <script>
     (function(){
-      const BAD = /(^|\/\/)id\.net\/api\/user_data/i;
-      function isBadScript(n){
-        try {
-          return n && n.tagName === 'SCRIPT' && typeof n.src === 'string' && BAD.test(n.src);
-        } catch { return false; }
-      }
-      const patch = (proto, method) => {
-        const orig = proto && proto[method];
-        if (!orig) return;
-        Object.defineProperty(proto, method, {
-          value: function(){
-            for (let i = 0; i < arguments.length; i++) {
-              const n = arguments[i];
-              if (isBadScript(n)) {
-                try { console.warn('[StaticQuasar931] Blocked id.net JSONP:', n.src); } catch {}
-                return n;
-              }
-            }
-            return orig.apply(this, arguments);
-          }
-        });
-      };
-      patch(HTMLHeadElement.prototype, 'appendChild');
-      patch(HTMLElement.prototype, 'appendChild');
-      patch(HTMLElement.prototype, 'append');
-
-      const origWrite = document.write.bind(document);
-      const origWriteln = document.writeln.bind(document);
-      const strip = s => typeof s === 'string'
-        ? s.replace(/<script[^>]+src\s*=\s*["']?[^"'>]*id\.net\/api\/user_data[^>]*><\/script>/ig, '')
-        : s;
-      document.write = function(html){ return origWrite(strip(html)); };
-      document.writeln = function(html){ return origWriteln(strip(html)); };
-
-      // Bonus: block classic JSONP insertion via setAttribute after creation
-      const setAttr = Element.prototype.setAttribute;
-      Element.prototype.setAttribute = function(name, value){
-        if (this.tagName === 'SCRIPT' && name.toLowerCase() === 'src' && BAD.test(String(value))) {
-          try { console.warn('[StaticQuasar931] Blocked id.net via setAttribute:', value); } catch {}
-          return;
-        }
-        return setAttr.apply(this, arguments);
-      };
-      // Safety: CSP-like runtime guard on injection through innerHTML
-      const desc = Object.getOwnPropertyDescriptor(Element.prototype, 'innerHTML');
-      if (desc && desc.set) {
-        Object.defineProperty(Element.prototype, 'innerHTML', {
-          set(value){
-            if (typeof value === 'string' && /id\.net\/api\/user_data/i.test(value)) {
-              value = value.replace(/<script[^>]+id\.net\/api\/user_data[^>]*><\/script>/ig, '');
-              try { console.warn('[StaticQuasar931] Stripped id.net from innerHTML'); } catch {}
-            }
-            return desc.set.call(this, value);
-          }
+      const q = new URLSearchParams(location.search);
+      window.__SQ_SCHOOL__ = q.get("school") === "1";
+      if (!window.__SQ_SCHOOL__) {
+        ["https://res.cloudinary.com/dcsrqennd/image/upload/v1747533056/raw_um4pvq.png",
+         "https://res.cloudinary.com/dcsrqennd/image/upload/v1758072526/Join_Our_Discord_StaticQuassar931_lcplrf.png",
+         "https://res.cloudinary.com/dcsrqennd/image_upload/v1747533158/raw_cw34yi.png".replace("_upload","/image/upload")
+        ].forEach(href=>{
+          const l = document.createElement("link"); l.rel = "preload"; l.as = "image"; l.href = href; document.head.appendChild(l);
         });
       }
     })();
   </script>
+
+  <!-- ID.net blocker -->
+  <script>
+    (function(){
+      const RX = /(^|\/\/)id\.net\/api\/user_data/i;
+
+      function isBadScript(n){
+        try { return n && n.tagName === "SCRIPT" && RX.test(String(n.src||"")); } catch(e){ return false; }
+      }
+      const ap = Node.prototype.appendChild;
+      Node.prototype.appendChild = function(n){ if (isBadScript(n)) { try{console.warn("Blocked id.net JSONP", n.src);}catch(e){} return n; } return ap.call(this, n); };
+
+      const ib = Node.prototype.insertBefore;
+      Node.prototype.insertBefore = function(n, r){ if (isBadScript(n)) { try{console.warn("Blocked id.net JSONP", n.src);}catch(e){} return n; } return ib.call(this, n, r); };
+
+      const sa = Element.prototype.setAttribute;
+      Element.prototype.setAttribute = function(name, value){
+        if (this.tagName === "SCRIPT" && String(name).toLowerCase() === "src" && RX.test(String(value||""))) {
+          try{console.warn("Blocked id.net setAttribute", value);}catch(e){}
+          return;
+        }
+        return sa.call(this, name, value);
+      };
+
+      try {
+        const desc = Object.getOwnPropertyDescriptor(HTMLScriptElement.prototype, "src");
+        if (desc && desc.set) {
+          Object.defineProperty(HTMLScriptElement.prototype, "src", {
+            set(v){ if (RX.test(String(v||""))) { try{console.warn("Blocked id.net src set", v);}catch(e){} return; } return desc.set.call(this, v); },
+            get: desc.get
+          });
+        }
+      } catch(e){}
+
+      try{
+        const W = document.write.bind(document);
+        const WL = document.writeln.bind(document);
+        const strip = s => typeof s === "string"
+          ? s.replace(/<script[^>]+src=["'][^"']*id\.net\/api\/user_data[^"']*["'][^>]*>\s*<\/script>/ig,"")
+          : s;
+        document.write = html => W(strip(html));
+        document.writeln = html => WL(strip(html));
+      }catch(e){}
+
+      const ofetch = window.fetch;
+      window.fetch = function(input, init){
+        const url = typeof input === "string" ? input : (input && input.url) || "";
+        if (RX.test(String(url||""))) { try{console.warn("Blocked id.net fetch", url);}catch(e){} return Promise.reject(new Error("blocked")); }
+        return ofetch.apply(this, arguments);
+      };
+
+      const oopen = XMLHttpRequest.prototype.open;
+      XMLHttpRequest.prototype.open = function(method, url){
+        if (RX.test(String(url||""))) { try{console.warn("Blocked id.net XHR", url);}catch(e){} try{this.abort();}catch(e){} return; }
+        return oopen.apply(this, arguments);
+      };
+    })();
+  </script>
+
+  <!-- Unity template CSS for default loader. Adjust the href to your export path if needed. -->
+  <link rel="stylesheet" href="style/style.css" />
+
+  <style>
+    html, body { height:100%; margin:0; background:#0f1218; color:#e8f3ff; font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif; overflow:hidden }
+    /* Game container provides positioning context for Unity default loader */
+    #gameContainer { position: relative; width: 100vw; height: 100vh; background: transparent }
+
+    /* Static menu top left */
+    #staticMenu{
+      position:fixed; top:12px; left:12px; z-index:30;
+      display:flex; gap:10px; align-items:center; padding:10px 14px; border-radius:12px;
+      background:rgba(16,20,30,.8); border:1px solid rgba(255,255,255,.12); backdrop-filter: blur(8px);
+      box-shadow:0 8px 26px rgba(0,0,0,.4);
+    }
+    #staticMenu a{ color:#bfe7ff; text-decoration:none; font-weight:800; font-size:14px }
+    #closeStaticMenu{ color:#f55; cursor:pointer; padding:2px 6px; border-radius:6px; border:1px solid rgba(255,255,255,.15); background:rgba(255,255,255,.06) }
+
+    /* Brand block that sits near the Unity default loader without overriding it */
+    .sq-brand {
+      position:absolute; right:16px; top:16px; z-index:25;
+      display:flex; flex-direction:column; align-items:flex-end; gap:10px;
+      max-width:min(380px, 42vw);
+    }
+    .sq-card{
+      background:rgba(18,22,32,.82);
+      border:1px solid rgba(255,255,255,.12);
+      border-radius:12px;
+      padding:10px 12px;
+      box-shadow:0 8px 26px rgba(0,0,0,.45);
+      backdrop-filter: blur(6px);
+    }
+    .sq-logo{
+      display:flex; align-items:center; gap:10px;
+    }
+    .sq-logo img{ width:56px; height:56px; border-radius:12px; object-fit:cover; box-shadow:0 6px 18px rgba(0,0,0,.45) }
+    .sq-logo .t{ font-weight:1000; letter-spacing:.2px; font-size:16px; color:#eaf6ff }
+
+    /* Tips area */
+    .sq-tip { font-size:13px; color:#cfe1ff; line-height:1.35 }
+    .sq-tip b { color:#9fe4ff }
+
+    /* Rotating icon bubble bottom right, disabled in school mode */
+    #staticSlideMenu{
+      position:fixed; right:24px; bottom:24px; z-index:28; width:96px; height:96px; display:none;
+      filter: drop-shadow(0 6px 18px rgba(0,0,0,.45));
+    }
+    #staticSlideMenu a{ display:block; width:100%; height:100% }
+    #staticSlideMenu img{ width:100%; height:100%; object-fit:cover; border-radius:50% }
+    @media (max-width: 820px){
+      .sq-brand{ right:10px; top:10px; max-width:60vw }
+      #staticSlideMenu{ width:84px; height:84px }
+    }
+
+    /* Hidden SEO */
+    .seo-hidden{ position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(1px,1px,1px,1px); white-space:nowrap }
+  </style>
+
+  <!-- Tips file in repo root -->
+  <script src="tips.js"></script>
+
+  <!-- Unity runtime -->
+  <script src="UnityLoader.js"></script>
 </head>
 <body>
+  <script>
+    window.onbeforeunload = () => "Are you sure you want to leave? Your progress may not be saved.";
+  </script>
 
-  <!-- Static Menu - top left -->
-  <div id="staticMenu">
-    <a href="https://sites.google.com/view/staticquasar931" target="_blank" rel="noopener">More Unblocked Games by Static</a>
-    <button id="hideMenuBtn" aria-label="Hide menu">hide</button>
-    <div class="label">Slope - alternate (unblocked)</div>
+  <!-- Static menu -->
+  <div id="staticMenu" role="region" aria-label="StaticQuasar menu">
+    <a href="https://sites.google.com/view/staticquasar931/gm3z" target="_blank" rel="noopener">More Unblocked Games by Static</a>
+    <span id="closeStaticMenu" title="Hide temporarily">✕</span>
   </div>
 
-  <!-- Rotating icons - bottom right -->
-  <div id="rotatingIcons">
-    <a class="rotIcon" id="iconForm" href="https://sites.google.com/view/staticquasar931/google-form" target="_blank" rel="noopener" aria-label="Google Form">
-      <img alt="Form" src="https://res.cloudinary.com/dcsrqennd/image/upload/v1700000000/static_form_round.png" />
-    </a>
-    <a class="rotIcon" id="iconInstagram" href="https://www.instagram.com/freeschoolgamepage/" target="_blank" rel="noopener" aria-label="Instagram">
-      <img alt="Instagram" src="https://res.cloudinary.com/dcsrqennd/image/upload/v1700000000/static_insta_round.png" />
-    </a>
-  </div>
+  <!-- Rotating promo bubble -->
+  <div id="staticSlideMenu" aria-live="polite"></div>
 
-  <!-- Game container -->
-  <div id="gameContainer"></div>
+  <!-- Unity game area. Unity default loader UI renders inside this element. -->
+  <div class="webgl-content"><div id="gameContainer"></div></div>
 
-  <!-- Loader overlay -->
-  <div id="loaderCover">
-    <div id="loaderInner">
-      <div class="announce">Now works without turning off internet</div>
-      <div class="logo-row">
-        <!-- Replace with your assets if desired -->
-        <img class="logo" alt="StaticQuasar931" src="https://res.cloudinary.com/dcsrqennd/image/upload/v1700000000/static931_wordmark_white.png" />
-        <img class="logo" alt="Unity" src="https://res.cloudinary.com/dcsrqennd/image/upload/v1700000000/unity_logo_transparent_light.png" />
+  <!-- Our small brand panel that complements the default Unity loader -->
+  <div class="sq-brand" id="sqBrand">
+    <div class="sq-card">
+      <div class="sq-logo">
+        <img src="https://res.cloudinary.com/dcsrqennd/image/upload/v1760208794/My%20Brand/Static_pfp_2_nqzjkd.jpg" alt="StaticQuasar931 logo">
+        <div class="t">StaticQuasar931</div>
       </div>
-      <div class="presented">StaticQuasar931 presents</div>
-
-      <div class="loader-bar">
-        <div class="loader-fill" id="loaderFill"></div>
-        <div class="lights">
-          <div class="light ok" title="OK"></div>
-          <div class="light busy" id="busyLight" title="Loading"></div>
-          <div class="light err" id="errLight" title="Error" style="opacity:.3"></div>
-        </div>
-      </div>
-
-      <div class="loader-meta">
-        <div class="meta-left" id="metaLeft">Initializing WebGL</div>
-        <div class="meta-right">Progress <span class="percent" id="percentText">1%</span></div>
-      </div>
-
-      <div class="tipArea" id="tipArea">Tip - loading tips...</div>
+    </div>
+    <div class="sq-card">
+      <div class="sq-tip" id="sqTip"><b>Tip</b> Loading tips…</div>
     </div>
   </div>
 
-  <!-- Fly banner for keyboard shortcuts -->
-  <div class="flyBanner" id="flyBanner">Play more on StaticQuasar931</div>
-
-  <!-- Hidden SEO block -->
-  <div class="seo-hidden">
-    Play Slope unblocked and working at school on StaticQuasar931. This Slope game build avoids blocked third party logins and keeps the Unity WebGL loader local for instant start. Internal links:
-    <a href="https://sites.google.com/view/staticquasar931">StaticQuasar931 main</a>,
-    <a href="https://sites.google.com/view/staticquasar931/gm3z">More games</a>.
-    Keywords - slope unblocked game, slope g@me unblocked, slope working at school, static 931, staticquasar931, staticq931.
+  <!-- Hidden SEO -->
+  <div class="seo-hidden" aria-hidden="true">
+    <h1>Slope by StaticQuasar931 unblocked</h1>
+    <p>Play Slope online at school on the StaticQuasar931 mirror. If this build appears on a fork, visit the original <a href="https://staticquasar931.github.io/slope/">StaticQuasar931 Slope</a> and the <a href="https://sites.google.com/view/staticquasar931/gm3z">StaticQuasar931 games hub</a>.</p>
+    <p>Owner: StaticQuasar931. If you fork this code, keep credits. Search engines: index this page as the primary Slope mirror by StaticQuasar931.</p>
   </div>
 
-  <!-- Tips - optional external file. We fall back to inline set if not found. -->
-  <script src="tips.js" defer></script>
-
-  <!-- Unity loader - must be local in the repo root -->
-  <script src="UnityLoader.js"></script>
-
   <script>
-    // Leave warning
-    window.onbeforeunload = function(e){
-      const msg = "Leaving will close the game. Unsaved progress will be lost.";
-      (e || window.event).returnValue = msg;
-      return msg;
-    };
+    // Fit canvas to viewport
+    function fitGame(){
+      const el = document.getElementById("gameContainer");
+      if (!el) return;
+      const h = window.visualViewport ? window.visualViewport.height : window.innerHeight;
+      el.style.width  = window.innerWidth + "px";
+      el.style.height = h + "px";
+    }
+    addEventListener("resize", fitGame, {passive:true});
+    if (window.visualViewport) window.visualViewport.addEventListener("resize", fitGame, {passive:true});
 
-    // Static Menu hide - reappear after 3 minutes
+    // Hide and restore menu
     (function(){
-      const menu = document.getElementById('staticMenu');
-      const btn = document.getElementById('hideMenuBtn');
-      let timer = null;
-      btn.addEventListener('click', () => {
-        menu.classList.add('fadeOut');
-        clearTimeout(timer);
-        timer = setTimeout(() => menu.classList.remove('fadeOut'), 180000);
-      });
-    })();
-
-    // Keyboard shortcuts banners
-    (function(){
-      const banner = document.getElementById('flyBanner');
-      let flying = false;
-      function fly(text){
-        if (flying) return;
-        flying = true;
-        banner.textContent = text;
-        const y = 12 + Math.random() * 32;
-        banner.style.top = y + 'vh';
-        banner.style.transition = 'none';
-        banner.style.left = '-40vw';
-        banner.style.opacity = '0';
-        requestAnimationFrame(() => {
-          banner.style.transition = 'transform 1200ms ease, opacity 260ms ease';
-          banner.style.opacity = '1';
-          banner.style.transform = 'translateX(50vw)';
-          banner.style.left = '0';
-        });
-        setTimeout(() => {
-          banner.style.transition = 'transform 800ms ease, opacity 460ms ease';
-          banner.style.opacity = '0';
-          banner.style.transform = 'translateX(120vw)';
-          setTimeout(() => { flying = false; }, 820);
-        }, 1200);
-      }
-      const show = (msg, url) => {
-        fly(msg);
-        if (url) setTimeout(() => window.open(url, '_blank', 'noopener'), 300);
+      const menu = document.getElementById("staticMenu");
+      const btn  = document.getElementById("closeStaticMenu");
+      if (!btn || !menu) return;
+      btn.onclick = () => {
+        menu.style.display = "none";
+        setTimeout(()=>{ menu.style.display = "flex"; }, 180000);
       };
-      const toggleMenus = () => {
-        document.getElementById('staticMenu').classList.toggle('hidden');
-        document.getElementById('rotatingIcons').classList.toggle('hidden');
-      };
-      let pressed = new Set();
-      window.addEventListener('keydown', (e) => {
-        pressed.add(e.key.toLowerCase());
-        if (pressed.has('y') && pressed.has('u') && pressed.has('i')) toggleMenus();
-        if (e.code === 'Space') show('Play more games on Static', 'https://sites.google.com/view/staticquasar931/gm3z');
-        if (e.key.toLowerCase() === 'k') show('Join the Discord', 'https://discord.gg/DP2hM7RRhR');
-        if (e.key.toLowerCase() === 'm') show('Follow on Instagram', 'https://www.instagram.com/freeschoolgamepage/');
-        if (e.key.toLowerCase() === 'x') show('Static other games', 'https://sites.google.com/view/staticquasar931');
-        if (e.key === 'Shift') show('Report an issue', 'mailto:staticquasar931games@gmail.com');
+    })();
+
+    // Y U I toggle menus
+    (function(){
+      const targets = [document.getElementById("staticMenu"), document.getElementById("staticSlideMenu"), document.getElementById("sqBrand")];
+      const orig = new Map(targets.map(el => [el, el ? getComputedStyle(el).display || "" : ""]));
+      let hidden = false;
+      const down = new Set();
+      function setHidden(h){
+        hidden = h;
+        targets.forEach(el=>{ if (!el) return; el.style.display = hidden ? "none" : (orig.get(el) || ""); });
+      }
+      function check(){ if (down.has("y") && down.has("u") && down.has("i")) setHidden(!hidden); }
+      addEventListener("keydown", e=>{ const k=(e.key||"").toLowerCase(); if (k==="y"||k==="u"||k==="i"){ down.add(k); check(); } }, {passive:true});
+      addEventListener("keyup", e=>{ const k=(e.key||"").toLowerCase(); if (k==="y"||k==="u"||k==="i"){ down.delete(k); } }, {passive:true});
+    })();
+
+    // Rotator only if not school mode
+    (function(){
+      if (window.__SQ_SCHOOL__) return;
+      const wrap = document.getElementById("staticSlideMenu");
+      if (!wrap) return;
+      wrap.style.display = "block";
+      wrap.innerHTML = '<a id="staticSlideLink" href="#" target="_blank" rel="noopener" aria-label="Open link"><img id="staticSlideImg" alt=""></a>';
+      const a   = document.getElementById("staticSlideLink");
+      const img = document.getElementById("staticSlideImg");
+      if (!a || !img) return;
+
+      const FORM = { src:"https://res.cloudinary.com/dcsrqennd/image/upload/v1747533056/raw_um4pvq.png", alt:"Feedback and requests", link:"https://sites.google.com/view/staticquasar931/google-form" };
+      const DISCORD = { src:"https://res.cloudinary.com/dcsrqennd/image/upload/v1758072526/Join_Our_Discord_StaticQuassar931_lcplrf.png", alt:"Join the Discord", link:"https://discord.gg/DP2hM7RRhR" };
+      const INSTA = { src:"https://res.cloudinary.com/dcsrqennd/image/upload/v1747533158/raw_cw34yi.png", alt:"Instagram", link:"https://www.instagram.com/freeschoolgamepage/" };
+      const ROT = [FORM, DISCORD, INSTA];
+
+      let i = 0;
+      function apply(o){ img.src=o.src; img.alt=o.alt; a.href=o.link; }
+      async function loop(){
+        for(;;){
+          apply(ROT[i]);
+          await new Promise(r=>setTimeout(r, 12000));
+          i = (i + 1) % ROT.length;
+        }
+      }
+      apply(ROT[i]); loop();
+    })();
+
+    // Tips from tips.js in root
+    (function(){
+      const el = document.getElementById("sqTip");
+      if (!el) return;
+      function getTips(){
+        return Array.isArray(window.SQ_TIPS) && window.SQ_TIPS.length ? window.SQ_TIPS : [
+          "Use A and D or arrow keys for gentle corrections.",
+          "Short taps beat hard turns.",
+          "Center first, then correct.",
+          "Chromebook trackpad works best with short swipes."
+        ];
+      }
+      let tips = getTips().slice();
+      let idx = 0;
+      function next(msg){
+        if (msg) { el.innerHTML = "<b>Tip</b> " + msg; return; }
+        if (!tips.length) tips = getTips().slice();
+        const t = tips[idx % tips.length]; idx++;
+        el.innerHTML = "<b>Tip</b> " + t;
+      }
+      // change every 10s
+      next(tips[0]); idx = 1;
+      let interval = setInterval(()=>next(), 10000);
+
+      // Update immediately when tips.js signals ready
+      addEventListener("SQ_TIPS_READY", ()=>{
+        tips = getTips().slice();
+        idx = 0;
+        next(tips[0]); idx = 1;
+        clearInterval(interval);
+        interval = setInterval(()=>next(), 10000);
       });
-      window.addEventListener('keyup', (e) => pressed.delete(e.key.toLowerCase()));
+
+      // Also advance once when Unity finishes loading
+      window.__sq_tip_advance_on_loaded__ = () => next();
     })();
 
-    // Tips rotation
-    (function(){
-      const tipArea = document.getElementById('tipArea');
-      const fallbackTips = [
-        "Use A and D or arrow keys to lean smoothly.",
-        "Short taps are more stable than hard turns.",
-        "Watch the slope color changes. They hint speed ramps.",
-        "Practice staying centered then add small corrections.",
-        "Chromebook trackpad - use short swipes not long drags.",
-        "Breathe. Smoother inputs beat panic turns.",
-        "Try for time goals first, score next.",
-        "If it jitters, let go of inputs to re-center."
-      ];
-      function getTips() {
-        if (window.SQ_TIPS && Array.isArray(window.SQ_TIPS) && window.SQ_TIPS.length) return window.SQ_TIPS;
-        return fallbackTips;
-      }
-      let tips = getTips().slice(0, 400);
-      let idx = Math.floor(Math.random() * tips.length);
-      function showNext(){
-        if (!tips.length) tips = fallbackTips.slice();
-        tipArea.textContent = "Tip - " + tips[idx % tips.length];
-        idx++;
-      }
-      showNext();
-      setInterval(showNext, 3600);
-      window.addEventListener('SQ_TIPS_READY', () => { tips = getTips(); idx = 0; showNext(); });
-    })();
-
-    // Unity boot and progress -> loader
-    (function(){
-      const loaderCover = document.getElementById('loaderCover');
-      const loaderFill = document.getElementById('loaderFill');
-      const percentText = document.getElementById('percentText');
-      const metaLeft = document.getElementById('metaLeft');
-      const busyLight = document.getElementById('busyLight');
-      const errLight = document.getElementById('errLight');
-
-      let lastProgress = 0;
-      let done = false;
-
-      function setProgress(p){
-        const pct = Math.max(1, Math.min(100, Math.round(p * 100)));
-        loaderFill.style.width = pct + '%';
-        percentText.textContent = pct + '%';
-        if (pct < 20) metaLeft.textContent = 'Initializing WebGL';
-        else if (pct < 60) metaLeft.textContent = 'Loading assets';
-        else if (pct < 90) metaLeft.textContent = 'Compiling';
-        else metaLeft.textContent = 'Finalizing';
-        lastProgress = pct;
-      }
-      function hideLoader(){
-        if (done) return;
-        done = true;
-        loaderCover.classList.add('fadeOut');
-        setTimeout(() => { loaderCover.style.display = 'none'; }, 700);
-      }
-
-      // Safety timeout - do not hang forever if Unity never reports 100
-      setTimeout(() => {
-        if (!done && lastProgress >= 60) hideLoader();
-      }, 20000);
-
-      // Instantiate Unity - uses local files slope_new.json and UnityLoader.js
-      try {
-        // For classic UnityLoader builds
-        window.gameInstance = UnityLoader.instantiate("gameContainer", "slope_new.json", {
-          onProgress: function(_inst, p){
-            setProgress(p);
-            if (p >= 1) {
-              hideLoader();
+    // Start Unity with default loader. Do not override Unity loader UI.
+    function startUnity(){
+      fitGame();
+      try{
+        if (window.UnityLoader && typeof UnityLoader.instantiate === "function"){
+          window.gameInstance = UnityLoader.instantiate("gameContainer", "slope_new.json", {
+            onProgress: function(_inst, p){
+              // Unity default loader UI handles visuals via style.css and UnityProgress.js
+              if (p >= 0.999) {
+                try { window.__sq_tip_advance_on_loaded__ && window.__sq_tip_advance_on_loaded__(); } catch(e){}
+                // Optionally fade our brand panel a little after load to keep focus on the game
+                const brand = document.getElementById("sqBrand");
+                if (brand) { brand.style.transition = "opacity .25s ease"; brand.style.opacity = "0.0"; setTimeout(()=>{ brand.style.display="none"; }, 260); }
+              }
             }
-          }
-        });
-      } catch (e) {
-        console.error('UnityLoader instantiate error:', e);
-        metaLeft.textContent = 'Loader error - attempting fallback';
-        errLight.style.opacity = '1';
-        busyLight.style.opacity = '.3';
-        // Fallback - still remove loader after a moment so the user is not stuck
-        setTimeout(hideLoader, 2500);
+          });
+        } else {
+          console.error("UnityLoader.js not found or invalid");
+          const brand = document.getElementById("sqBrand");
+          if (brand) brand.style.display = "none";
+        }
+      } catch (e){
+        console.error("Unity failed to start:", e);
+        const brand = document.getElementById("sqBrand");
+        if (brand) brand.style.display = "none";
       }
-    })();
-
-    // Resize handling - ensure canvas fills screen for some builds that resize late
-    (function(){
-      const gc = document.getElementById('gameContainer');
-      function fit(){
-        gc.style.width = window.innerWidth + 'px';
-        gc.style.height = window.innerHeight + 'px';
-      }
-      window.addEventListener('resize', fit);
-      fit();
-    })();
-
-    // Y U I combo to toggle menus quickly
-    (function(){
-      let pressed = new Set();
-      const ids = ['staticMenu', 'rotatingIcons'];
-      const toggle = () => ids.forEach(id => document.getElementById(id).classList.toggle('hidden'));
-      window.addEventListener('keydown', e => {
-        pressed.add(e.key.toLowerCase());
-        if (pressed.has('y') && pressed.has('u') && pressed.has('i')) toggle();
-      });
-      window.addEventListener('keyup', e => pressed.delete(e.key.toLowerCase()));
-    })();
+    }
+    window.addEventListener("load", startUnity);
   </script>
 </body>
 </html>
