@@ -10,7 +10,7 @@
 
   <title>Slope - Free Unblocked Game | StaticQuasar931</title>
 
-  <!-- Icons and social -->
+  <!-- Favicon / Social image -->
   <link rel="icon" href="https://res.cloudinary.com/dlq5fztla/image/upload/v1760301648/slope_Staticquasar931_stable_agqxto.png" />
   <meta property="og:image" content="https://res.cloudinary.com/dlq5fztla/image/upload/v1760301648/slope_Staticquasar931_stable_agqxto.png" />
   <meta name="twitter:image" content="https://res.cloudinary.com/dlq5fztla/image/upload/v1760301648/slope_Staticquasar931_stable_agqxto.png" />
@@ -29,16 +29,28 @@
   <meta property="og:url" content="https://staticquasar931.github.io/slope/" />
   <meta name="twitter:card" content="summary_large_image" />
 
-  <!-- Unity default loader CSS -->
+  <!-- Unity default loader CSS and loader script -->
   <link rel="stylesheet" href="style/style.css" />
+  <script src="UnityLoader.js"></script>
+  <script src="UnityProgress.js"></script>
+
+  <!-- Tips data -->
+  <script src="tips.js" defer></script>
 
   <style>
-    html,body{margin:0;padding:0;height:100%;overflow:hidden;background:#131419;color:#e8f3ff;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif}
-    #gameContainer{position:relative;width:100vw;height:100vh;background:transparent}
+    html,body{
+      margin:0; padding:0; height:100%; overflow:hidden;
+      background:#131419; color:#e8f3ff;
+      font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+    }
+    #gameContainer{
+      position:relative;
+      width:100vw; height:100vh; background:transparent;
+    }
 
-    /* Branding and tips */
+    /* Branding and tips during load - do not cover Unity loader area */
     #sqBrand{
-      position:fixed; top:16px; right:16px; z-index:20;
+      position:fixed; top:14px; right:14px; z-index:20;
       background:rgba(10,12,18,.6); border:1px solid rgba(255,255,255,.15);
       padding:10px 12px; border-radius:10px; font-weight:900;
       backdrop-filter:blur(8px);
@@ -51,122 +63,145 @@
       border:1px solid rgba(255,255,255,.12);
     }
     .fade-out{animation:fadeOut .25s ease forwards}
-    @keyframes fadeOut{to{opacity:0;visibility:hidden}}
+    @keyframes fadeOut{to{opacity:0; visibility:hidden}}
+
+    /* Hidden SEO block */
+    .seo-hidden{ position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(1px,1px,1px,1px); white-space:nowrap; }
   </style>
 
-  <!-- Unity runtime -->
-  <script src="UnityLoader.js"></script>
-
-  <!-- tips.js must be in repo root -->
-  <script src="tips.js" defer></script>
-
-  <!-- Hard block id.net before anything else touches the DOM/network -->
+  <!-- Block any id.net attempts so school networks never stall -->
   <script>
     (function(){
       const RX=/id\.net\/api\/user_data/i;
 
-      // block script tags to id.net
+      // Block <script src="...id.net...">
       const ap=Node.prototype.appendChild, ib=Node.prototype.insertBefore;
-      function blk(n){
+      function blockNode(n){
         try{
           if(n && n.tagName==='SCRIPT' && RX.test(String(n.src||''))){
-            console.warn('Blocked id.net JSONP', n.src); n.remove(); return true;
+            console.warn('Blocked id.net JSONP:', n.src);
+            n.remove(); return true;
           }
         }catch(e){}
         return false;
       }
-      Node.prototype.appendChild=function(n){ if(blk(n)) return n; return ap.call(this,n); };
-      Node.prototype.insertBefore=function(n,r){ if(blk(n)) return n; return ib.call(this,n,r); };
+      Node.prototype.appendChild=function(n){ if(blockNode(n)) return n; return ap.call(this,n); };
+      Node.prototype.insertBefore=function(n,r){ if(blockNode(n)) return n; return ib.call(this,n,r); };
 
-      // scrub document.write
+      // Scrub document.write of any id.net script tags
       try{
         const W=document.write.bind(document), WL=document.writeln.bind(document);
-        const strip=s=>typeof s==='string'?s.replace(/<script[^>]+src=["'][^"']*id\.net\/api\/user_data[^"']*["'][^>]*>\s*<\/script>/ig,''):s;
-        document.write=html=>W(strip(html));
-        document.writeln=html=>WL(strip(html));
+        const strip=s=>typeof s==='string'
+          ? s.replace(/<script[^>]+src=["'][^"']*id\.net\/api\/user_data[^"']*["'][^>]*>\s*<\/script>/ig,'')
+          : s;
+        document.write = html => W(strip(html));
+        document.writeln = html => WL(strip(html));
       }catch(e){}
 
-      // fetch/XHR
-      const ofetch=window.fetch;
-      window.fetch=function(input,init){
-        const url=typeof input==='string'?input:(input&&input.url)||'';
-        if(RX.test(String(url||''))){ console.warn('Blocked id.net fetch', url); return Promise.resolve(new Response('{}',{status:200,headers:{'Content-Type':'application/json'}})); }
-        return ofetch.apply(this,arguments);
+      // fetch and XHR stubs
+      const ofetch = window.fetch;
+      window.fetch = function(input, init){
+        const url = typeof input==='string' ? input : (input && input.url) || '';
+        if (RX.test(String(url||''))){
+          console.warn('Blocked id.net fetch', url);
+          return Promise.resolve(new Response("{}", {status:200, headers:{'Content-Type':'application/json'}}));
+        }
+        return ofetch.apply(this, arguments);
       };
       const oopen=XMLHttpRequest.prototype.open, osend=XMLHttpRequest.prototype.send;
-      XMLHttpRequest.prototype.open=function(m,u){ this.__sq_blk = /id\.net/i.test(String(u||'')); return oopen.apply(this,arguments); };
+      XMLHttpRequest.prototype.open=function(m,u){ this.__sq_blk=/id\.net/i.test(String(u||'')); return oopen.apply(this,arguments); };
       XMLHttpRequest.prototype.send=function(){
-        if(this.__sq_blk){ this.readyState=4; this.status=200; this.responseText='{}'; this.onload&&this.onload(); this.onreadystatechange&&this.onreadystatechange(); return; }
+        if(this.__sq_blk){
+          this.readyState=4; this.status=200; this.responseText='{}';
+          this.onload && this.onload(); this.onreadystatechange && this.onreadystatechange(); return;
+        }
         return osend.apply(this,arguments);
       };
     })();
   </script>
 </head>
 <body>
-  <!-- Branding and tips visible during load, hidden when runtime is ready -->
+  <!-- Branding and tips shown during load, hidden when runtime is ready -->
   <div id="sqBrand">
     StaticQuasar931 Presents
-    <small>Loading Slope…</small>
+    <small>Loading Slope...</small>
   </div>
-  <div id="sqTip">Loading tip…</div>
+  <div id="sqTip">Loading tip...</div>
 
-  <!-- Unity container -->
+  <!-- Unity container - default Unity loader renders inside here -->
   <div id="gameContainer"></div>
+
+  <!-- Hidden SEO -->
+  <div class="seo-hidden" aria-hidden="true">
+    <h1>Slope by StaticQuasar931 - unblocked</h1>
+    <p>Play Slope online at school on the StaticQuasar931 mirror. Chromebook and mobile friendly.</p>
+  </div>
 
   <script>
     // Leave warning
     window.onbeforeunload = () => "Are you sure you want to leave? Your progress may not be saved.";
 
-    // Fit canvas
-    function fit(){ const c=document.getElementById('gameContainer'); if(!c) return; c.style.width=innerWidth+'px'; c.style.height=(visualViewport?visualViewport.height:innerHeight)+'px'; }
-    addEventListener('resize', fit, {passive:true});
-    visualViewport && visualViewport.addEventListener('resize', fit, {passive:true});
+    // Fit game to viewport
+    function fit(){
+      const el = document.getElementById("gameContainer");
+      if (!el) return;
+      const h = window.visualViewport ? window.visualViewport.height : window.innerHeight;
+      el.style.width  = window.innerWidth + "px";
+      el.style.height = h + "px";
+    }
+    addEventListener("resize", fit, {passive:true});
+    if (window.visualViewport) window.visualViewport.addEventListener("resize", fit, {passive:true});
 
     // Tips rotation every 10s
     (function(){
-      const el=document.getElementById('sqTip'); if(!el) return;
-      const list = Array.isArray(window.SQ_TIPS)&&window.SQ_TIPS.length ? window.SQ_TIPS.slice() : ["Use A and D to steer.","Short taps beat hard turns.","Center first, then correct."];
-      for(let i=list.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[list[i],list[j]]=[list[j],list[i]];}
-      let k=0; const show=()=>{ el.textContent=list[k%list.length]; k++; };
-      show(); const id=setInterval(show, 10000);
-      window.__sq_hideTips = ()=>{ clearInterval(id); el.classList.add('fade-out'); };
+      const tipEl = document.getElementById("sqTip");
+      if (!tipEl) return;
+      const list = Array.isArray(window.SQ_TIPS) && window.SQ_TIPS.length
+        ? window.SQ_TIPS.slice()
+        : ["Use A and D to steer.", "Short taps beat hard turns.", "Center first, then correct."];
+
+      // Shuffle
+      for (let i=list.length-1; i>0; i--){ const j=Math.floor(Math.random()*(i+1)); [list[i],list[j]]=[list[j],list[i]]; }
+
+      let idx = 0;
+      function show(){ tipEl.textContent = list[idx % list.length]; idx++; }
+      show();
+      const id = setInterval(show, 10000);
+      window.__sq_hideTips = () => { clearInterval(id); tipEl.classList.add("fade-out"); };
     })();
 
-    // Start Unity with the real UnityProgress once the scripts are there
+    // Launch Unity using the default loader UI
     (function(){
-      let gi=null;
+      let gi = null;
 
       function runtimeReady(){
-        document.getElementById('sqBrand')?.classList.add('fade-out');
+        const b = document.getElementById("sqBrand");
+        if (b) b.classList.add("fade-out");
         window.__sq_hideTips && window.__sq_hideTips();
       }
 
       function start(){
         fit();
-        // Wait until UnityProgress is defined (handles the case where the CDN fallback just loaded)
-        function boot(){
-          if (typeof UnityProgress !== 'function') { setTimeout(boot, 30); return; }
-          gi = UnityLoader.instantiate('gameContainer', 'slope_new.json', {
-            onProgress: UnityProgress,
-            Module: {
-              onRuntimeInitialized: runtimeReady
-            }
-          });
-          // watchdog in case onRuntimeInitialized never fires
-          let tries=0;
-          const t=setInterval(()=>{
-            const m=gi && gi.Module;
-            if((m && (m.calledRun || m.runtimeInitialized)) || tries>120){
-              clearInterval(t); runtimeReady();
-            }
-            tries++;
-          },500);
-        }
-        boot();
+        // Use UnityProgress directly so we get the stock loader
+        gi = UnityLoader.instantiate("gameContainer", "slope_new.json", {
+          onProgress: UnityProgress,
+          Module: { onRuntimeInitialized: runtimeReady }
+        });
+
+        // Watchdog - complete if runtime flags flip or if it takes too long
+        let tries = 0;
+        const t = setInterval(()=>{
+          const m = gi && gi.Module;
+          if ((m && (m.calledRun || m.runtimeInitialized)) || tries > 120){
+            clearInterval(t);
+            runtimeReady();
+          }
+          tries++;
+        }, 500);
       }
 
-      if (document.readyState === 'complete') start();
-      else window.addEventListener('load', start);
+      if (document.readyState === "complete") start();
+      else window.addEventListener("load", start);
     })();
   </script>
 </body>
