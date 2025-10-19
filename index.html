@@ -5,123 +5,104 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Slope - Free Unblocked Game | StaticQuasar931</title>
 
-  <!-- Favicon -->
   <link rel="icon" href="https://res.cloudinary.com/dlq5fztla/image/upload/v1760301648/slope_Staticquasar931_stable_agqxto.png" />
 
-  <!-- SEO -->
-  <meta name="description" content="Play Slope free and unblocked on StaticQuasar931. Official stable version now working at more schools than ever. Chromebook and mobile friendly." />
-  <meta name="keywords" content="Slope, Slope unblocked, play Slope online, Slope 3D, Slope stable, StaticQuasar931, unblocked games for school, Static 931" />
+  <meta name="description" content="Play Slope free and unblocked on StaticQuasar931. Official stable version that works at school. Chromebook and mobile friendly." />
+  <meta name="keywords" content="Slope, Slope unblocked, play Slope online, Slope game, unblocked games for school, StaticQuasar931, Static 931" />
   <meta name="theme-color" content="#131419" />
   <meta property="og:title" content="Play Slope - Official Stable Version | StaticQuasar931" />
-  <meta property="og:description" content="Slope: fast, smooth, unblocked. Play free at school with internet enabled. Official StaticQuasar931 mirror." />
+  <meta property="og:description" content="Slope - fast, smooth, unblocked. Works with internet enabled on more school networks." />
   <meta property="og:image" content="https://res.cloudinary.com/dlq5fztla/image/upload/v1760301648/slope_Staticquasar931_stable_agqxto.png" />
   <meta property="og:type" content="website" />
+  <link rel="canonical" href="https://staticquasar931.github.io/slope/" />
 
-  <!-- Unity default loader -->
   <link rel="stylesheet" href="style/style.css" />
   <script src="UnityLoader.js"></script>
   <script src="UnityProgress.js"></script>
   <script src="tips.js" defer></script>
 
   <style>
-    html,body {
-      margin:0; padding:0; height:100%; overflow:hidden;
-      background:radial-gradient(circle at center, #17191d, #0c0d11);
-      color:#f5f8ff;
-      font-family:"Segoe UI",Roboto,Arial,sans-serif;
-    }
+    html,body{margin:0;padding:0;height:100%;overflow:hidden;background:radial-gradient(circle at center,#17191d,#0c0d11);color:#f5f8ff;font-family:"Segoe UI",Roboto,Arial,sans-serif}
 
-    .webgl-content { position:fixed; inset:0; display:flex; align-items:center; justify-content:center; }
-    #gameContainer { width:100%; height:100%; background:transparent; position:relative; }
+    .webgl-content{position:fixed;inset:0;display:flex;align-items:center;justify-content:center}
+    #gameContainer{width:100%;height:100%;background:transparent;position:relative}
 
-    /* Branding - top center at 5px */
-    #sqBrand {
-      position:fixed; top:5px; left:50%; transform:translateX(-50%);
-      z-index:20; text-align:center;
-      padding:14px 18px; border-radius:14px;
-      background:linear-gradient(145deg, rgba(10,12,18,.7), rgba(10,12,18,.45));
-      border:1px solid rgba(255,255,255,.15);
-      box-shadow:0 16px 40px rgba(0,0,0,.45);
-      backdrop-filter:blur(10px);
-      max-width:min(820px, 96vw);
-      animation:brandPop .6s ease forwards;
-    }
-    @keyframes brandPop {
-      from {opacity:0; transform:translate(-50%,-4px) scale(.98);}
-      to {opacity:1; transform:translate(-50%,0) scale(1);}
-    }
-
-    #sqBrand img {
-      width:56px; height:56px; border-radius:12px; object-fit:cover;
-      box-shadow:0 8px 24px rgba(0,0,0,.45);
-      vertical-align:middle; margin-right:10px;
-      opacity:0; animation:logoIn .5s ease .05s forwards;
-    }
-    @keyframes logoIn { to {opacity:1;} }
-
-    #sqBrand .line {
-      display:block;
-      opacity:0;
-      transform:translateY(3px);
-      font-weight:900;
-      text-shadow:0 2px 10px rgba(0,0,0,.5);
-      letter-spacing:.25px;
-      animation:lineFade .5s ease forwards;
-    }
-    #sqBrand .line1 { font-size:18px; color:#6ce0ff; animation-delay:.15s; }
-    #sqBrand .line2 { font-size:22px; color:#ffffff; animation-delay:.25s; }
-    #sqBrand .line3 { font-size:14px; color:#cfe7ff; opacity:.95; animation-delay:.35s; }
-
-    @keyframes lineFade {
-      from {opacity:0; transform:translateY(3px);}
-      to   {opacity:1; transform:none;}
-    }
+    /* Top center branding */
+    #sqBrand{position:fixed;top:5px;left:50%;transform:translateX(-50%);z-index:20;text-align:center;padding:14px 18px;border-radius:14px;background:linear-gradient(145deg,rgba(10,12,18,.7),rgba(10,12,18,.45));border:1px solid rgba(255,255,255,.15);box-shadow:0 16px 40px rgba(0,0,0,.45);backdrop-filter:blur(10px);max-width:min(860px,96vw);animation:brandPop .6s ease forwards}
+    @keyframes brandPop{from{opacity:0;transform:translate(-50%,-4px) scale(.98)}to{opacity:1;transform:translate(-50%,0) scale(1)}}
+    #sqBrand img{width:56px;height:56px;border-radius:12px;object-fit:cover;box-shadow:0 8px 24px rgba(0,0,0,.45);vertical-align:middle;margin-right:10px;opacity:0;animation:logoIn .5s ease .05s forwards}
+    @keyframes logoIn{to{opacity:1}}
+    #sqBrand .line{display:block;opacity:0;transform:translateY(3px);font-weight:900;text-shadow:0 2px 10px rgba(0,0,0,.5);letter-spacing:.25px;animation:lineFade .5s ease forwards}
+    #sqBrand .line1{font-size:18px;color:#6ce0ff;animation-delay:.15s}
+    #sqBrand .line2{font-size:22px;color:#ffffff;animation-delay:.25s}
+    #sqBrand .line3{font-size:14px;color:#cfe7ff;opacity:.95;animation-delay:.35s}
+    @keyframes lineFade{from{opacity:0;transform:translateY(3px)}to{opacity:1;transform:none}}
 
     /* Tips - bottom left */
-    #sqTip {
-      position:fixed; left:14px; bottom:16px;
-      z-index:20; font-size:14px; color:#dfeaff;
-      padding:12px 14px;
-      background:rgba(15,18,28,.65);
-      border:1px solid rgba(255,255,255,.12);
-      border-radius:12px;
-      box-shadow:0 6px 25px rgba(0,0,0,.5);
-      max-width:min(560px, 80vw);
-      line-height:1.35;
-      opacity:0; animation:tipIn .6s ease .4s forwards;
-    }
-    @keyframes tipIn { to {opacity:1;} }
+    #sqTip{position:fixed;left:14px;bottom:16px;z-index:20;font-size:14px;color:#dfeaff;padding:12px 14px;background:rgba(15,18,28,.65);border:1px solid rgba(255,255,255,.12);border-radius:12px;box-shadow:0 6px 25px rgba(0,0,0,.5);max-width:min(560px,80vw);line-height:1.35;opacity:0;animation:tipIn .6s ease .4s forwards}
+    @keyframes tipIn{to{opacity:1}}
 
-    .fade-out { animation:fadeOut .25s ease forwards; }
-    @keyframes fadeOut { to {opacity:0; visibility:hidden;} }
+    /* Static menu */
+    #staticMenu{position:fixed;top:12px;left:12px;z-index:21;display:flex;gap:10px;align-items:center;padding:10px 14px;border-radius:12px;background:linear-gradient(135deg,rgba(20,20,28,.92),rgba(20,20,28,.6));border:1px solid rgba(94,225,255,.35);box-shadow:0 8px 28px rgba(0,0,0,.45);font-size:14px;backdrop-filter:blur(8px)}
+    #staticMenu a{color:#5ee1ff;text-decoration:none;font-weight:800}
+    #closeStaticMenu{color:#f55;cursor:pointer;padding:2px 6px;border-radius:6px;border:1px solid rgba(255,255,255,.15);background:rgba(255,255,255,.06);user-select:none}
 
-    .seo-hidden { position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(1px,1px,1px,1px); }
+    /* Rotating promo bubble */
+    #staticSlideMenu{position:fixed;bottom:24px;right:24px;z-index:21;width:100px;height:100px;pointer-events:none;opacity:0;transform:translateX(140px) scale(.96);filter:drop-shadow(0 6px 18px rgba(0,0,0,.45))}
+    #staticSlideMenu a{display:block;width:100%;height:100%}
+    #staticSlideMenu img{width:100%;height:100%;object-fit:cover;border-radius:50%}
+    .slide-in{animation:slideIn 1.1s ease forwards}.slide-out{animation:slideOut 1.0s ease forwards}
+    @keyframes slideIn{from{opacity:0;transform:translateX(140px) scale(.96)}to{opacity:1;transform:translateX(0) scale(1)}}
+    @keyframes slideOut{from{opacity:1;transform:translateX(0) scale(1)}to{opacity:0;transform:translateX(140px) scale(.96)}}
+    @media (max-width:768px){#staticSlideMenu{width:84px;height:84px}}
+
+    /* Key banners */
+    .fly{position:fixed;z-index:22;pointer-events:auto;padding:12px 16px;border-radius:12px;background:rgba(20,24,36,.92);border:1px solid rgba(94,225,255,.35);color:#bfe7ff;font-weight:800;text-decoration:none;box-shadow:0 8px 28px rgba(0,0,0,.45);top:14%;left:-40%;will-change:transform,opacity;animation:flyAcross 8s ease-in-out forwards}
+    @keyframes flyAcross{0%{left:-40%;opacity:0}10%{left:2%;opacity:1}50%{left:48%;opacity:1}95%{left:96%;opacity:1}100%{left:110%;opacity:0}}
+    .fly.t2{top:22%}.fly.t3{top:30%}.fly.t4{top:18%}.fly.t5{top:26%}
+
+    .fade-out{animation:fadeOut .25s ease forwards}
+    @keyframes fadeOut{to{opacity:0;visibility:hidden}}
+
+    .seo-hidden{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(1px,1px,1px,1px);white-space:nowrap}
   </style>
 
-  <!-- Block id.net for school networks -->
+  <script>
+    (function(){
+      const q = new URLSearchParams(location.search);
+      window.__SQ_SCHOOL__ = q.get("school") === "1";
+      if (!window.__SQ_SCHOOL__) {
+        ["https://res.cloudinary.com/dcsrqennd/image/upload/v1747533056/raw_um4pvq.png",
+         "https://res.cloudinary.com/dcsrqennd/image/upload/v1758072526/Join_Our_Discord_StaticQuassar931_lcplrf.png",
+         "https://res.cloudinary.com/dcsrqennd/image/upload/v1747533158/raw_cw34yi.png"
+        ].forEach(href=>{
+          const l = document.createElement("link"); l.rel = "preload"; l.as = "image"; l.href = href; document.head.appendChild(l);
+        });
+      }
+    })();
+  </script>
+
   <script>
     (function(){
       const RX=/id\.net\/api\/user_data/i;
       const ap=Node.prototype.appendChild, ib=Node.prototype.insertBefore;
-      function blockNode(n){
-        try{
-          if(n && n.tagName==='SCRIPT' && RX.test(String(n.src||''))){ n.remove(); return true; }
-        }catch(e){}
-        return false;
-      }
-      Node.prototype.appendChild=function(n){ if(blockNode(n)) return n; return ap.call(this,n); };
-      Node.prototype.insertBefore=function(n,r){ if(blockNode(n)) return n; return ib.call(this,n,r); };
+      function blk(n){try{if(n&&n.tagName==='SCRIPT'&&RX.test(String(n.src||''))){n.remove();return true}}catch(e){}return false}
+      Node.prototype.appendChild=function(n){if(blk(n))return n;return ap.call(this,n)};
+      Node.prototype.insertBefore=function(n,r){if(blk(n))return n;return ib.call(this,n,r)};
+      try{
+        const W=document.write.bind(document),WL=document.writeln.bind(document);
+        const strip=s=>typeof s==='string'?s.replace(/<script[^>]+src=["'][^"']*id\.net\/api\/user_data[^"']*["'][^>]*>\s*<\/script>/ig,''):s;
+        document.write=h=>W(strip(h));document.writeln=h=>WL(strip(h));
+      }catch(e){}
       const ofetch=window.fetch;
-      window.fetch=function(input){
-        const url=typeof input==='string'?input:(input&&input.url)||'';
-        if(RX.test(String(url||''))) return Promise.resolve(new Response("{}",{status:200}));
-        return ofetch.apply(this,arguments);
-      };
+      window.fetch=function(input){const url=typeof input==='string'?input:(input&&input.url)||'';if(RX.test(String(url||'')))return Promise.resolve(new Response("{}",{status:200,headers:{'Content-Type':'application/json'}}));return ofetch.apply(this,arguments)};
+      const oopen=XMLHttpRequest.prototype.open,osend=XMLHttpRequest.prototype.send;
+      XMLHttpRequest.prototype.open=function(m,u){this.__sqBlk=/id\.net/i.test(String(u||''));return oopen.apply(this,arguments)};
+      XMLHttpRequest.prototype.send=function(){if(this.__sqBlk){this.readyState=4;this.status=200;this.responseText='{}';this.onload&&this.onload();this.onreadystatechange&&this.onreadystatechange();return}return osend.apply(this,arguments)};
     })();
   </script>
 </head>
 <body>
-  <!-- Branding -->
   <div id="sqBrand">
     <img src="https://res.cloudinary.com/dcsrqennd/image/upload/v1760208794/My%20Brand/Static_pfp_2_nqzjkd.jpg" alt="StaticQuasar931 Logo" />
     <span class="line line1">StaticQuasar931 Unblocked Games Presents</span>
@@ -129,18 +110,23 @@
     <span class="line line3">Now working with internet enabled and at more schools than ever</span>
   </div>
 
-  <!-- Tips -->
   <div id="sqTip">Loading tip...</div>
 
-  <!-- Unity Game -->
+  <div id="staticMenu" role="region" aria-label="StaticQuasar menu">
+    <a href="https://sites.google.com/view/staticquasar931/gm3z" target="_blank" rel="noopener">More Unblocked Games by Static</a>
+    <span id="closeStaticMenu" title="Hide temporarily">✕</span>
+  </div>
+
+  <div id="staticSlideMenu" aria-live="polite" style="display:none"></div>
+
   <div class="webgl-content">
     <div id="gameContainer"></div>
   </div>
 
-  <!-- Hidden SEO -->
-  <div class="seo-hidden">
-    <h1>Slope - Unblocked Official Stable Version</h1>
-    <p>Play the official stable Slope game unblocked at school by StaticQuasar931. Smooth and fast.</p>
+  <div class="seo-hidden" aria-hidden="true">
+    <p>S-t-a-t-i-c-Q-u-a-s-a-r-9-3-1 S-l-o-p-e U-n-b-l-o-c-k-e-d O-f-f-i-c-i-a-l S-t-a-b-l-e V-e-r-s-i-o-n</p>
+    <p>P-l-a-y S-l-o-p-e o-n l-i-n-e a-t s-c-h-o-o-l - C-h-r-o-m-e-b-o-o-k a-n-d m-o-b-i-l-e f-r-i-e-n-d-l-y</p>
+    <p>S-t-a-t-i-c 9-3-1 g-a-m-e s h-u-b - h-t-t-p-s-:-/-/-s-i-t-e-s-.-g-o-o-g-l-e-.-c-o-m-/-v-i-e-w-/-s-t-a-t-i-c-q-u-a-s-a-r-9-3-1-/-g-m-3-z</p>
   </div>
 
   <script>
@@ -153,20 +139,96 @@
       c.style.height = innerHeight + "px";
     }
     addEventListener("resize", fit, { passive: true });
+    if (window.visualViewport) window.visualViewport.addEventListener("resize", fit, { passive: true });
 
-    // Tip rotation - every 10s
-    (function() {
+    (function(){
+      const menu = document.getElementById("staticMenu");
+      const btn  = document.getElementById("closeStaticMenu");
+      if (!btn || !menu) return;
+      btn.onclick = () => {
+        menu.style.display = "none";
+        setTimeout(()=>{ menu.style.display = "flex"; }, 180000);
+      };
+    })();
+
+    (function(){
+      if (window.__SQ_SCHOOL__) return;
+      const wrap = document.getElementById("staticSlideMenu");
+      if (!wrap) return;
+      wrap.style.display = "block";
+      wrap.innerHTML = '<a id="staticSlideLink" href="#" target="_blank" rel="noopener" aria-label="Open link"><img id="staticSlideImg" alt=""></a>';
+      const a   = document.getElementById("staticSlideLink");
+      const img = document.getElementById("staticSlideImg");
+      if (!a || !img) return;
+
+      const FORM    = { src:"https://res.cloudinary.com/dcsrqennd/image/upload/v1747533056/raw_um4pvq.png", alt:"Feedback and requests", link:"https://sites.google.com/view/staticquasar931/google-form", cls:"" };
+      const DISCORD = { src:"https://res.cloudinary.com/dcsrqennd/image/upload/v1758072526/Join_Our_Discord_StaticQuassar931_lcplrf.png", alt:"Join the Discord", link:"https://discord.gg/DP2hM7RRhR", cls:"discord" };
+      const INSTA   = { src:"https://res.cloudinary.com/dcsrqennd/image/upload/v1747533158/raw_cw34yi.png", alt:"Instagram", link:"https://www.instagram.com/freeschoolgamepage/", cls:"" };
+      const ROT = [FORM, DISCORD, INSTA];
+
+      const T_IN = 1100, T_SHOW = 4200, T_OUT = 900, T_GAP = 12000;
+      let i = 0;
+      function apply(o){ img.src=o.src; img.alt=o.alt; a.href=o.link; wrap.className=o.cls; }
+      async function loop(){
+        for(;;){
+          apply(ROT[i]);
+          wrap.style.pointerEvents = "auto";
+          wrap.classList.remove("slide-out");
+          wrap.classList.add("slide-in");
+          await new Promise(r => setTimeout(r, T_IN + T_SHOW));
+          wrap.classList.remove("slide-in");
+          wrap.classList.add("slide-out");
+          await new Promise(r => setTimeout(r, T_OUT));
+          wrap.style.pointerEvents = "none";
+          await new Promise(r => setTimeout(r, T_GAP));
+          i = (i + 1) % ROT.length;
+        }
+      }
+      apply(ROT[i]); loop();
+    })();
+
+    (function(){
+      const LINKS = {
+        space: { text:"Play games on StaticQuasar931", href:"https://sites.google.com/view/staticquasar931/gm3z", cls:"t2" },
+        shift: { text:"Report an issue", href:"https://sites.google.com/view/staticquasar931/google-form?utm_source=slope&utm_medium=key_shift", cls:"t3" },
+        k:     { text:"Join the Discord", href:"https://discord.gg/DP2hM7RRhR", cls:"t4" },
+        m:     { text:"Follow on Instagram", href:"https://www.instagram.com/freeschoolgamepage/", cls:"t5" },
+        x:     { text:"Static other games", href:"https://sites.google.com/view/staticquasar931/gm3z", cls:"" }
+      };
+      const lastShown = {};
+      const MIN_GAP_MS = 200;
+      let nextLane = 0;
+      const lanes = ["", " t2", " t3", " t4", " t5"];
+      function banner(text, href, laneCls){
+        const a = document.createElement("a");
+        a.className = "fly" + (laneCls || "");
+        a.href = href; a.target = "_blank"; a.rel = "noopener";
+        a.textContent = text;
+        document.body.appendChild(a);
+        setTimeout(()=>{ a.remove(); }, 8200);
+      }
+      window.addEventListener("keydown", e=>{
+        const k = (e.key || "").toLowerCase();
+        if (["w","a","s","d","q","e","arrowup","arrowdown","arrowleft","arrowright"].includes(k)) return;
+        if (k===" " || k==="shift" || k==="k" || k==="m" || k==="x"){
+          if (k===" ") e.preventDefault();
+          const id = k===" " ? "space" : k;
+          const cfg = LINKS[id];
+          const now = performance.now();
+          if (!cfg) return;
+          if (lastShown[id] && now - lastShown[id] < MIN_GAP_MS) return;
+          lastShown[id] = now;
+          const lane = lanes[nextLane % lanes.length]; nextLane++;
+          banner(cfg.text, cfg.href, lane);
+        }
+      }, {passive:false});
+    })();
+
+    (function(){
       const tipEl = document.getElementById("sqTip");
       if (!tipEl) return;
-      const list = (Array.isArray(window.SQ_TIPS) && window.SQ_TIPS.length) ? window.SQ_TIPS.slice() : [
-        "Use A and D to steer.",
-        "Short taps beat hard turns.",
-        "Center first, then correct."
-      ];
-      for (let i = list.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [list[i], list[j]] = [list[j], list[i]];
-      }
+      const list = Array.isArray(window.SQ_TIPS) && window.SQ_TIPS.length ? window.SQ_TIPS.slice() : ["Use A and D to steer.","Short taps beat hard turns.","Center first, then correct."];
+      for (let i=list.length-1; i>0; i--){ const j=Math.floor(Math.random()*(i+1)); [list[i],list[j]]=[list[j],list[i]]; }
       let idx = 0;
       const show = () => { tipEl.textContent = list[idx % list.length]; idx++; };
       show();
@@ -174,21 +236,30 @@
       window.__sq_hideTips = () => { clearInterval(id); tipEl.classList.add("fade-out"); };
     })();
 
-    // Unity loader - default UI
-    (function() {
-      let gi = null;
-      function runtimeReady() {
-        const b = document.getElementById("sqBrand");
+    (function(){
+      let gi=null;
+      function runtimeReady(){
+        const b=document.getElementById("sqBrand");
         if (b) b.classList.add("fade-out");
         window.__sq_hideTips && window.__sq_hideTips();
       }
-      function start() {
+      function start(){
         fit();
-        gi = UnityLoader.instantiate("gameContainer", "slope_new.json", {
+        gi = UnityLoader.instantiate("gameContainer","slope_new.json",{
           onProgress: UnityProgress,
-          Module: { onRuntimeInitialized: runtimeReady }
+          Module:{ onRuntimeInitialized: runtimeReady }
         });
         window.gameInstance = gi;
+
+        let tries = 0;
+        const t = setInterval(()=>{
+          const m = gi && gi.Module;
+          if ((m && (m.calledRun || m.runtimeInitialized)) || tries > 120){
+            clearInterval(t);
+            runtimeReady();
+          }
+          tries++;
+        }, 500);
       }
       if (document.readyState === "complete") start();
       else window.addEventListener("load", start);
