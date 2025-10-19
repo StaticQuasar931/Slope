@@ -11,11 +11,12 @@
   <meta name="keywords" content="Slope, Slope unblocked, play Slope online, Slope game, unblocked games for school, StaticQuasar931, Static 931" />
   <meta name="theme-color" content="#131419" />
   <meta property="og:title" content="Play Slope - Official Stable Version | StaticQuasar931" />
-  <meta property="og:description" content="Slope - fast, smooth, unblocked. Works with internet enabled on more school networks." />
+  <meta property="og:description" content="Slope. Fast. Smooth. Unblocked. Works with internet enabled on more school networks." />
   <meta property="og:image" content="https://res.cloudinary.com/dlq5fztla/image/upload/v1760301648/slope_Staticquasar931_stable_agqxto.png" />
   <meta property="og:type" content="website" />
   <link rel="canonical" href="https://staticquasar931.github.io/slope/" />
 
+  <!-- Default Unity loader files in your root -->
   <link rel="stylesheet" href="style/style.css" />
   <script src="UnityLoader.js"></script>
   <script src="UnityProgress.js"></script>
@@ -63,6 +64,7 @@
 
     .fade-out{animation:fadeOut .25s ease forwards}
     @keyframes fadeOut{to{opacity:0;visibility:hidden}}
+    .gone{display:none !important}
 
     .seo-hidden{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(1px,1px,1px,1px);white-space:nowrap}
   </style>
@@ -82,6 +84,7 @@
     })();
   </script>
 
+  <!-- Block id.net -->
   <script>
     (function(){
       const RX=/id\.net\/api\/user_data/i;
@@ -103,6 +106,7 @@
   </script>
 </head>
 <body>
+  <!-- Branding -->
   <div id="sqBrand">
     <img src="https://res.cloudinary.com/dcsrqennd/image/upload/v1760208794/My%20Brand/Static_pfp_2_nqzjkd.jpg" alt="StaticQuasar931 Logo" />
     <span class="line line1">StaticQuasar931 Unblocked Games Presents</span>
@@ -110,23 +114,28 @@
     <span class="line line3">Now working with internet enabled and at more schools than ever</span>
   </div>
 
+  <!-- Tips -->
   <div id="sqTip">Loading tip...</div>
 
+  <!-- Static menu -->
   <div id="staticMenu" role="region" aria-label="StaticQuasar menu">
     <a href="https://sites.google.com/view/staticquasar931/gm3z" target="_blank" rel="noopener">More Unblocked Games by Static</a>
     <span id="closeStaticMenu" title="Hide temporarily">✕</span>
   </div>
 
+  <!-- Rotating promo bubble -->
   <div id="staticSlideMenu" aria-live="polite" style="display:none"></div>
 
+  <!-- Unity game -->
   <div class="webgl-content">
     <div id="gameContainer"></div>
   </div>
 
+  <!-- Hidden SEO -->
   <div class="seo-hidden" aria-hidden="true">
     <p>S-t-a-t-i-c-Q-u-a-s-a-r-9-3-1 S-l-o-p-e U-n-b-l-o-c-k-e-d O-f-f-i-c-i-a-l S-t-a-b-l-e V-e-r-s-i-o-n</p>
-    <p>P-l-a-y S-l-o-p-e o-n l-i-n-e a-t s-c-h-o-o-l - C-h-r-o-m-e-b-o-o-k a-n-d m-o-b-i-l-e f-r-i-e-n-d-l-y</p>
-    <p>S-t-a-t-i-c 9-3-1 g-a-m-e s h-u-b - h-t-t-p-s-:-/-/-s-i-t-e-s-.-g-o-o-g-l-e-.-c-o-m-/-v-i-e-w-/-s-t-a-t-i-c-q-u-a-s-a-r-9-3-1-/-g-m-3-z</p>
+    <p>P-l-a-y S-l-o-p-e o-n l-i-n-e a-t s-c-h-o-o-l C-h-r-o-m-e-b-o-o-k a-n-d m-o-b-i-l-e f-r-i-e-n-d-l-y</p>
+    <p>S-t-a-t-i-c 9-3-1 g-a-m-e s h-u-b h-t-t-p-s-:-/-/-s-i-t-e-s-.-g-o-o-g-l-e-.-c-o-m-/-v-i-e-w-/-s-t-a-t-i-c-q-u-a-s-a-r-9-3-1-/-g-m-3-z</p>
   </div>
 
   <script>
@@ -224,6 +233,7 @@
       }, {passive:false});
     })();
 
+    /* Tips rotation, with hide hook */
     (function(){
       const tipEl = document.getElementById("sqTip");
       if (!tipEl) return;
@@ -233,30 +243,44 @@
       const show = () => { tipEl.textContent = list[idx % list.length]; idx++; };
       show();
       const id = setInterval(show, 10000);
-      window.__sq_hideTips = () => { clearInterval(id); tipEl.classList.add("fade-out"); };
+      window.__sq_hideTips = () => {
+        clearInterval(id);
+        tipEl.classList.add("fade-out");
+        setTimeout(()=> tipEl.classList.add("gone"), 280);
+      };
     })();
 
+    /* Unity loader with strict hide-on-ready */
     (function(){
-      let gi=null;
-      function runtimeReady(){
-        const b=document.getElementById("sqBrand");
-        if (b) b.classList.add("fade-out");
+      let gi = null;
+      let done = false;
+
+      function hideBrandingAndTips(){
+        if (done) return;
+        done = true;
+        const b = document.getElementById("sqBrand");
+        if (b){
+          b.classList.add("fade-out");
+          setTimeout(()=> b.classList.add("gone"), 280);
+        }
         window.__sq_hideTips && window.__sq_hideTips();
       }
+
       function start(){
         fit();
         gi = UnityLoader.instantiate("gameContainer","slope_new.json",{
           onProgress: UnityProgress,
-          Module:{ onRuntimeInitialized: runtimeReady }
+          Module:{ onRuntimeInitialized: hideBrandingAndTips }
         });
         window.gameInstance = gi;
 
+        /* Watchdog fallback */
         let tries = 0;
         const t = setInterval(()=>{
           const m = gi && gi.Module;
           if ((m && (m.calledRun || m.runtimeInitialized)) || tries > 120){
             clearInterval(t);
-            runtimeReady();
+            hideBrandingAndTips();
           }
           tries++;
         }, 500);
