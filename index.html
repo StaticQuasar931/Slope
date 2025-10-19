@@ -60,13 +60,6 @@
   <!-- tips.js must be in repo root -->
   <script src="tips.js" defer></script>
 
-  <!-- Try local UnityProgress.js first; if it fails, load the working CDN copy -->
-  <script src="style/UnityProgress.js" onerror="
-    var s=document.createElement('script');
-    s.src='https://cdn.jsdelivr.net/gh/cookieclickerunblocked/slp@ddcf1d475e4c9f0c58a6b0cf0cba75b25896b657/UnityProgress.js';
-    document.head.appendChild(s);
-  "></script>
-
   <!-- Hard block id.net before anything else touches the DOM/network -->
   <script>
     (function(){
