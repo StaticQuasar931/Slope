@@ -12,8 +12,6 @@
   <meta name="description" content="Play Slope free and unblocked on StaticQuasar931. Official stable version now working at more schools than ever. Chromebook and mobile friendly." />
   <meta name="keywords" content="Slope, Slope unblocked, play Slope online, Slope 3D, Slope stable, StaticQuasar931, unblocked games for school, Static 931" />
   <meta name="theme-color" content="#131419" />
-
-  <!-- OG -->
   <meta property="og:title" content="Play Slope - Official Stable Version | StaticQuasar931" />
   <meta property="og:description" content="Slope: fast, smooth, unblocked. Play free at school with internet enabled. Official StaticQuasar931 mirror." />
   <meta property="og:image" content="https://res.cloudinary.com/dlq5fztla/image/upload/v1760301648/slope_Staticquasar931_stable_agqxto.png" />
@@ -36,85 +34,63 @@
     .webgl-content { position:fixed; inset:0; display:flex; align-items:center; justify-content:center; }
     #gameContainer { width:100%; height:100%; background:transparent; position:relative; }
 
-    /* --- CINEMATIC BRANDING --- */
+    /* Branding - top center at 5px */
     #sqBrand {
-      position:fixed; top:50%; left:50%; transform:translate(-50%,-50%);
+      position:fixed; top:5px; left:50%; transform:translateX(-50%);
       z-index:20; text-align:center;
-      padding:30px 40px; border-radius:20px;
+      padding:14px 18px; border-radius:14px;
       background:linear-gradient(145deg, rgba(10,12,18,.7), rgba(10,12,18,.45));
       border:1px solid rgba(255,255,255,.15);
-      box-shadow:0 20px 50px rgba(0,0,0,.5);
+      box-shadow:0 16px 40px rgba(0,0,0,.45);
       backdrop-filter:blur(10px);
-      max-width:90vw;
-      animation:popIn .8s ease forwards;
+      max-width:min(820px, 96vw);
+      animation:brandPop .6s ease forwards;
     }
-    @keyframes popIn {
-      from {opacity:0; transform:translate(-50%,-55%) scale(.96);}
-      to {opacity:1; transform:translate(-50%,-50%) scale(1);}
+    @keyframes brandPop {
+      from {opacity:0; transform:translate(-50%,-4px) scale(.98);}
+      to {opacity:1; transform:translate(-50%,0) scale(1);}
     }
 
     #sqBrand img {
-      width:140px; height:140px;
-      border-radius:20px; object-fit:cover;
-      box-shadow:0 10px 30px rgba(0,0,0,.6);
-      margin-bottom:20px;
-      animation:logoFade .8s ease .05s forwards;
-      opacity:0;
+      width:56px; height:56px; border-radius:12px; object-fit:cover;
+      box-shadow:0 8px 24px rgba(0,0,0,.45);
+      vertical-align:middle; margin-right:10px;
+      opacity:0; animation:logoIn .5s ease .05s forwards;
     }
-
-    @keyframes logoFade {
-      from {opacity:0; transform:scale(.95);}
-      to {opacity:1; transform:scale(1);}
-    }
+    @keyframes logoIn { to {opacity:1;} }
 
     #sqBrand .line {
+      display:block;
       opacity:0;
-      transform:translateY(4px);
+      transform:translateY(3px);
       font-weight:900;
-      text-shadow:0 2px 12px rgba(0,0,0,.5);
-      letter-spacing:.3px;
-      animation:lineFade .6s ease forwards;
+      text-shadow:0 2px 10px rgba(0,0,0,.5);
+      letter-spacing:.25px;
+      animation:lineFade .5s ease forwards;
     }
-
-    #sqBrand .line1 {
-      font-size:28px;
-      color:#6ce0ff;
-      animation-delay:.2s;
-    }
-    #sqBrand .line2 {
-      font-size:32px;
-      color:#ffffff;
-      animation-delay:.35s;
-    }
-    #sqBrand .line3 {
-      font-size:18px;
-      opacity:.9;
-      color:#cfe7ff;
-      animation-delay:.5s;
-    }
+    #sqBrand .line1 { font-size:18px; color:#6ce0ff; animation-delay:.15s; }
+    #sqBrand .line2 { font-size:22px; color:#ffffff; animation-delay:.25s; }
+    #sqBrand .line3 { font-size:14px; color:#cfe7ff; opacity:.95; animation-delay:.35s; }
 
     @keyframes lineFade {
-      from {opacity:0; transform:translateY(4px);}
-      to {opacity:1; transform:none;}
+      from {opacity:0; transform:translateY(3px);}
+      to   {opacity:1; transform:none;}
     }
 
-    /* Tips */
+    /* Tips - bottom left */
     #sqTip {
-      position:fixed; bottom:24px; left:50%; transform:translateX(-50%);
-      z-index:20; font-size:15px; color:#dfeaff;
-      padding:14px 18px;
+      position:fixed; left:14px; bottom:16px;
+      z-index:20; font-size:14px; color:#dfeaff;
+      padding:12px 14px;
       background:rgba(15,18,28,.65);
       border:1px solid rgba(255,255,255,.12);
-      border-radius:14px;
+      border-radius:12px;
       box-shadow:0 6px 25px rgba(0,0,0,.5);
-      max-width:600px;
-      text-align:center;
-      line-height:1.4;
-      animation:fadeIn .8s ease .6s forwards;
-      opacity:0;
+      max-width:min(560px, 80vw);
+      line-height:1.35;
+      opacity:0; animation:tipIn .6s ease .4s forwards;
     }
-
-    @keyframes fadeIn { to {opacity:1;} }
+    @keyframes tipIn { to {opacity:1;} }
 
     .fade-out { animation:fadeOut .25s ease forwards; }
     @keyframes fadeOut { to {opacity:0; visibility:hidden;} }
@@ -129,15 +105,12 @@
       const ap=Node.prototype.appendChild, ib=Node.prototype.insertBefore;
       function blockNode(n){
         try{
-          if(n && n.tagName==='SCRIPT' && RX.test(String(n.src||''))){
-            n.remove(); return true;
-          }
+          if(n && n.tagName==='SCRIPT' && RX.test(String(n.src||''))){ n.remove(); return true; }
         }catch(e){}
         return false;
       }
       Node.prototype.appendChild=function(n){ if(blockNode(n)) return n; return ap.call(this,n); };
       Node.prototype.insertBefore=function(n,r){ if(blockNode(n)) return n; return ib.call(this,n,r); };
-
       const ofetch=window.fetch;
       window.fetch=function(input){
         const url=typeof input==='string'?input:(input&&input.url)||'';
@@ -148,15 +121,15 @@
   </script>
 </head>
 <body>
-  <!-- BRANDING -->
+  <!-- Branding -->
   <div id="sqBrand">
     <img src="https://res.cloudinary.com/dcsrqennd/image/upload/v1760208794/My%20Brand/Static_pfp_2_nqzjkd.jpg" alt="StaticQuasar931 Logo" />
-    <div class="line line1">StaticQuasar931 Unblocked Games Presents</div>
-    <div class="line line2">Slope — Official and Stable | Unblocked</div>
-    <div class="line line3">Now working with internet enabled and at more schools than ever</div>
+    <span class="line line1">StaticQuasar931 Unblocked Games Presents</span>
+    <span class="line line2">Slope - Official and Stable | Unblocked</span>
+    <span class="line line3">Now working with internet enabled and at more schools than ever</span>
   </div>
 
-  <!-- TIPS -->
+  <!-- Tips -->
   <div id="sqTip">Loading tip...</div>
 
   <!-- Unity Game -->
@@ -167,7 +140,7 @@
   <!-- Hidden SEO -->
   <div class="seo-hidden">
     <h1>Slope - Unblocked Official Stable Version</h1>
-    <p>Play the official stable Slope game unblocked at school by StaticQuasar931. Smooth, fast, and 3D ready.</p>
+    <p>Play the official stable Slope game unblocked at school by StaticQuasar931. Smooth and fast.</p>
   </div>
 
   <script>
@@ -181,7 +154,7 @@
     }
     addEventListener("resize", fit, { passive: true });
 
-    // Tip rotation
+    // Tip rotation - every 10s
     (function() {
       const tipEl = document.getElementById("sqTip");
       if (!tipEl) return;
@@ -201,14 +174,14 @@
       window.__sq_hideTips = () => { clearInterval(id); tipEl.classList.add("fade-out"); };
     })();
 
-    // Unity loader
+    // Unity loader - default UI
     (function() {
       let gi = null;
       function runtimeReady() {
-        document.getElementById("sqBrand")?.classList.add("fade-out");
+        const b = document.getElementById("sqBrand");
+        if (b) b.classList.add("fade-out");
         window.__sq_hideTips && window.__sq_hideTips();
       }
-
       function start() {
         fit();
         gi = UnityLoader.instantiate("gameContainer", "slope_new.json", {
@@ -217,7 +190,6 @@
         });
         window.gameInstance = gi;
       }
-
       if (document.readyState === "complete") start();
       else window.addEventListener("load", start);
     })();
