@@ -29,12 +29,12 @@
   <meta property="og:url" content="https://staticquasar931.github.io/slope/" />
   <meta name="twitter:card" content="summary_large_image" />
 
-  <!-- Unity default loader CSS and loader script -->
+  <!-- Unity default loader CSS and scripts (match your repo layout) -->
   <link rel="stylesheet" href="style/style.css" />
   <script src="UnityLoader.js"></script>
   <script src="UnityProgress.js"></script>
 
-  <!-- Tips data -->
+  <!-- Tips data (in repo root) -->
   <script src="tips.js" defer></script>
 
   <style>
@@ -43,12 +43,12 @@
       background:#131419; color:#e8f3ff;
       font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
     }
-    #gameContainer{
-      position:relative;
-      width:100vw; height:100vh; background:transparent;
-    }
 
-    /* Branding and tips during load - do not cover Unity loader area */
+    /* Critical: wrapper UnityProgress targets for logo/progress UI */
+    .webgl-content{ position:fixed; inset:0; }
+    #gameContainer{ position:relative; width:100%; height:100%; background:transparent; }
+
+    /* Branding and tips during load */
     #sqBrand{
       position:fixed; top:14px; right:14px; z-index:20;
       background:rgba(10,12,18,.6); border:1px solid rgba(255,255,255,.15);
@@ -56,12 +56,14 @@
       backdrop-filter:blur(8px);
     }
     #sqBrand small{display:block; font-weight:700; opacity:.85}
+
     #sqTip{
       position:fixed; left:14px; bottom:16px; z-index:20;
       max-width:min(560px, 80vw); font-size:13px; line-height:1.35;
       background:rgba(15,18,28,.6); padding:10px 12px; border-radius:10px;
       border:1px solid rgba(255,255,255,.12);
     }
+
     .fade-out{animation:fadeOut .25s ease forwards}
     @keyframes fadeOut{to{opacity:0; visibility:hidden}}
 
@@ -121,15 +123,22 @@
   </script>
 </head>
 <body>
-  <!-- Branding and tips shown during load, hidden when runtime is ready -->
+  <!-- Branding and tips during load -->
   <div id="sqBrand">
     StaticQuasar931 Presents
     <small>Loading Slope...</small>
   </div>
   <div id="sqTip">Loading tip...</div>
 
-  <!-- Unity container - default Unity loader renders inside here -->
-  <div id="gameContainer"></div>
+  <!-- Unity wrapper: UnityProgress injects .logo and .progress here -->
+  <div class="webgl-content">
+    <div id="gameContainer"></div>
+    <div class="footer">
+      <div class="webgl-logo"></div>
+      <div class="title">Slope</div>
+      <div class="fullscreen" onclick="window.gameInstance && window.gameInstance.SetFullscreen(1)"></div>
+    </div>
+  </div>
 
   <!-- Hidden SEO -->
   <div class="seo-hidden" aria-hidden="true">
@@ -182,13 +191,14 @@
 
       function start(){
         fit();
-        // Use UnityProgress directly so we get the stock loader
+        // Important: pass UnityProgress so stock loader renders
         gi = UnityLoader.instantiate("gameContainer", "slope_new.json", {
           onProgress: UnityProgress,
           Module: { onRuntimeInitialized: runtimeReady }
         });
+        window.gameInstance = gi;
 
-        // Watchdog - complete if runtime flags flip or if it takes too long
+        // Watchdog - finalize if runtime flags flip or it takes too long
         let tries = 0;
         const t = setInterval(()=>{
           const m = gi && gi.Module;
