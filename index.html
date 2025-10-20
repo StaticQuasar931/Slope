@@ -16,17 +16,38 @@
   <meta property="og:type" content="website" />
   <link rel="canonical" href="https://staticquasar931.github.io/slope/" />
 
-  
-<!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-27S3Y4TS0Y"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
+  <!-- GA preconnects -->
+  <link rel="dns-prefetch" href="https://www.googletagmanager.com">
+  <link rel="dns-prefetch" href="https://www.google-analytics.com">
+  <link rel="preconnect" href="https://www.googletagmanager.com" crossorigin>
+  <link rel="preconnect" href="https://www.google-analytics.com" crossorigin>
 
-  gtag('config', 'G-27S3Y4TS0Y');
-</script>
+  <!-- GA4 loader with queue, respects ?school=1 -->
+  <script>
+    (function () {
+      try {
+        var q = new URLSearchParams(location.search);
+        window.__SQ_SCHOOL__ = q.get("school") === "1";
+      } catch (e) {
+        window.__SQ_SCHOOL__ = false;
+      }
 
+      window.dataLayer = window.dataLayer || [];
+      window.gtag = function(){ dataLayer.push(arguments); };
+
+      gtag("js", new Date());
+      gtag("config", "G-27S3Y4TS0Y", { transport_type: "beacon", anonymize_ip: true });
+
+      if (!window.__SQ_SCHOOL__) {
+        var s = document.createElement("script");
+        s.async = true;
+        s.src = "https://www.googletagmanager.com/gtag/js?id=G-27S3Y4TS0Y";
+        s.referrerPolicy = "origin-when-cross-origin";
+        s.onerror = function(){ console.warn("GA blocked or failed to load"); };
+        document.head.appendChild(s);
+      }
+    })();
+  </script>
 
   <!-- Default Unity loader files in your root -->
   <link rel="stylesheet" href="style/style.css" />
@@ -41,18 +62,18 @@
     #gameContainer{width:100%;height:100%;background:transparent;position:relative}
 
     /* Top center branding */
-    #sqBrand{position:fixed;top:5px;left:50%;transform:translateX(-50%);z-index:20;text-align:center;padding:14px 18px;border-radius:14px;background:linear-gradient(145deg,rgba(10,12,18,.7),rgba(10,12,18,.45));border:1px solid rgba(255,255,255,.15);box-shadow:0 16px 40px rgba(0,0,0,.45);backdrop-filter:blur(10px);max-width:min(860px,96vw);animation:brandPop .6s ease forwards}
+    #sqBrand{position:fixed;top:5px;left:50%;transform:translateX(-50%);z-index:20;text-align:center;padding:14px 18px;border-radius:14px;background:linear-gradient(145deg,rgba(10,12,18,.7),rgba(10,12,18,.45));border:1px solid rgba(255,255,255,.15);box-shadow:0 16px 40px rgba(0,0,0,.45);backdrop-filter:blur(10px);max-width:min(960px,96vw);animation:brandPop .6s ease forwards}
     @keyframes brandPop{from{opacity:0;transform:translate(-50%,-4px) scale(.98)}to{opacity:1;transform:translate(-50%,0) scale(1)}}
-    #sqBrand img{width:56px;height:56px;border-radius:12px;object-fit:cover;box-shadow:0 8px 24px rgba(0,0,0,.45);vertical-align:middle;margin-right:10px;opacity:0;animation:logoIn .5s ease .05s forwards}
+    #sqBrand img{width:64px;height:64px;border-radius:12px;object-fit:cover;box-shadow:0 8px 24px rgba(0,0,0,.45);vertical-align:middle;margin-right:12px;opacity:0;animation:logoIn .5s ease .05s forwards}
     @keyframes logoIn{to{opacity:1}}
     #sqBrand .line{display:block;opacity:0;transform:translateY(3px);font-weight:900;text-shadow:0 2px 10px rgba(0,0,0,.5);letter-spacing:.25px;animation:lineFade .5s ease forwards}
-    #sqBrand .line1{font-size:18px;color:#6ce0ff;animation-delay:.15s}
-    #sqBrand .line2{font-size:22px;color:#ffffff;animation-delay:.25s}
-    #sqBrand .line3{font-size:14px;color:#cfe7ff;opacity:.95;animation-delay:.35s}
+    #sqBrand .line1{font-size:20px;color:#6ce0ff;animation-delay:.15s}
+    #sqBrand .line2{font-size:26px;color:#ffffff;animation-delay:.25s}
+    #sqBrand .line3{font-size:16px;color:#cfe7ff;opacity:.95;animation-delay:.35s}
     @keyframes lineFade{from{opacity:0;transform:translateY(3px)}to{opacity:1;transform:none}}
 
     /* Tips - bottom left */
-    #sqTip{position:fixed;left:14px;bottom:16px;z-index:20;font-size:14px;color:#dfeaff;padding:12px 14px;background:rgba(15,18,28,.65);border:1px solid rgba(255,255,255,.12);border-radius:12px;box-shadow:0 6px 25px rgba(0,0,0,.5);max-width:min(560px,80vw);line-height:1.35;opacity:0;animation:tipIn .6s ease .4s forwards}
+    #sqTip{position:fixed;left:14px;bottom:16px;z-index:20;font-size:15px;color:#dfeaff;padding:12px 14px;background:rgba(15,18,28,.65);border:1px solid rgba(255,255,255,.12);border-radius:12px;box-shadow:0 6px 25px rgba(0,0,0,.5);max-width:min(560px,80vw);line-height:1.35;opacity:0;animation:tipIn .6s ease .4s forwards}
     @keyframes tipIn{to{opacity:1}}
 
     /* Static menu */
@@ -84,7 +105,7 @@
   <script>
     (function(){
       const q = new URLSearchParams(location.search);
-      window.__SQ_SCHOOL__ = q.get("school") === "1";
+      window.__SQ_SCHOOL__ = window.__SQ_SCHOOL__ || (q.get("school") === "1");
       if (!window.__SQ_SCHOOL__) {
         ["https://res.cloudinary.com/dcsrqennd/image/upload/v1747533056/raw_um4pvq.png",
          "https://res.cloudinary.com/dcsrqennd/image/upload/v1758072526/Join_Our_Discord_StaticQuassar931_lcplrf.png",
@@ -262,7 +283,7 @@
       };
     })();
 
-    /* Unity loader with strict hide-on-ready */
+    /* Unity loader with strict hide-on-ready + GA event */
     (function(){
       let gi = null;
       let done = false;
@@ -282,7 +303,12 @@
         fit();
         gi = UnityLoader.instantiate("gameContainer","slope_new.json",{
           onProgress: UnityProgress,
-          Module:{ onRuntimeInitialized: hideBrandingAndTips }
+          Module:{
+            onRuntimeInitialized: function(){
+              try { gtag("event", "unity_ready", { value: 1 }); } catch(e){}
+              hideBrandingAndTips();
+            }
+          }
         });
         window.gameInstance = gi;
 
@@ -292,6 +318,7 @@
           const m = gi && gi.Module;
           if ((m && (m.calledRun || m.runtimeInitialized)) || tries > 120){
             clearInterval(t);
+            try { gtag("event", "unity_ready_watchdog", { value: 1 }); } catch(e){}
             hideBrandingAndTips();
           }
           tries++;
