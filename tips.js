@@ -1,5 +1,3 @@
-<script>
-
 (function () {
   // ---------------- base lists (original vibe, lightly edited for duplicates and straight quotes) ----------------
   const gameplayTips = [
@@ -224,7 +222,7 @@
 
     // Generate a bunch of silly combos
     const verbs = ["touch", "kick", "stare at", "collect", "yell at", "befriend"];
-    const objects = ["bees", "clouds", "traffic cones", "loading bars", "NPCs named Greg", "tutorial popups", "lava lamps", "puddles"];
+    const objects = ["bees", "clouds", "traffic cones", "loading bars", "NPCs named Greg", "lava lamps", "puddles"];
     const outcomes = ["it will not help", "results may vary", "science will be disappointed", "someone will notice", "achievement not unlocked", "you may level up in patience"];
 
     const template3 = [];
@@ -297,7 +295,7 @@
     return true;
   });
 
-  // If you truly need to guarantee at least triple the original count, we can inflate with harmless numbered variants.
+  // Inflate if needed to hit a minimum size (three times base lists)
   const MIN_TARGET = Math.ceil((gameplayTips.length + obviousFacts.length + gamerLogic.length + lifeTips.length + realLifeTips.length) * 3);
   if (ALL_TIPS.length < MIN_TARGET) {
     const base = "Fun fact: most bedrooms have beds.";
@@ -316,9 +314,7 @@
     return arr;
   }
 
-  function nowTs() {
-    return Date.now();
-  }
+  function nowTs() { return Date.now(); }
 
   // ---------------- persistent cycle state with IDs ----------------
   const LS_KEY = "SQTips_state_v2";
@@ -329,11 +325,9 @@
       const raw = localStorage.getItem(LS_KEY);
       if (!raw) throw 0;
       const s = JSON.parse(raw);
-      // Validate against current tip pool size
       if (!s || !Array.isArray(s.order) || typeof s.cursor !== "number" || s.total !== total) throw 0;
       return s;
     } catch {
-      // Fresh state
       const order = Array.from({ length: total }, (_, i) => i);
       shuffleInPlace(order);
       const s = { order, cursor: 0, cycle: 1, total };
@@ -357,29 +351,23 @@
   const state = loadState(ALL_TIPS.length);
 
   function nextTipCore(renderToEl) {
-    // If we have exhausted the order, reshuffle a fresh cycle
     if (state.cursor >= state.order.length) {
       state.cursor = 0;
       state.cycle += 1;
-      shuffleInPlace(state.order); // new round, new order
+      shuffleInPlace(state.order);
     }
 
     const idx = state.order[state.cursor++];
     const tip = ALL_TIPS[idx];
-    const id = nextId(); // assign id at render time
+    const id = nextId();
     const ts = nowTs();
 
-    // Persist the advanced cursor immediately, so refreshes do not repeat within a cycle
     saveState(state);
 
-    // Optional: write to DOM if an element was provided
     if (renderToEl) {
-      try {
-        renderToEl.textContent = tip;
-      } catch {}
+      try { renderToEl.textContent = tip; } catch {}
     }
 
-    // Return detailed record
     return { id, tip, index: idx, total: ALL_TIPS.length, cycle: state.cycle, ts };
   }
 
@@ -391,30 +379,23 @@
   }
 
   // ---------------- public API ----------------
-  function apiNext() {
-    return nextTipCore(null);
-  }
-
+  function apiNext() { return nextTipCore(null); }
   function apiRenderTo(elOrSelector) {
     const el = getElement(elOrSelector);
-    if (!el) return nextTipCore(null);
     return nextTipCore(el);
   }
-
   function apiGetMany(n = 10) {
     const count = Math.max(0, Math.min(n, ALL_TIPS.length));
     const out = [];
     for (let i = 0; i < count; i++) out.push(nextTipCore(null));
     return out;
   }
-
   function apiResetCycle(shuffle = true) {
     state.cursor = 0;
     state.cycle += 1;
     if (shuffle) shuffleInPlace(state.order);
     saveState(state);
   }
-
   function apiState() {
     return {
       cursor: state.cursor,
@@ -437,7 +418,6 @@
     window.SQTips.resetCycle = apiResetCycle;
     window.SQTips.state = apiState;
 
-    // console log
     console.log(
       "%c[StaticQuasar931 Tips Loaded]%c " +
         window.SQTips.list.length +
@@ -451,19 +431,3 @@
     );
   }
 })();
-</script>
-
-<!-- Example usage:
-<div id="tipBox"></div>
-<script>
-  // Render one tip into #tipBox and get its assigned id
-  const shown = SQTips.renderTo("#tipBox");
-  // shown -> { id, tip, index, total, cycle, ts }
-
-  // Get 20 unique tips (no repeats until a full pass)
-  const batch = SQTips.getMany(20);
-
-  // Inspect internal state
-  console.log(SQTips.state());
-</script>
--->
