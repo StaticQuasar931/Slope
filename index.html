@@ -322,21 +322,6 @@
       }, {passive:false});
     })();
 
-    /* Tips rotation using your SQTips API (+ hide hook) */
-    (function(){
-      const tipEl = document.getElementById("sqTip");
-      if (!tipEl) return;
-
-      function showOne() {
-        try {
-          if (window.SQTips && typeof window.SQTips.renderTo === "function") {
-            window.SQTips.renderTo(tipEl);
-          } else {
-            // fallback once
-            tipEl.textContent = "Use A and D to steer. Short taps beat hard turns.";
-          }
-        } catch(e){}
-      }
 
       showOne();
       const id = setInterval(showOne, 10000);
