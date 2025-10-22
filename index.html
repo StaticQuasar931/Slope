@@ -5,10 +5,29 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Slope - Free Unblocked Game | StaticQuasar931</title>
 
-  <!-- Favicon -->
-  <link rel="icon" href="https://res.cloudinary.com/dlq5fztla/image/upload/v1760301648/slope_Staticquasar931_stable_agqxto.png" />
+  <!-- ✅ Content Security Policy -->
+  <meta http-equiv="Content-Security-Policy" content="
+    default-src 'self';
+    script-src
+      'self'
+      'unsafe-inline'
+      'unsafe-eval'
+      'wasm-unsafe-eval'
+      https://www.googletagmanager.com;
+    style-src 'self' 'unsafe-inline';
+    img-src 'self' data: blob: https://res.cloudinary.com https://www.google-analytics.com https://www.googletagmanager.com;
+    font-src 'self' data:;
+    connect-src 'self' blob: data: https://www.google-analytics.com https://www.googletagmanager.com;
+    media-src 'self' blob: data:;
+    worker-src 'self' blob:;
+    frame-src 'self';
+    object-src 'none';
+    base-uri 'self';
+    form-action 'self'
+  ">
 
-  <!-- SEO / OG -->
+  <!-- Favicon / SEO -->
+  <link rel="icon" href="https://res.cloudinary.com/dlq5fztla/image/upload/v1760301648/slope_Staticquasar931_stable_agqxto.png" />
   <meta name="description" content="Play Slope free and unblocked on StaticQuasar931. Official stable version that works at school. Chromebook and mobile friendly." />
   <meta name="keywords" content="Slope, Slope unblocked, play Slope online, Slope game, unblocked games for school, StaticQuasar931, Static 931" />
   <meta name="theme-color" content="#131419" />
@@ -29,7 +48,7 @@
   <script src="UnityLoader.js" defer></script>
   <script src="UnityProgress.js" defer></script>
 
-  <!-- Your tips file (must be JS only; no <script> tags inside). Safe to fail; we have a fallback. -->
+  <!-- Your tips file (PURE JS only—no <script> wrappers). Safe to fail; we have a fallback. -->
   <script src="tips.js" defer></script>
 
   <style>
@@ -82,12 +101,8 @@
   <!-- GA4 bootstrap (queues events) and loads the library unless ?school=1 -->
   <script>
     (function () {
-      try {
-        var q = new URLSearchParams(location.search);
-        window.__SQ_SCHOOL__ = q.get("school") === "1";
-      } catch (e) {
-        window.__SQ_SCHOOL__ = false;
-      }
+      try { var q = new URLSearchParams(location.search); window.__SQ_SCHOOL__ = q.get("school") === "1"; }
+      catch (e) { window.__SQ_SCHOOL__ = false; }
 
       window.dataLayer = window.dataLayer || [];
       window.gtag = function(){ dataLayer.push(arguments); };
@@ -169,7 +184,6 @@
   </div>
 
   <script>
-    // Leave warning
     window.onbeforeunload = function(){ return "Are you sure you want to leave? Your progress may not be saved."; };
 
     // Fit canvas to viewport (window + visualViewport)
@@ -237,7 +251,7 @@
       var box = document.getElementById("sqTip");
       if (!box) return;
 
-      // Strong fallback line you requested
+      // Strong fallback line
       var FALLBACK = "StaticQuasar931 games are better. Facts 🤝";
       box.textContent = FALLBACK;
 
@@ -263,16 +277,12 @@
           startRotation();
           return;
         }
-        if ((tries || 0) > 60) {           // ~3s
-          // provide hide hook even if we never found SQTips
-          window.__sq_hideTips = hideTips;
-          return;
-        }
+        if ((tries || 0) > 60) { window.__sq_hideTips = hideTips; return; } // ~3s
         setTimeout(function(){ waitForSQ((tries||0)+1); }, 50);
       })();
     })();
 
-    /* Unity start: use the REAL Unity loader and hide our UI when runtime is ready */
+    /* Unity start: REAL Unity loader; hide UI when runtime is ready */
     (function(){
       var gi = null;
       var done = false;
