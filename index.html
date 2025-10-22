@@ -24,18 +24,37 @@
   <link rel="preconnect" href="https://www.googletagmanager.com" crossorigin>
   <link rel="preconnect" href="https://www.google-analytics.com" crossorigin>
 
+  <!-- GA4 bootstrap (always loads; queues if blocked) -->
+  <script>
+    (function () {
+      window.dataLayer = window.dataLayer || [];
+      window.gtag = function(){ dataLayer.push(arguments); };
+      gtag("js", new Date());
+      gtag("config", "G-27S3Y4TS0Y", { transport_type: "beacon", anonymize_ip: true });
+
+      var s = document.createElement("script");
+      s.async = true;
+      s.src = "https://www.googletagmanager.com/gtag/js?id=G-27S3Y4TS0Y";
+      s.onerror = function(){ console.warn("GA blocked or failed to load"); };
+      document.head.appendChild(s);
+    })();
+  </script>
+
   <!-- Unity default loader assets (your repo layout) -->
   <link rel="stylesheet" href="style/style.css" />
-  <script src="UnityLoader.js" defer></script>
-  <script src="UnityProgress.js" defer></script>
+  <script src="UnityLoader.js"></script>
+  <script src="UnityProgress.js"></script>
 
-  <!-- Your tips file (must be JS only; no <script> tags inside). Safe to fail; we have a fallback. -->
+  <!-- Your tips file (must be pure JS; no <script> tags in the file) -->
   <script src="tips.js" defer></script>
 
   <style>
     html,body{margin:0;padding:0;height:100%;overflow:hidden;background:radial-gradient(circle at center,#17191d,#0c0d11);color:#f5f8ff;font-family:"Segoe UI",Roboto,Arial,sans-serif}
     .webgl-content{position:fixed;inset:0;display:flex;align-items:center;justify-content:center}
-    #gameContainer{width:100%;height:100%;background:transparent;position:relative}
+    #gameContainer{position:fixed;top:0;left:0;width:100vw;height:100vh;background:transparent}
+
+    /* Hide Unity footer icons (WebGL + fullscreen) */
+    .webgl-content .footer{display:none !important}
 
     /* Top center branding */
     #sqBrand{position:fixed;top:5px;left:50%;transform:translateX(-50%);z-index:20;text-align:center;padding:14px 18px;border-radius:14px;background:linear-gradient(145deg,rgba(10,12,18,.7),rgba(10,12,18,.45));border:1px solid rgba(255,255,255,.15);box-shadow:0 16px 40px rgba(0,0,0,.45);backdrop-filter:blur(10px);max-width:min(960px,96vw);animation:brandPop .6s ease forwards}
@@ -66,7 +85,7 @@
     @keyframes slideOut{from{opacity:1;transform:translateX(0) scale(1)}to{opacity:0;transform:translateX(140px) scale(.96)}}
     @media (max-width:768px){#staticSlideMenu{width:84px;height:84px}}
 
-    /* Fly banners */
+    /* Fly banners (shortcuts) */
     .fly{position:fixed;z-index:22;pointer-events:auto;padding:12px 16px;border-radius:12px;background:rgba(20,24,36,.92);border:1px solid rgba(94,225,255,.35);color:#bfe7ff;font-weight:800;text-decoration:none;box-shadow:0 8px 28px rgba(0,0,0,.45);top:14%;left:-40%;will-change:transform,opacity;animation:flyAcross 8s ease-in-out forwards}
     @keyframes flyAcross{0%{left:-40%;opacity:0}10%{left:2%;opacity:1}50%{left:48%;opacity:1}95%{left:96%;opacity:1}100%{left:110%;opacity:0}}
     .fly.t2{top:22%}.fly.t3{top:30%}.fly.t4{top:18%}.fly.t5{top:26%}
@@ -79,31 +98,6 @@
     .seo-hidden{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(1px,1px,1px,1px);white-space:nowrap}
   </style>
 
-  <!-- GA4 bootstrap (queues events) and loads the library unless ?school=1 -->
-  <script>
-    (function () {
-      try {
-        var q = new URLSearchParams(location.search);
-        window.__SQ_SCHOOL__ = q.get("school") === "1";
-      } catch (e) {
-        window.__SQ_SCHOOL__ = false;
-      }
-
-      window.dataLayer = window.dataLayer || [];
-      window.gtag = function(){ dataLayer.push(arguments); };
-      gtag("js", new Date());
-      gtag("config", "G-27S3Y4TS0Y", { transport_type: "beacon", anonymize_ip: true });
-
-      if (!window.__SQ_SCHOOL__) {
-        var s = document.createElement("script");
-        s.async = true;
-        s.src = "https://www.googletagmanager.com/gtag/js?id=G-27S3Y4TS0Y";
-        s.onerror = function(){ console.warn("GA blocked or failed to load"); };
-        document.head.appendChild(s);
-      }
-    })();
-  </script>
-
   <!-- id.net hard block (JSONP, fetch, XHR) -->
   <script>
     (function(){
@@ -111,7 +105,7 @@
       var ap=Node.prototype.appendChild, ib=Node.prototype.insertBefore;
       function blk(n){try{if(n&&n.tagName==='SCRIPT'&&RX.test(String(n.src||''))){n.remove();return true;}}catch(e){}return false;}
       Node.prototype.appendChild=function(n){if(blk(n))return n;return ap.call(this,n);};
-      Node.prototype.insertBefore=function(n,r){if(blk(n))return n;return ib.call(this,n,r);};
+      Node.prototype.insertBefore=function(n,r){if(blk(n))return n;return ib.call(this,n,r)};
       try{
         var W=document.write.bind(document), WL=document.writeln.bind(document);
         var strip=function(s){return typeof s==='string'?s.replace(/<script[^>]+src=["'][^"']*id\.net\/api\/user_data[^"']*["'][^>]*>\s*<\/script>/ig,''):s;};
@@ -122,7 +116,9 @@
       window.fetch=function(input,init){
         try{
           var url=typeof input==='string'?input:(input&&input.url)||'';
-          if(RX.test(String(url||''))){return Promise.resolve(new Response("{}",{status:200,headers:{'Content-Type':'application/json'}}));}
+          if(RX.test(String(url||''))){
+            return Promise.resolve(new Response("{}",{status:200,headers:{'Content-Type':'application/json'}}));
+          }
         }catch(e){}
         return ofetch.apply(this,arguments);
       };
@@ -145,7 +141,7 @@
   </div>
 
   <!-- Tips -->
-  <div id="sqTip">Loading tip…</div>
+  <div id="sqTip">StaticQuasar931 games are better. Facts 🤝</div>
 
   <!-- Static menu -->
   <div id="staticMenu" role="region" aria-label="StaticQuasar menu">
@@ -153,7 +149,7 @@
     <span id="closeStaticMenu" title="Hide temporarily">✕</span>
   </div>
 
-  <!-- Rotating promo bubble (hidden in school mode) -->
+  <!-- Rotating promo bubble (hidden if ?school=1) -->
   <div id="staticSlideMenu" aria-live="polite" style="display:none"></div>
 
   <!-- Unity game -->
@@ -172,16 +168,78 @@
     // Leave warning
     window.onbeforeunload = function(){ return "Are you sure you want to leave? Your progress may not be saved."; };
 
-    // Fit canvas to viewport (window + visualViewport)
-    function fit() {
-      var c = document.getElementById("gameContainer");
-      if (!c) return;
-      var h = (window.visualViewport && window.visualViewport.height) ? window.visualViewport.height : window.innerHeight;
-      c.style.width = window.innerWidth + "px";
-      c.style.height = h + "px";
-    }
-    window.addEventListener("resize", fit, { passive: true });
-    if (window.visualViewport) window.visualViewport.addEventListener("resize", fit, { passive: true });
+    // ======== Robust auto-resize (window, visual viewport, fullscreen, Unity canvas insert) ========
+    (function(){
+      var container = document.getElementById('gameContainer');
+
+      function applySize(w,h, alignWebgl){
+        container.style.width  = w + 'px';
+        container.style.height = h + 'px';
+        var cvs = container.querySelector('canvas');
+        if (cvs){ cvs.style.width='100%'; cvs.style.height='100%'; }
+        if (alignWebgl){
+          var webgl = container.closest('.webgl-content');
+          if (webgl){ webgl.style.width=w+'px'; webgl.style.height=h+'px'; }
+        }
+      }
+      function fitFromDomFullscreen(){
+        var fs = document.fullscreenElement || document.webkitFullscreenElement ||
+                 document.mozFullScreenElement || document.msFullscreenElement;
+        if (!fs) return false;
+        var w = (screen && screen.width)  ? screen.width  : window.innerWidth;
+        var h = (screen && screen.height) ? screen.height : window.innerHeight;
+        applySize(w,h,true); container.style.transform='translate(0,0)';
+        return true;
+      }
+      function fitFromVisualViewport(){
+        var vv = window.visualViewport;
+        if (!vv) return false;
+        applySize(vv.width, vv.height, false);
+        container.style.transform = 'translate('+vv.offsetLeft+'px,'+vv.offsetTop+'px)';
+        return true;
+      }
+      function fitFromWindow(){
+        applySize(window.innerWidth, window.innerHeight, false);
+        container.style.transform='translate(0,0)';
+      }
+      function fit(){
+        if (fitFromDomFullscreen()) return;
+        if (fitFromVisualViewport()) return;
+        fitFromWindow();
+      }
+      var ticking=false;
+      function burst(){
+        if (ticking) return;
+        ticking=true;
+        var i=0;
+        function step(){
+          fit();
+          if (++i<5) requestAnimationFrame(step);
+          else ticking=false;
+        }
+        requestAnimationFrame(step);
+      }
+      window.addEventListener('resize', burst, {passive:true});
+      window.addEventListener('orientationchange', burst, {passive:true});
+      ['fullscreenchange','webkitfullscreenchange','mozfullscreenchange','MSFullscreenChange'].forEach(function(ev){
+        document.addEventListener(ev, burst, {passive:true});
+      });
+      if (window.visualViewport){
+        visualViewport.addEventListener('resize', burst, {passive:true});
+        visualViewport.addEventListener('scroll', burst, {passive:true});
+      }
+      try{
+        new MutationObserver(function(muts){
+          for (var i=0;i<muts.length;i++){
+            var m=muts[i];
+            for (var j=0;j<m.addedNodes.length;j++){
+              if (m.addedNodes[j].tagName==='CANVAS'){ burst(); return; }
+            }
+          }
+        }).observe(container,{childList:true,subtree:true});
+      }catch(e){}
+      fit(); requestAnimationFrame(fit); setTimeout(fit,500);
+    })();
 
     // Static menu hide/restore
     (function(){
@@ -194,6 +252,14 @@
       };
     })();
 
+    // school=1 flag for promos only
+    (function(){
+      try {
+        var q = new URLSearchParams(location.search);
+        window.__SQ_SCHOOL__ = q.get("school")==="1";
+      } catch(e){ window.__SQ_SCHOOL__ = false; }
+    })();
+
     // Rotating promo (skip if ?school=1)
     (function(){
       if (window.__SQ_SCHOOL__) return;
@@ -201,92 +267,97 @@
       if (!wrap) return;
       wrap.style.display = "block";
       wrap.innerHTML = '<a id="staticSlideLink" href="#" target="_blank" rel="noopener" aria-label="Open link"><img id="staticSlideImg" alt=""></a>';
-      var a   = document.getElementById("staticSlideLink");
+      var a = document.getElementById("staticSlideLink");
       var img = document.getElementById("staticSlideImg");
       if (!a || !img) return;
 
       var FORM    = { src:"https://res.cloudinary.com/dcsrqennd/image/upload/v1747533056/raw_um4pvq.png", alt:"Feedback and requests", link:"https://sites.google.com/view/staticquasar931/google-form", cls:"" };
       var DISCORD = { src:"https://res.cloudinary.com/dcsrqennd/image/upload/v1758072526/Join_Our_Discord_StaticQuassar931_lcplrf.png", alt:"Join the Discord", link:"https://discord.gg/DP2hM7RRhR", cls:"discord" };
       var INSTA   = { src:"https://res.cloudinary.com/dcsrqennd/image/upload/v1747533158/raw_cw34yi.png", alt:"Instagram", link:"https://www.instagram.com/freeschoolgamepage/", cls:"" };
-      var ROT = [FORM, DISCORD, INSTA];
+      var ROT=[FORM,DISCORD,INSTA];
 
-      var T_IN = 1100, T_SHOW = 4200, T_OUT = 900, T_GAP = 12000;
-      var i = 0;
+      var T_IN=1100, T_SHOW=4200, T_OUT=900, T_GAP=12000, i=0;
       function apply(o){ img.src=o.src; img.alt=o.alt; a.href=o.link; wrap.className=o.cls; }
       (function loop(){
         apply(ROT[i]);
-        wrap.style.pointerEvents = "auto";
+        wrap.style.pointerEvents="auto";
         wrap.classList.remove("slide-out");
         wrap.classList.add("slide-in");
         setTimeout(function(){
           wrap.classList.remove("slide-in");
           wrap.classList.add("slide-out");
           setTimeout(function(){
-            wrap.style.pointerEvents = "none";
-            setTimeout(function(){
-              i = (i + 1) % ROT.length;
-              loop();
-            }, T_GAP);
+            wrap.style.pointerEvents="none";
+            setTimeout(function(){ i=(i+1)%ROT.length; loop(); }, T_GAP);
           }, T_OUT);
-        }, T_IN + T_SHOW);
+        }, T_IN+T_SHOW);
       })();
     })();
 
-    /* Tips: robust init that upgrades from fallback to SQTips when ready */
-    (function () {
-      var box = document.getElementById("sqTip");
-      if (!box) return;
-
-      // Strong fallback line you requested
-      var FALLBACK = "StaticQuasar931 games are better. Facts 🤝";
-      box.textContent = FALLBACK;
-
-      function hideTips() {
-        box.classList.add("fade-out");
-        setTimeout(function(){ box.classList.add("gone"); }, 280);
-      }
-
-      function startRotation() {
-        try { window.SQTips.renderTo(box); } catch (e) {}
-        var rot = setInterval(function () {
-          try { window.SQTips.renderTo(box); } catch (e) {}
-        }, 10000);
-        window.__sq_hideTips = function () {
-          clearInterval(rot);
-          hideTips();
-        };
-      }
-
-      // Poll for SQTips (handles slow loads or if tips.js was cached)
-      (function waitForSQ(tries){
-        if (window.SQTips && typeof window.SQTips.renderTo === "function") {
-          startRotation();
-          return;
-        }
-        if ((tries || 0) > 60) {           // ~3s
-          // provide hide hook even if we never found SQTips
-          window.__sq_hideTips = hideTips;
-          return;
-        }
-        setTimeout(function(){ waitForSQ((tries||0)+1); }, 50);
-      })();
-    })();
-
-    /* Unity start: use the REAL Unity loader and hide our UI when runtime is ready */
+    // Shortcuts / key banners
     (function(){
-      var gi = null;
-      var done = false;
+      var LINKS = {
+        space: { text:"Play games on StaticQuasar931", href:"https://sites.google.com/view/staticquasar931/gm3z", cls:"t2" },
+        shift: { text:"Report an issue", href:"https://sites.google.com/view/staticquasar931/google-form?utm_source=slope&utm_medium=key_shift", cls:"t3" },
+        k:     { text:"Join the Discord", href:"https://discord.gg/DP2hM7RRhR", cls:"t4" },
+        m:     { text:"Follow on Instagram", href:"https://www.instagram.com/freeschoolgamepage/", cls:"t5" },
+        x:     { text:"Static other games", href:"https://sites.google.com/view/staticquasar931/gm3z", cls:"" }
+      };
+      var lastShown={}, MIN=200, nextLane=0, lanes=[""," t2"," t3"," t4"," t5"];
+      function banner(text,href,lane){
+        var a=document.createElement('a');
+        a.className='fly'+(lane||''); a.href=href; a.target='_blank'; a.rel='noopener'; a.textContent=text;
+        document.body.appendChild(a);
+        setTimeout(function(){ a.remove(); }, 8200);
+      }
+      window.addEventListener('keydown', function(e){
+        var k=(e.key||'').toLowerCase();
+        if (["w","a","s","d","q","e","arrowup","arrowdown","arrowleft","arrowright"].includes(k)) return;
+        if (k===" "||k==="shift"||k==="k"||k==="m"||k==="x"){
+          if (k===" ") e.preventDefault();
+          var id=(k===" ")?"space":k, cfg=LINKS[id]; if (!cfg) return;
+          var now=performance.now(); if (lastShown[id] && now-lastShown[id]<MIN) return; lastShown[id]=now;
+          var lane=lanes[nextLane%lanes.length]; nextLane++; banner(cfg.text,cfg.href,lane);
+        }
+      }, {passive:false});
+    })();
 
+    // Tips rotation using your SQTips API (upgrades from fallback)
+    (function(){
+      var tipEl = document.getElementById("sqTip");
+      if (!tipEl) return;
+
+      function hideTips(){
+        tipEl.classList.add("fade-out");
+        setTimeout(function(){ tipEl.classList.add("gone"); }, 280);
+      }
+
+      function startRotation(){
+        try { window.SQTips && window.SQTips.renderTo && window.SQTips.renderTo(tipEl); } catch(e){}
+        var id=setInterval(function(){
+          try { window.SQTips && window.SQTips.renderTo && window.SQTips.renderTo(tipEl); } catch(e){}
+        }, 10000);
+        window.__sq_hideTips = function(){ clearInterval(id); hideTips(); };
+      }
+
+      // Poll for SQTips (tips.js) for up to ~5s
+      (function wait(tries){
+        if (window.SQTips && typeof window.SQTips.renderTo === "function"){ startRotation(); return; }
+        if ((tries||0)>100){ window.__sq_hideTips = hideTips; return; }
+        setTimeout(function(){ wait((tries||0)+1); }, 50);
+      })();
+    })();
+
+    // Unity start: use the REAL Unity loader and hide UI when runtime is ready
+    (function(){
+      var gi=null, done=false;
       function hideBrandingAndTips(){
-        if (done) return;
-        done = true;
-        var b = document.getElementById("sqBrand");
+        if (done) return; done=true;
+        var b=document.getElementById("sqBrand");
         if (b){ b.classList.add("fade-out"); setTimeout(function(){ b.classList.add("gone"); }, 280); }
         if (typeof window.__sq_hideTips === "function") window.__sq_hideTips();
       }
-
       function start(){
-        fit();
         try{
           gi = UnityLoader.instantiate("gameContainer","slope_new.json",{
             onProgress: UnityProgress,
@@ -299,11 +370,10 @@
           });
           window.gameInstance = gi;
 
-          // Watchdog fallback (~60s)
-          var tries = 0;
-          var t = setInterval(function(){
-            var m = gi && gi.Module;
-            if ((m && (m.calledRun || m.runtimeInitialized)) || tries > 120){
+          // Watchdog (~60s max)
+          var tries=0, t=setInterval(function(){
+            var m=gi && gi.Module;
+            if ((m && (m.calledRun || m.runtimeInitialized)) || tries>120){
               clearInterval(t);
               try { gtag("event","unity_ready_watchdog",{value:1}); } catch(e){}
               hideBrandingAndTips();
@@ -315,7 +385,6 @@
           hideBrandingAndTips();
         }
       }
-
       if (document.readyState === "complete") start();
       else window.addEventListener("load", start);
     })();
