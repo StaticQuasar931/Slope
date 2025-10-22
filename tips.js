@@ -220,9 +220,8 @@
       "Tip RNG is seeded by vibes."
     ];
 
-    // Generate a bunch of silly combos
     const verbs = ["touch", "kick", "stare at", "collect", "yell at", "befriend"];
-    const objects = ["bees", "clouds", "traffic cones", "loading bars", "NPCs named Greg", "lava lamps", "puddles"];
+    const objects = ["bees", "clouds", "traffic cones", "loading bars", "NPCs named Greg", "tutorial popups", "lava lamps", "puddles"];
     const outcomes = ["it will not help", "results may vary", "science will be disappointed", "someone will notice", "achievement not unlocked", "you may level up in patience"];
 
     const template3 = [];
@@ -254,7 +253,6 @@
       "Ceilings are floors for spiders."
     ];
 
-    // Build the giant set
     return [
       ...template1,
       ...notFood,
@@ -286,7 +284,6 @@
     ...buildGeneratedTips()
   ];
 
-  // Deduplicate by case-insensitive trimmed string
   const seen = new Set();
   const ALL_TIPS = RAW_TIPS.filter(t => {
     const key = t.replace(/\s+/g, " ").trim().toLowerCase();
@@ -295,7 +292,6 @@
     return true;
   });
 
-  // Inflate if needed to hit a minimum size (three times base lists)
   const MIN_TARGET = Math.ceil((gameplayTips.length + obviousFacts.length + gamerLogic.length + lifeTips.length + realLifeTips.length) * 3);
   if (ALL_TIPS.length < MIN_TARGET) {
     const base = "Fun fact: most bedrooms have beds.";
@@ -305,7 +301,6 @@
     }
   }
 
-  // ---------------- utilities ----------------
   function shuffleInPlace(arr) {
     for (let i = arr.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));
@@ -314,9 +309,6 @@
     return arr;
   }
 
-  function nowTs() { return Date.now(); }
-
-  // ---------------- persistent cycle state with IDs ----------------
   const LS_KEY = "SQTips_state_v2";
   const LS_COUNTER = "SQTips_counter_v2";
 
@@ -336,9 +328,7 @@
     }
   }
 
-  function saveState(s) {
-    localStorage.setItem(LS_KEY, JSON.stringify(s));
-  }
+  function saveState(s) { localStorage.setItem(LS_KEY, JSON.stringify(s)); }
 
   function nextId() {
     const current = parseInt(localStorage.getItem(LS_COUNTER) || "0", 10);
@@ -347,7 +337,6 @@
     return next;
   }
 
-  // ---------------- tip engine ----------------
   const state = loadState(ALL_TIPS.length);
 
   function nextTipCore(renderToEl) {
@@ -356,19 +345,12 @@
       state.cycle += 1;
       shuffleInPlace(state.order);
     }
-
     const idx = state.order[state.cursor++];
     const tip = ALL_TIPS[idx];
     const id = nextId();
-    const ts = nowTs();
-
     saveState(state);
-
-    if (renderToEl) {
-      try { renderToEl.textContent = tip; } catch {}
-    }
-
-    return { id, tip, index: idx, total: ALL_TIPS.length, cycle: state.cycle, ts };
+    if (renderToEl) { try { renderToEl.textContent = tip; } catch {} }
+    return { id, tip, index: idx, total: ALL_TIPS.length, cycle: state.cycle, ts: Date.now() };
   }
 
   function getElement(elOrSelector) {
@@ -378,24 +360,10 @@
     return null;
   }
 
-  // ---------------- public API ----------------
   function apiNext() { return nextTipCore(null); }
-  function apiRenderTo(elOrSelector) {
-    const el = getElement(elOrSelector);
-    return nextTipCore(el);
-  }
-  function apiGetMany(n = 10) {
-    const count = Math.max(0, Math.min(n, ALL_TIPS.length));
-    const out = [];
-    for (let i = 0; i < count; i++) out.push(nextTipCore(null));
-    return out;
-  }
-  function apiResetCycle(shuffle = true) {
-    state.cursor = 0;
-    state.cycle += 1;
-    if (shuffle) shuffleInPlace(state.order);
-    saveState(state);
-  }
+  function apiRenderTo(elOrSelector) { const el = getElement(elOrSelector); return nextTipCore(el); }
+  function apiGetMany(n = 10) { const out=[]; for (let i=0;i<Math.max(0, Math.min(n, ALL_TIPS.length)); i++) out.push(nextTipCore(null)); return out; }
+  function apiResetCycle(shuffle = true) { state.cursor=0; state.cycle+=1; if (shuffle) shuffleInPlace(state.order); saveState(state); }
   function apiState() {
     return {
       cursor: state.cursor,
@@ -406,7 +374,6 @@
     };
   }
 
-  // ---------------- export safely ----------------
   if (typeof window !== "undefined") {
     window.SQTips = window.SQTips || {};
     if (!Array.isArray(window.SQTips.list) || window.SQTips.list.length < ALL_TIPS.length) {
