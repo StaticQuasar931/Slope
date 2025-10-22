@@ -136,6 +136,41 @@
   </script>
 </head>
 <body>
+
+  <div id="gameContainer" style="position:fixed;top:0;left:0;width:100vw;height:100vh;background:#111;"></div>
+
+<script>
+  // Auto-fit the element to full screen at all times
+  function fitToScreen() {
+    const el = document.getElementById("gameContainer");
+    if (!el) return;
+    el.style.width = window.innerWidth + "px";
+    el.style.height = window.innerHeight + "px";
+  }
+
+  // Adjust for visual viewport (fixes Chrome zoom and mobile bars)
+  function fitVisual() {
+    const el = document.getElementById("gameContainer");
+    if (!el || !window.visualViewport) return;
+    el.style.width = window.visualViewport.width + "px";
+    el.style.height = window.visualViewport.height + "px";
+  }
+
+  // Initial fit
+  fitToScreen();
+  fitVisual();
+
+  // Auto-update on resize and zoom
+  window.addEventListener("resize", fitToScreen);
+  if (window.visualViewport)
+    window.visualViewport.addEventListener("resize", fitVisual);
+
+  // Optional: re-fit after edits (useful for dynamic DOM updates)
+  const observer = new MutationObserver(fitToScreen);
+  observer.observe(document.body, { childList: true, subtree: true });
+</script>
+
+  
   <!-- Branding -->
   <div id="sqBrand">
     <img src="https://res.cloudinary.com/dcsrqennd/image/upload/v1760208794/My%20Brand/Static_pfp_2_nqzjkd.jpg" alt="StaticQuasar931 Logo" />
