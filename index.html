@@ -8,23 +8,23 @@
   <!-- Favicon -->
   <link rel="icon" href="https://res.cloudinary.com/dlq5fztla/image/upload/v1760301648/slope_Staticquasar931_stable_agqxto.png" />
 
-  <!-- Core SEO -->
+  <!-- Basic SEO -->
   <meta name="description" content="Play Slope free and unblocked on StaticQuasar931. Official stable version that works at school. Chromebook and mobile friendly." />
   <meta name="keywords" content="Slope, Slope unblocked, play Slope online, Slope game, unblocked games for school, StaticQuasar931, Static 931" />
   <meta name="theme-color" content="#131419" />
-  <link rel="canonical" href="https://staticquasar931.github.io/slope/" />
   <meta property="og:title" content="Play Slope - Official Stable Version | StaticQuasar931" />
   <meta property="og:description" content="Slope. Fast. Smooth. Unblocked. Works with internet enabled on more school networks." />
   <meta property="og:image" content="https://res.cloudinary.com/dlq5fztla/image/upload/v1760301648/slope_Staticquasar931_stable_agqxto.png" />
   <meta property="og:type" content="website" />
+  <link rel="canonical" href="https://staticquasar931.github.io/slope/" />
 
-  <!-- GA preconnects -->
+  <!-- GA performance hints -->
   <link rel="dns-prefetch" href="https://www.googletagmanager.com">
   <link rel="dns-prefetch" href="https://www.google-analytics.com">
   <link rel="preconnect" href="https://www.googletagmanager.com" crossorigin>
   <link rel="preconnect" href="https://www.google-analytics.com" crossorigin>
 
-  <!-- GA4 loader with queue, disabled on ?school=1 -->
+  <!-- Google Analytics 4 (queued, disabled in ?school=1) -->
   <script>
     (function () {
       try {
@@ -34,39 +34,48 @@
         window.__SQ_SCHOOL__ = false;
       }
 
+      // Queue before network script arrives
       window.dataLayer = window.dataLayer || [];
       window.gtag = function(){ dataLayer.push(arguments); };
 
+      // Basic boot & page view
       gtag("js", new Date());
-      gtag("config", "G-27S3Y4TS0Y", { transport_type: "beacon", anonymize_ip: true });
+      gtag("config", "G-27S3Y4TS0Y", {
+        transport_type: "beacon",
+        anonymize_ip: true
+      });
+      gtag("event", "page_view");
 
+      // Only load GA in non-school mode
       if (!window.__SQ_SCHOOL__) {
         var s = document.createElement("script");
         s.async = true;
         s.src = "https://www.googletagmanager.com/gtag/js?id=G-27S3Y4TS0Y";
         s.referrerPolicy = "origin-when-cross-origin";
-        s.onerror = function(){ console.warn("GA blocked or failed to load"); };
+        s.onerror = function(){ console.warn("GA failed/blocked"); };
         document.head.appendChild(s);
       }
     })();
   </script>
 
-  <!-- Unity default loader assets (your local files) -->
+  <!-- Unity default loader assets (your root layout) -->
   <link rel="stylesheet" href="style/style.css" />
   <script src="UnityLoader.js"></script>
   <script src="UnityProgress.js"></script>
 
-  <!-- Tips data (your local file) -->
+  <!-- Tips (your updated file; must be pure JS, no <script> wrapper) -->
   <script src="tips.js" defer></script>
 
   <style>
     html,body{margin:0;padding:0;height:100%;overflow:hidden;background:radial-gradient(circle at center,#17191d,#0c0d11);color:#f5f8ff;font-family:"Segoe UI",Roboto,Arial,sans-serif}
-
     .webgl-content{position:fixed;inset:0;display:flex;align-items:center;justify-content:center}
     #gameContainer{width:100%;height:100%;background:transparent;position:relative}
 
-    /* Top center branding */
-    #sqBrand{position:fixed;top:5px;left:50%;transform:translateX(-50%);z-index:20;text-align:center;padding:16px 20px;border-radius:16px;background:linear-gradient(145deg,rgba(10,12,18,.7),rgba(10,12,18,.45));border:1px solid rgba(255,255,255,.15);box-shadow:0 16px 40px rgba(0,0,0,.45);backdrop-filter:blur(10px);max-width:min(1000px,96vw);animation:brandPop .6s ease forwards}
+    /* Hide Unity footer (webgl + fullscreen icons) */
+    .webgl-content .footer{display:none !important}
+
+    /* Top-center branding */
+    #sqBrand{position:fixed;top:5px;left:50%;transform:translateX(-50%);z-index:20;text-align:center;padding:16px 20px;border-radius:14px;background:linear-gradient(145deg,rgba(10,12,18,.7),rgba(10,12,18,.45));border:1px solid rgba(255,255,255,.15);box-shadow:0 16px 40px rgba(0,0,0,.45);backdrop-filter:blur(10px);max-width:min(960px,96vw);animation:brandPop .6s ease forwards}
     @keyframes brandPop{from{opacity:0;transform:translate(-50%,-4px) scale(.98)}to{opacity:1;transform:translate(-50%,0) scale(1)}}
     #sqBrand img{width:64px;height:64px;border-radius:12px;object-fit:cover;box-shadow:0 8px 24px rgba(0,0,0,.45);vertical-align:middle;margin-right:12px;opacity:0;animation:logoIn .5s ease .05s forwards}
     @keyframes logoIn{to{opacity:1}}
@@ -85,7 +94,7 @@
     #staticMenu a{color:#5ee1ff;text-decoration:none;font-weight:800}
     #closeStaticMenu{color:#f55;cursor:pointer;padding:2px 6px;border-radius:6px;border:1px solid rgba(255,255,255,.15);background:rgba(255,255,255,.06);user-select:none}
 
-    /* Rotating promo bubble */
+    /* Rotating promo bubble (disabled with ?school=1) */
     #staticSlideMenu{position:fixed;bottom:24px;right:24px;z-index:21;width:100px;height:100px;pointer-events:none;opacity:0;transform:translateX(140px) scale(.96);filter:drop-shadow(0 6px 18px rgba(0,0,0,.45))}
     #staticSlideMenu a{display:block;width:100%;height:100%}
     #staticSlideMenu img{width:100%;height:100%;object-fit:cover;border-radius:50%}
@@ -94,7 +103,7 @@
     @keyframes slideOut{from{opacity:1;transform:translateX(0) scale(1)}to{opacity:0;transform:translateX(140px) scale(.96)}}
     @media (max-width:768px){#staticSlideMenu{width:84px;height:84px}}
 
-    /* Key banners */
+    /* Banners (key shortcuts) */
     .fly{position:fixed;z-index:22;pointer-events:auto;padding:12px 16px;border-radius:12px;background:rgba(20,24,36,.92);border:1px solid rgba(94,225,255,.35);color:#bfe7ff;font-weight:800;text-decoration:none;box-shadow:0 8px 28px rgba(0,0,0,.45);top:14%;left:-40%;will-change:transform,opacity;animation:flyAcross 8s ease-in-out forwards}
     @keyframes flyAcross{0%{left:-40%;opacity:0}10%{left:2%;opacity:1}50%{left:48%;opacity:1}95%{left:96%;opacity:1}100%{left:110%;opacity:0}}
     .fly.t2{top:22%}.fly.t3{top:30%}.fly.t4{top:18%}.fly.t5{top:26%}
@@ -103,10 +112,11 @@
     @keyframes fadeOut{to{opacity:0;visibility:hidden}}
     .gone{display:none !important}
 
+    /* Obfuscated SEO (intentionally spaced) */
     .seo-hidden{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(1px,1px,1px,1px);white-space:nowrap}
   </style>
 
-  <!-- Preload promo images unless ?school=1 -->
+  <!-- School mode + preload promos -->
   <script>
     (function(){
       const q = new URLSearchParams(location.search);
@@ -122,36 +132,22 @@
     })();
   </script>
 
-  <!-- Block id.net everywhere -->
+  <!-- Block id.net early -->
   <script>
     (function(){
       const RX=/id\.net\/api\/user_data/i;
-
-      // Block JSONP scripts
       const ap=Node.prototype.appendChild, ib=Node.prototype.insertBefore;
       function blk(n){try{if(n&&n.tagName==='SCRIPT'&&RX.test(String(n.src||''))){n.remove();return true}}catch(e){}return false}
       Node.prototype.appendChild=function(n){if(blk(n))return n;return ap.call(this,n)};
       Node.prototype.insertBefore=function(n,r){if(blk(n))return n;return ib.call(this,n,r)};
-
-      // Scrub document.write
       try{
         const W=document.write.bind(document),WL=document.writeln.bind(document);
         const strip=s=>typeof s==='string'?s.replace(/<script[^>]+src=["'][^"']*id\.net\/api\/user_data[^"']*["'][^>]*>\s*<\/script>/ig,''):s;
         document.write=h=>W(strip(h));document.writeln=h=>WL(strip(h));
       }catch(e){}
-
-      // fetch stub
       const ofetch=window.fetch;
-      window.fetch=function(input){
-        const url=typeof input==='string'?input:(input&&input.url)||'';
-        if(RX.test(String(url||''))){
-          return Promise.resolve(new Response("{}",{status:200,headers:{'Content-Type':'application/json'}}));
-        }
-        return ofetch.apply(this,arguments)
-      };
-
-      // XHR stub
-      const oopen=XMLHttpRequest.prototype.open, osend=XMLHttpRequest.prototype.send;
+      window.fetch=function(input){const url=typeof input==='string'?input:(input&&input.url)||'';if(RX.test(String(url||'')))return Promise.resolve(new Response("{}",{status:200,headers:{'Content-Type':'application/json'}}));return ofetch.apply(this,arguments)};
+      const oopen=XMLHttpRequest.prototype.open,osend=XMLHttpRequest.prototype.send;
       XMLHttpRequest.prototype.open=function(m,u){this.__sqBlk=/id\.net/i.test(String(u||''));return oopen.apply(this,arguments)};
       XMLHttpRequest.prototype.send=function(){if(this.__sqBlk){this.readyState=4;this.status=200;this.responseText='{}';this.onload&&this.onload();this.onreadystatechange&&this.onreadystatechange();return}return osend.apply(this,arguments)};
     })();
@@ -183,7 +179,7 @@
     <div id="gameContainer"></div>
   </div>
 
-  <!-- Hidden obfuscated SEO -->
+  <!-- Hidden/obfuscated SEO -->
   <div class="seo-hidden" aria-hidden="true">
     <p>S-t-a-t-i-c-Q-u-a-s-a-r-9-3-1 S-l-o-p-e U-n-b-l-o-c-k-e-d O-f-f-i-c-i-a-l S-t-a-b-l-e V-e-r-s-i-o-n</p>
     <p>P-l-a-y S-l-o-p-e o-n l-i-n-e a-t s-c-h-o-o-l C-h-r-o-m-e-b-o-o-k a-n-d m-o-b-i-l-e f-r-i-e-n-d-l-y</p>
@@ -191,53 +187,21 @@
   </div>
 
   <script>
-    /* Leave warning */
+    // Leave warning
     window.onbeforeunload = () => "Are you sure you want to leave? Your progress may not be saved.";
 
-    /* Viewport fit with robust signals */
-    (function () {
-      const CONTAINER_ID = "gameContainer";
-      let raf = 0, lastW = 0, lastH = 0;
+    // Fit to viewport (handles mobile visual viewport too)
+    function fitGame(){
+      const c = document.getElementById("gameContainer");
+      if (!c) return;
+      const h = window.visualViewport ? window.visualViewport.height : window.innerHeight;
+      c.style.width  = window.innerWidth + "px";
+      c.style.height = h + "px";
+    }
+    addEventListener("resize", fitGame, { passive:true });
+    if (window.visualViewport) window.visualViewport.addEventListener("resize", fitGame, { passive:true });
 
-      function computeSize() {
-        const vw = Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
-        const vh = window.visualViewport
-          ? Math.floor(window.visualViewport.height)
-          : Math.max(document.documentElement.clientHeight, window.innerHeight || 0);
-        return { vw, vh };
-      }
-
-      function applySize() {
-        const el = document.getElementById(CONTAINER_ID);
-        if (!el) return;
-        const { vw, vh } = computeSize();
-        if (vw === lastW && vh === lastH) return;
-        lastW = vw; lastH = vh;
-        el.style.width = vw + "px";
-        el.style.height = vh + "px";
-      }
-
-      function schedule() {
-        cancelAnimationFrame(raf);
-        raf = requestAnimationFrame(applySize);
-      }
-
-      window.addEventListener("resize", schedule, { passive: true });
-      window.addEventListener("orientationchange", schedule);
-      if (window.visualViewport) {
-        window.visualViewport.addEventListener("resize", schedule, { passive: true });
-        window.visualViewport.addEventListener("scroll", schedule, { passive: true });
-      }
-      document.addEventListener("fullscreenchange", schedule);
-      document.addEventListener("webkitfullscreenchange", schedule);
-      document.addEventListener("mozfullscreenchange", schedule);
-      if (window.ResizeObserver) new ResizeObserver(schedule).observe(document.documentElement);
-
-      if (document.readyState === "complete") schedule();
-      else window.addEventListener("load", schedule);
-    })();
-
-    /* Static menu hide + auto restore */
+    // Static menu hide/restore
     (function(){
       const menu = document.getElementById("staticMenu");
       const btn  = document.getElementById("closeStaticMenu");
@@ -248,7 +212,7 @@
       };
     })();
 
-    /* Rotator only if not in school mode */
+    // Rotating promo (disabled in ?school=1)
     (function(){
       if (window.__SQ_SCHOOL__) return;
       const wrap = document.getElementById("staticSlideMenu");
@@ -258,12 +222,10 @@
       const a   = document.getElementById("staticSlideLink");
       const img = document.getElementById("staticSlideImg");
       if (!a || !img) return;
-
       const FORM    = { src:"https://res.cloudinary.com/dcsrqennd/image/upload/v1747533056/raw_um4pvq.png", alt:"Feedback and requests", link:"https://sites.google.com/view/staticquasar931/google-form", cls:"" };
       const DISCORD = { src:"https://res.cloudinary.com/dcsrqennd/image/upload/v1758072526/Join_Our_Discord_StaticQuassar931_lcplrf.png", alt:"Join the Discord", link:"https://discord.gg/DP2hM7RRhR", cls:"discord" };
       const INSTA   = { src:"https://res.cloudinary.com/dcsrqennd/image/upload/v1747533158/raw_cw34yi.png", alt:"Instagram", link:"https://www.instagram.com/freeschoolgamepage/", cls:"" };
       const ROT = [FORM, DISCORD, INSTA];
-
       const T_IN = 1100, T_SHOW = 4200, T_OUT = 900, T_GAP = 12000;
       let i = 0;
       function apply(o){ img.src=o.src; img.alt=o.alt; a.href=o.link; wrap.className=o.cls; }
@@ -285,7 +247,7 @@
       apply(ROT[i]); loop();
     })();
 
-    /* Key banners with cooldown */
+    // Fun banners (keyboard)
     (function(){
       const LINKS = {
         space: { text:"Play games on StaticQuasar931", href:"https://sites.google.com/view/staticquasar931/gm3z", cls:"t2" },
@@ -323,16 +285,16 @@
       }, {passive:false});
     })();
 
-    /* Tips rotation with hide hook */
+    // Tips: render & cycle using your SQTips API
     (function(){
       const tipEl = document.getElementById("sqTip");
       if (!tipEl) return;
-      const list = Array.isArray(window.SQ_TIPS) && window.SQ_TIPS.length ? window.SQ_TIPS.slice() : ["Use A and D to steer.","Short taps beat hard turns.","Center first, then correct."];
-      for (let i=list.length-1; i>0; i--){ const j=Math.floor(Math.random()*(i+1)); [list[i],list[j]]=[list[j],list[i]]; }
-      let idx = 0;
-      const show = () => { tipEl.textContent = list[idx % list.length]; idx++; };
-      show();
-      const id = setInterval(show, 10000);
+      function showNext(){
+        try { window.SQTips && window.SQTips.renderTo && window.SQTips.renderTo(tipEl); }
+        catch(e){ tipEl.textContent = "Loading…"; }
+      }
+      showNext();
+      const id = setInterval(showNext, 10000);
       window.__sq_hideTips = () => {
         clearInterval(id);
         tipEl.classList.add("fade-out");
@@ -340,7 +302,7 @@
       };
     })();
 
-    /* Unity start: use default UnityProgress UI, hide branding and tips when runtime is ready */
+    // Unity start + hide overlays when runtime is really ready
     (function(){
       let gi = null;
       let done = false;
@@ -349,32 +311,30 @@
         if (done) return;
         done = true;
         const b = document.getElementById("sqBrand");
-        if (b){
-          b.classList.add("fade-out");
-          setTimeout(()=> b.classList.add("gone"), 280);
-        }
+        if (b){ b.classList.add("fade-out"); setTimeout(()=> b.classList.add("gone"), 280); }
         window.__sq_hideTips && window.__sq_hideTips();
       }
 
       function start(){
+        fitGame();
         gi = UnityLoader.instantiate("gameContainer","slope_new.json",{
-          onProgress: UnityProgress,
+          onProgress: UnityProgress, // stock Unity loader UI
           Module:{
             onRuntimeInitialized: function(){
-              try { gtag("event","unity_ready",{value:1}); } catch(e){}
+              try { gtag("event", "unity_ready", { value: 1 }); } catch(e){}
               hideBrandingAndTips();
             }
           }
         });
         window.gameInstance = gi;
 
-        // Watchdog fallback
+        // Watchdog fallback (if Unity never calls onRuntimeInitialized)
         let tries = 0;
         const t = setInterval(()=>{
           const m = gi && gi.Module;
           if ((m && (m.calledRun || m.runtimeInitialized)) || tries > 120){
             clearInterval(t);
-            if (tries > 120){ try { gtag("event","unity_ready_watchdog",{value:1}); } catch(e){} }
+            try { gtag("event", "unity_ready_watchdog", { value: 1 }); } catch(e){}
             hideBrandingAndTips();
           }
           tries++;
